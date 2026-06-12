@@ -9,6 +9,7 @@ export interface ShopItem {
   rarityDisplay: string;
   price: number;
   image: string;
+  featured: boolean;
 }
 
 export interface ShopBundle {
@@ -20,6 +21,7 @@ export interface ShopBundle {
   image: string;
   icons: string[];
   itemCount: number;
+  featured: boolean;
 }
 
 export type ShopEntry = ShopItem | ShopBundle;
@@ -46,9 +48,15 @@ const rarityOrder: Record<string, number> = {
   common: 7,
 };
 
+const featuredSizes = new Set(['Size_2_x_1', 'Size_3_x_1', 'Size_4_x_1']);
+
+function isFeatured(entry: any): boolean {
+  return featuredSizes.has(entry.tileSize);
+}
+
 function getRarity(entry: any): string {
   const brItems: any[] = entry.brItems ?? entry.items ?? [];
-  return brItems[0]?.rarity?.value ?? 'common';
+  return brItems[0]?.rarity?.value ?? 'legendary';
 }
 
 function getBestImage(item: any): string {
@@ -62,7 +70,6 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
   const entries: any[] = json.data?.entries ?? [];
 
-  // バンドルエントリーを先に処理し、含まれるアイテム名を記録
   const bundleItemNames = new Set<string>();
   const bundles: ShopBundle[] = [];
 
@@ -77,9 +84,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
       .filter(Boolean)
       .slice(0, 6);
 
-    brItems.forEach((i: any) => {
-      if (i.name) bundleItemNames.add(i.name);
-    });
+    brItems.forEach((i: any) => { if (i.name) bundleItemNames.add(i.name); });
 
     bundles.push({
       kind: 'bundle',
@@ -90,16 +95,17 @@ export async function fetchShop(): Promise<ShopEntry[]> {
       image: getBestImage(mainItem),
       icons,
       itemCount: brItems.length,
+      featured: isFeatured(entry),
     });
   }
 
-  // 単体アイテムを処理（バンドルに含まれるものはスキップ）
   const seenNames = new Set<string>();
   const items: ShopItem[] = [];
 
   for (const entry of entries) {
     if (entry.bundle) continue;
     const brItems: any[] = entry.brItems ?? entry.items ?? [];
+    const entryFeatured = isFeatured(entry);
 
     for (const item of brItems) {
       const name: string = item.name ?? '';
@@ -115,6 +121,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
         rarityDisplay: item.rarity?.displayValue ?? '',
         price: entry.finalPrice ?? entry.regularPrice ?? 0,
         image: getBestImage(item),
+        featured: entryFeatured,
       });
     }
   }

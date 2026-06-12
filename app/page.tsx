@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export const revalidate = 600;
 
-function ItemCard({ item }: { item: ShopItem }) {
+function ItemCard({ item, large }: { item: ShopItem; large?: boolean }) {
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
     <div style={{
@@ -20,7 +20,7 @@ function ItemCard({ item }: { item: ShopItem }) {
             src={item.image}
             alt={item.name}
             fill
-            sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 180px"
+            sizes={large ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 33vw, 160px"}
             style={{ objectFit: "cover" }}
           />
         </div>
@@ -28,26 +28,27 @@ function ItemCard({ item }: { item: ShopItem }) {
         <div style={{ width: "100%", aspectRatio: "1/1", backgroundColor: "var(--border)" }} />
       )}
       <div style={{ height: "3px", backgroundColor: color }} />
-      <div style={{ padding: "8px" }}>
-        <p style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase", marginBottom: "2px" }}>
+      <div style={{ padding: large ? "10px" : "8px" }}>
+        <p style={{ fontSize: large ? "11px" : "10px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase", marginBottom: "2px" }}>
           {item.rarityDisplay || item.typeDisplay}
         </p>
         <p style={{
-          fontSize: "12px", fontWeight: "700", color: "var(--text)", lineHeight: 1.3, marginBottom: "6px",
+          fontSize: large ? "13px" : "12px",
+          fontWeight: "700", color: "var(--text)", lineHeight: 1.3, marginBottom: "6px",
           overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any,
         }}>
           {item.name}
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>⟁</span>
-          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>{item.price.toLocaleString()}</span>
+          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: large ? "13px" : "12px" }}>⟁</span>
+          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: large ? "13px" : "12px" }}>{item.price.toLocaleString()}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function BundleCard({ bundle }: { bundle: ShopBundle }) {
+function BundleCard({ bundle, large }: { bundle: ShopBundle; large?: boolean }) {
   const color = rarityColors[bundle.rarity] ?? rarityColors.legendary;
   return (
     <div style={{
@@ -57,10 +58,9 @@ function BundleCard({ bundle }: { bundle: ShopBundle }) {
       border: `1px solid ${color}66`,
       display: "flex",
       flexDirection: "column",
-      gridColumn: "span 2",
+      gridColumn: large ? "span 2" : "span 2",
     }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        {/* メイン画像 */}
         {bundle.image ? (
           <div style={{ position: "relative", width: "50%", aspectRatio: "1/1", flexShrink: 0 }}>
             <Image
@@ -74,7 +74,6 @@ function BundleCard({ bundle }: { bundle: ShopBundle }) {
         ) : (
           <div style={{ width: "50%", aspectRatio: "1/1", backgroundColor: "var(--border)", flexShrink: 0 }} />
         )}
-        {/* 右側情報 */}
         <div style={{ flex: 1, padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div>
             <span style={{
@@ -98,7 +97,6 @@ function BundleCard({ bundle }: { bundle: ShopBundle }) {
             </p>
           </div>
           <div>
-            {/* アイコン一覧 */}
             {bundle.icons.length > 0 && (
               <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "8px" }}>
                 {bundle.icons.map((icon, i) => (
@@ -134,6 +132,8 @@ export default async function ShopPage() {
     year: "numeric", month: "long", day: "numeric", weekday: "short",
   });
 
+  const featured = entries.filter(e => e.featured);
+  const regular = entries.filter(e => !e.featured);
   const bundleCount = entries.filter(e => e.kind === "bundle").length;
   const itemCount = entries.filter(e => e.kind === "item").length;
 
@@ -153,20 +153,52 @@ export default async function ShopPage() {
         </div>
       ) : (
         <>
-          <p style={{ color: "var(--text-muted)", fontSize: "12px", marginBottom: "14px" }}>
-            {bundleCount > 0 && `セット ${bundleCount}件・`}アイテム {itemCount}件
-          </p>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
-            gap: "10px",
-          }}>
-            {entries.map((entry) =>
-              entry.kind === "bundle"
-                ? <BundleCard key={entry.id} bundle={entry} />
-                : <ItemCard key={entry.id} item={entry} />
-            )}
-          </div>
+          {/* 今日のおすすめ */}
+          {featured.length > 0 && (
+            <section style={{ marginBottom: "32px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                <span style={{ fontSize: "18px" }}>⭐</span>
+                <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--primary)", letterSpacing: "1px" }}>
+                  今日のおすすめ
+                </h2>
+                <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Epic公式が注目するアイテム</span>
+              </div>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+                gap: "12px",
+              }}>
+                {featured.map((entry) =>
+                  entry.kind === "bundle"
+                    ? <BundleCard key={entry.id} bundle={entry} large />
+                    : <ItemCard key={entry.id} item={entry} large />
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* 全アイテム */}
+          <section>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px" }}>
+                🛒 全アイテム
+              </h2>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                {bundleCount > 0 && `セット ${bundleCount}件・`}アイテム {itemCount}件
+              </span>
+            </div>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+              gap: "10px",
+            }}>
+              {regular.map((entry) =>
+                entry.kind === "bundle"
+                  ? <BundleCard key={entry.id} bundle={entry} />
+                  : <ItemCard key={entry.id} item={entry} />
+              )}
+            </div>
+          </section>
         </>
       )}
     </div>
