@@ -24,6 +24,11 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       apple: "/icon-192.png",
     },
+    appleWebApp: {
+      capable: true,
+      title: "フォトナHub",
+      statusBarStyle: "black-translucent",
+    },
     title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
     description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト「フォトナHub」",
     openGraph: {
