@@ -144,6 +144,7 @@ export type CosmeticCategory = 'br' | 'tracks' | 'instruments' | 'cars' | 'lego'
 export interface NewCosmetic {
   id: string;
   name: string;
+  typeValue: string;
   typeDisplay: string;
   rarity: string;
   image: string;
@@ -177,6 +178,7 @@ export async function fetchNewCosmetics(): Promise<NewCosmetic[]> {
       all.push({
         id: item.id,
         name,
+        typeValue: item.type?.value ?? '',
         typeDisplay: item.type?.displayValue ?? '',
         rarity: item.rarity?.value ?? 'common',
         image: item.images?.icon ?? item.images?.smallIcon ?? '',

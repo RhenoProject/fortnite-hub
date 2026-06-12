@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { NewCosmetic, CosmeticCategory, cosmeticCategoryLabel, rarityColors } from "@/lib/shopApi";
+import { NewCosmetic, cosmeticCategoryLabel, CosmeticCategory, rarityColors } from "@/lib/shopApi";
 
 const ALL = "all";
 
@@ -64,48 +64,68 @@ function CosmeticCard({ item }: { item: NewCosmetic }) {
 }
 
 export function CosmeticsClient({ items }: { items: NewCosmetic[] }) {
-  const [filter, setFilter] = useState<CosmeticCategory | typeof ALL>(ALL);
+  const [filter, setFilter] = useState<string>(ALL);
 
-  const filtered = filter === ALL ? items : items.filter(i => i.category === filter);
+  // カテゴリー単位のフィルター（楽曲・楽器・車・レゴ系）
+  const categoryFilters: CosmeticCategory[] = ['tracks', 'instruments', 'cars', 'lego', 'legoKits'];
 
-  const tabStyle = (cat: CosmeticCategory | typeof ALL): React.CSSProperties => ({
+  // brアイテムのタイプ一覧
+  const brTypes = Array.from(
+    new Set(items.filter(i => i.category === 'br' && i.typeValue).map(i => i.typeValue))
+  );
+
+  // カテゴリーフィルターに使う（件数あるもののみ）
+  const availableCategories = categoryFilters.filter(cat => items.some(i => i.category === cat));
+
+  const filtered = filter === ALL
+    ? items
+    : brTypes.includes(filter)
+      ? items.filter(i => i.typeValue === filter)
+      : items.filter(i => i.category === filter);
+
+  const tabStyle = (key: string): React.CSSProperties => ({
     padding: "6px 14px",
     borderRadius: "20px",
     fontSize: "12px",
     fontWeight: "700",
     cursor: "pointer",
     border: "none",
-    backgroundColor: filter === cat ? "var(--primary)" : "var(--card)",
-    color: filter === cat ? "#0a0f1a" : "var(--text-muted)",
+    backgroundColor: filter === key ? "var(--primary)" : "var(--card)",
+    color: filter === key ? "#0a0f1a" : "var(--text-muted)",
     transition: "all 0.15s",
     whiteSpace: "nowrap" as const,
+    flexShrink: 0,
   });
 
   return (
     <>
-      {/* カテゴリーフィルター */}
-      <div style={{
-        display: "flex",
-        gap: "8px",
-        marginBottom: "20px",
-        overflowX: "auto",
-        paddingBottom: "4px",
-      }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "20px", overflowX: "auto", paddingBottom: "4px" }}>
         <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>
           すべて ({items.length})
         </button>
-        {(Object.entries(cosmeticCategoryLabel) as [CosmeticCategory, string][]).map(([cat, label]) => {
+
+        {/* BRコスメのタイプ別 */}
+        {brTypes.map(type => {
+          const count = items.filter(i => i.typeValue === type).length;
+          const label = items.find(i => i.typeValue === type)?.typeDisplay ?? type;
+          return (
+            <button key={type} style={tabStyle(type)} onClick={() => setFilter(type)}>
+              {label} ({count})
+            </button>
+          );
+        })}
+
+        {/* 楽曲・楽器・車・レゴ等 */}
+        {availableCategories.map(cat => {
           const count = items.filter(i => i.category === cat).length;
-          if (count === 0) return null;
           return (
             <button key={cat} style={tabStyle(cat)} onClick={() => setFilter(cat)}>
-              {label} ({count})
+              {cosmeticCategoryLabel[cat]} ({count})
             </button>
           );
         })}
       </div>
 
-      {/* グリッド */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
