@@ -28,11 +28,6 @@ export default async function CosmeticsPage() {
           marginTop: "8px",
           fontSize: "12px",
           color: "var(--text-muted)",
-          backgroundColor: "var(--card)",
-          border: "1px solid var(--border)",
-          borderRadius: "6px",
-          padding: "6px 12px",
-          display: "inline-block",
         }}>
           ※ 一部のアイテムは表示されない場合があります
         </p>

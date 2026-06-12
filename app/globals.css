@@ -9,7 +9,6 @@
   --accent: #ffd700;
   --text: #f0f4f8;
   --text-muted: #6b8099;
-  --bottom-nav-height: 60px;
 }
 
 * {
@@ -33,39 +32,4 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
-}
-
-/* スマホ：下部タブバーのぶん余白を確保 */
-@media (max-width: 640px) {
-  main {
-    padding-bottom: calc(var(--bottom-nav-height) + 8px);
-  }
-  footer {
-    display: none;
-  }
-}
-
-/* タブバー：スマホのみ表示 */
-.bottom-nav {
-  display: none;
-}
-@media (max-width: 640px) {
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--bottom-nav-height);
-    background-color: var(--surface);
-    border-top: 1px solid var(--border);
-    z-index: 100;
-  }
-}
-
-/* ヘッダーナビ：スマホでは非表示（下タブで代替） */
-@media (max-width: 640px) {
-  .header-nav {
-    display: none;
-  }
 }
