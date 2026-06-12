@@ -9,7 +9,7 @@ export function Header() {
     display: "flex",
     alignItems: "center",
     gap: "6px",
-    padding: "8px 18px",
+    padding: "8px 16px",
     minHeight: "44px",
     borderRadius: "8px",
     fontSize: "14px",
@@ -33,7 +33,7 @@ export function Header() {
     fontSize: "10px",
     fontWeight: "700",
     paddingBottom: "4px",
-    borderTop: pathname === href ? `2px solid var(--primary)` : "2px solid transparent",
+    borderTop: pathname === href ? "2px solid var(--primary)" : "2px solid transparent",
     transition: "all 0.15s",
   });
 
@@ -55,7 +55,6 @@ export function Header() {
           justifyContent: "space-between",
           gap: "12px",
         }}>
-          {/* ロゴ */}
           <Link href="/" style={{ textDecoration: "none", display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
             <span style={{ fontSize: "20px", fontWeight: "900", letterSpacing: "2px", color: "var(--primary)" }}>
               フォトナHub
@@ -65,14 +64,11 @@ export function Header() {
             </span>
           </Link>
 
-          {/* PC用ナビ（スマホでは非表示） */}
+          {/* PC用ナビ */}
           <nav className="header-nav" style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            <Link href="/" style={navStyle("/")}>
-              🛍️ ショップ
-            </Link>
-            <Link href="/news" style={navStyle("/news")}>
-              📰 ニュース
-            </Link>
+            <Link href="/" style={navStyle("/")}>🛍️ ショップ</Link>
+            <Link href="/news" style={navStyle("/news")}>📰 ニュース</Link>
+            <Link href="/cosmetics" style={navStyle("/cosmetics")}>✨ 新着</Link>
           </nav>
         </div>
       </header>
@@ -86,6 +82,10 @@ export function Header() {
         <Link href="/news" style={tabStyle("/news")}>
           <span style={{ fontSize: "22px", lineHeight: 1 }}>📰</span>
           <span>ニュース</span>
+        </Link>
+        <Link href="/cosmetics" style={tabStyle("/cosmetics")}>
+          <span style={{ fontSize: "22px", lineHeight: 1 }}>✨</span>
+          <span>新着</span>
         </Link>
       </nav>
     </>

@@ -136,3 +136,52 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
   return all;
 }
+
+export type CosmeticCategory = 'br' | 'tracks' | 'instruments' | 'cars' | 'lego' | 'legoKits';
+
+export interface NewCosmetic {
+  id: string;
+  name: string;
+  typeDisplay: string;
+  rarity: string;
+  image: string;
+  addedAt: string;
+  category: CosmeticCategory;
+}
+
+export const cosmeticCategoryLabel: Record<CosmeticCategory, string> = {
+  br: 'コスメティック',
+  tracks: '楽曲',
+  instruments: '楽器',
+  cars: '車',
+  lego: 'レゴ',
+  legoKits: 'レゴキット',
+};
+
+export async function fetchNewCosmetics(): Promise<NewCosmetic[]> {
+  const res = await fetch(`${BASE_URL}/v2/cosmetics/new?language=ja`, { next: { revalidate: 1800 } });
+  if (!res.ok) throw new Error(`Cosmetics API error: ${res.status}`);
+  const json = await res.json();
+
+  const itemsObj: Record<string, any[]> = json.data?.items ?? {};
+  const all: NewCosmetic[] = [];
+
+  for (const [cat, list] of Object.entries(itemsObj)) {
+    if (!Array.isArray(list)) continue;
+    for (const item of list) {
+      all.push({
+        id: item.id,
+        name: item.name ?? '不明',
+        typeDisplay: item.type?.displayValue ?? '',
+        rarity: item.rarity?.value ?? 'common',
+        image: item.images?.icon ?? item.images?.smallIcon ?? '',
+        addedAt: item.added ?? '',
+        category: cat as CosmeticCategory,
+      });
+    }
+  }
+
+  all.sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
+
+  return all;
+}
