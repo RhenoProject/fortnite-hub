@@ -34,7 +34,7 @@ export default async function CosmeticsPage() {
           padding: "6px 12px",
           display: "inline-block",
         }}>
-          ※ APIの仕様により、一部のアイテムは表示されない場合があります
+          ※ 一部のアイテムは表示されない場合があります
         </p>
       </div>
 
