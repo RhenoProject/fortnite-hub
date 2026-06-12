@@ -3,24 +3,41 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Analytics } from "@vercel/analytics/next";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://fortnite-hub.vercel.app"),
-  title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
-  description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト「フォトナHub」",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  let ogImage = "/og-image.jpg";
+
+  try {
+    const res = await fetch("https://fortnite-api.com/v2/news?language=ja", {
+      next: { revalidate: 3600 },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      const first = (json.data?.br?.motds ?? []).find(
+        (m: any) => !m.hidden && (m.tileImage || m.image)
+      );
+      if (first) ogImage = first.tileImage || first.image;
+    }
+  } catch {}
+
+  return {
+    metadataBase: new URL("https://fortnite-hub.vercel.app"),
     title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
-    description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック！",
-    type: "website",
-    locale: "ja_JP",
-    images: [{ url: "/og-image.jpg", width: 1920, height: 1080, alt: "フォトナHub" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
-    description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック！",
-    images: ["/og-image.jpg"],
-  },
-};
+    description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト「フォトナHub」",
+    openGraph: {
+      title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
+      description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック！",
+      type: "website",
+      locale: "ja_JP",
+      images: [{ url: ogImage, width: 1920, height: 1080, alt: "フォトナHub" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
+      description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック！",
+      images: [ogImage],
+    },
+  };
+}
 
 export default function RootLayout({
   children,
