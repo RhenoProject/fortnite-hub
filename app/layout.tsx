@@ -36,7 +36,7 @@ export default function RootLayout({
           color: "var(--text-muted)",
           fontSize: "12px",
         }}>
-          © 2024 フォトナHub — This site is not affiliated with Epic Games.
+          © 2026 フォトナHub — This site is not affiliated with Epic Games.
         </footer>
         <Analytics />
       </body>
