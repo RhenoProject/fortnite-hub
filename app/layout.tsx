@@ -21,6 +21,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL("https://fortnite-hub-delta.vercel.app"),
+    icons: {
+      apple: "/icon-192.png",
+    },
     title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
     description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト「フォトナHub」",
     openGraph: {
