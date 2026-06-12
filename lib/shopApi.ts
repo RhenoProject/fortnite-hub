@@ -4,6 +4,7 @@ export interface ShopItem {
   kind: 'item';
   id: string;
   name: string;
+  typeValue: string;
   typeDisplay: string;
   rarity: string;
   rarityDisplay: string;
@@ -116,6 +117,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
         kind: 'item',
         id: item.id ?? entry.offerId,
         name,
+        typeValue: item.type?.value ?? '',
         typeDisplay: item.type?.displayValue ?? '',
         rarity: item.rarity?.value ?? 'common',
         rarityDisplay: item.rarity?.displayValue ?? '',
