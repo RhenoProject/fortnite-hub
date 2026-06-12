@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   } catch {}
 
   return {
-    metadataBase: new URL("https://fortnite-hub.vercel.app"),
+    metadataBase: new URL("https://fortnite-hub-delta.vercel.app"),
     title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
     description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト「フォトナHub」",
     openGraph: {
