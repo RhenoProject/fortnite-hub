@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://fortnite-hub.vercel.app"),
   title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
   description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト「フォトナHub」",
   openGraph: {
@@ -11,11 +12,13 @@ export const metadata: Metadata = {
     description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック！",
     type: "website",
     locale: "ja_JP",
+    images: [{ url: "/og-image.jpg", width: 1920, height: 1080, alt: "フォトナHub" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "フォトナHub | 日本一見やすいフォトナ情報サイト",
     description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック！",
+    images: ["/og-image.jpg"],
   },
 };
 
@@ -36,7 +39,7 @@ export default function RootLayout({
           color: "var(--text-muted)",
           fontSize: "12px",
         }}>
-          © 2026 フォトナHub — This site is not affiliated with Epic Games.
+          © 2026 フォトナHub — This site is not affiliated with or endorsed by Epic Games. Fortnite and related marks are trademarks of Epic Games, Inc.
         </footer>
         <Analytics />
       </body>
