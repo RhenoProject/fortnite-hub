@@ -169,9 +169,12 @@ export async function fetchNewCosmetics(): Promise<NewCosmetic[]> {
   for (const [cat, list] of Object.entries(itemsObj)) {
     if (!Array.isArray(list)) continue;
     for (const item of list) {
+      const name: string = item.name ?? '';
+      if (!name) continue;
+
       all.push({
         id: item.id,
-        name: item.name ?? '不明',
+        name,
         typeDisplay: item.type?.displayValue ?? '',
         rarity: item.rarity?.value ?? 'common',
         image: item.images?.icon ?? item.images?.smallIcon ?? '',
@@ -181,7 +184,12 @@ export async function fetchNewCosmetics(): Promise<NewCosmetic[]> {
     }
   }
 
-  all.sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
+  all.sort((a, b) => {
+    const ra = rarityOrder[a.rarity] ?? 8;
+    const rb = rarityOrder[b.rarity] ?? 8;
+    if (ra !== rb) return ra - rb;
+    return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+  });
 
   return all;
 }

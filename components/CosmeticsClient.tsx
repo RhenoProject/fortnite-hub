@@ -33,7 +33,16 @@ function CosmeticCard({ item }: { item: NewCosmetic }) {
           />
         </div>
       ) : (
-        <div style={{ width: "100%", aspectRatio: "1/1", backgroundColor: "var(--border)" }} />
+        <div style={{
+          width: "100%",
+          aspectRatio: "1/1",
+          background: `linear-gradient(135deg, ${color}33 0%, ${color}11 100%)`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <span style={{ fontSize: "28px", opacity: 0.5 }}>✨</span>
+        </div>
       )}
       <div style={{ height: "3px", backgroundColor: color }} />
       <div style={{ padding: "8px" }}>
@@ -57,7 +66,6 @@ function CosmeticCard({ item }: { item: NewCosmetic }) {
 export function CosmeticsClient({ items }: { items: NewCosmetic[] }) {
   const [filter, setFilter] = useState<CosmeticCategory | typeof ALL>(ALL);
 
-  const categories = [ALL, ...Object.keys(cosmeticCategoryLabel)] as (CosmeticCategory | typeof ALL)[];
   const filtered = filter === ALL ? items : items.filter(i => i.category === filter);
 
   const tabStyle = (cat: CosmeticCategory | typeof ALL): React.CSSProperties => ({
