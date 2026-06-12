@@ -30,6 +30,9 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] 成果物/ フォルダ作成
 - [x] CLAUDE.md に PROJECT.md を自動読み込み設定
 - [x] バグ修正: metadataBase のドメインを fortnite-hub-delta.vercel.app に統一
+- [x] PWAマニフェスト作成（manifest.ts）
+- [x] ホーム画面アイコン用PNG生成（icon-192.png・icon-512.png・apple-touch-icon.png）
+- [x] GitHubユーザー名変更対応（rushisyuya0125-beep → RhenoProject）・リモートURL更新
 
 ---
 
