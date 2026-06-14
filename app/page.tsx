@@ -30,7 +30,7 @@ export default async function ShopPage() {
         <span style={{ fontSize: "20px" }}>⭐</span>
         <div style={{ flex: 1, minWidth: "200px" }}>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "2px" }}>
-            V-Bucks・バトルパス購入時はクリエイターコードで応援してね！
+            アイテムを買うときはコードを使って応援してくれると嬉しいです！
           </p>
           <p style={{ fontSize: "22px", fontWeight: "900", color: "#ffd700", letterSpacing: "3px" }}>
             RHENO
