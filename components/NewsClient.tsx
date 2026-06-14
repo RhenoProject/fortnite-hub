@@ -38,6 +38,21 @@ export function NewsClient({ items }: { items: NewsItem[] }) {
 
   return (
     <>
+      <style>{`
+        .news-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        @media (min-width: 640px) {
+          .news-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+          }
+        }
+      `}</style>
+
       {/* カテゴリーフィルター */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "20px", overflowX: "auto", paddingBottom: "4px" }}>
         <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>
@@ -61,9 +76,9 @@ export function NewsClient({ items }: { items: NewsItem[] }) {
       </div>
 
       {/* ニュース一覧 */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        {filtered.map(item => (
-          <NewsCard key={item.id} item={item} />
+      <div className="news-grid">
+        {filtered.map((item, i) => (
+          <NewsCard key={item.id} item={item} priority={i < 2} />
         ))}
       </div>
     </>

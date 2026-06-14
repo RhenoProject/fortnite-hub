@@ -15,7 +15,7 @@ const categoryColor: Record<NewsCategory, string> = {
   creative: "#a855f7",
 };
 
-export function NewsCard({ item }: { item: NewsItem }) {
+export function NewsCard({ item, priority }: { item: NewsItem; priority?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const color = categoryColor[item.category];
   const label = categoryLabel[item.category];
@@ -35,16 +35,15 @@ export function NewsCard({ item }: { item: NewsItem }) {
       }}
     >
       {item.image ? (
-        <div style={{ position: "relative", width: "100%", aspectRatio: "16/7" }}>
+        <div style={{ position: "relative", width: "100%", aspectRatio: "16/9" }}>
           <Image
             src={item.image}
             alt={item.title}
             fill
-            sizes="(max-width: 640px) 100vw, 1100px"
+            sizes="(max-width: 639px) 100vw, (max-width: 1100px) 50vw, 530px"
             style={{ objectFit: "cover" }}
-            priority
+            priority={priority}
           />
-          {/* カテゴリーバッジを画像上に重ねる */}
           <span style={{
             position: "absolute",
             top: "14px",
@@ -60,7 +59,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
           </span>
         </div>
       ) : (
-        <div style={{ width: "100%", aspectRatio: "16/7", backgroundColor: "var(--border)", position: "relative" }}>
+        <div style={{ width: "100%", aspectRatio: "16/9", backgroundColor: "var(--border)", position: "relative" }}>
           <span style={{
             position: "absolute",
             top: "14px",
@@ -78,7 +77,6 @@ export function NewsCard({ item }: { item: NewsItem }) {
       )}
 
       <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "12px" }}>
-        {/* タイトル */}
         <h2 style={{
           fontSize: "20px",
           fontWeight: "900",
@@ -89,7 +87,6 @@ export function NewsCard({ item }: { item: NewsItem }) {
           {item.title}
         </h2>
 
-        {/* 本文 */}
         {item.body && (
           <p style={{
             fontSize: "15px",
@@ -105,7 +102,6 @@ export function NewsCard({ item }: { item: NewsItem }) {
           </p>
         )}
 
-        {/* 展開ボタン */}
         <div style={{
           display: "flex",
           alignItems: "center",
