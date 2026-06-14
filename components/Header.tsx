@@ -10,21 +10,95 @@ const navItems = [
 
 export function Header() {
   const pathname = usePathname();
-
   const isActive = (href: string) => pathname === href;
 
   return (
     <>
       <style>{`
-        .bottom-tab-bar { display: none; }
+        .header-inner {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
+        .site-logo {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.1;
+          text-decoration: none;
+        }
+        .site-logo-name {
+          font-size: 20px;
+          font-weight: 900;
+          letter-spacing: 2px;
+          color: var(--primary);
+        }
+        .site-logo-sub {
+          font-size: 9px;
+          color: var(--text-muted);
+          letter-spacing: 1px;
+          font-weight: 600;
+        }
+        .top-nav {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+        .nav-link {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          min-height: 44px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+          border: 1px solid var(--border);
+          color: var(--text-muted);
+          transition: all 0.15s;
+          white-space: nowrap;
+          background-color: transparent;
+        }
+        .nav-link.active {
+          background-color: var(--primary);
+          color: #0a0f1a;
+          border-color: transparent;
+        }
+
+        /* スマホ: ロゴ上・ナビ下の縦積みレイアウト */
         @media (max-width: 639px) {
-          .top-nav { display: none; }
-          .bottom-tab-bar { display: flex; }
-          body { padding-bottom: 64px; }
+          .header-inner {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 10px 16px 0;
+            gap: 8px;
+          }
+          .site-logo-name {
+            font-size: 22px;
+          }
+          .top-nav {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .top-nav::-webkit-scrollbar {
+            display: none;
+          }
+          .nav-link {
+            padding: 7px 14px;
+            font-size: 13px;
+            min-height: 38px;
+            flex-shrink: 0;
+          }
         }
       `}</style>
 
-      {/* デスクトップ・タブレット用ヘッダー */}
       <header style={{
         backgroundColor: "var(--surface)",
         borderBottom: "1px solid var(--border)",
@@ -32,87 +106,25 @@ export function Header() {
         top: 0,
         zIndex: 50,
       }}>
-        <div style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          padding: "12px 16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "12px",
-        }}>
-          <Link href="/" style={{ textDecoration: "none", display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-            <span style={{ fontSize: "20px", fontWeight: "900", letterSpacing: "2px", color: "var(--primary)" }}>
-              フォトナHub
-            </span>
-            <span style={{ fontSize: "9px", color: "var(--text-muted)", letterSpacing: "1px", fontWeight: "600" }}>
-              日本一見やすいフォトナ情報サイト
-            </span>
+        <div className="header-inner">
+          <Link href="/" className="site-logo">
+            <span className="site-logo-name">フォトナHub</span>
+            <span className="site-logo-sub">日本一見やすいフォトナ情報サイト</span>
           </Link>
 
-          <nav className="top-nav" style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <nav className="top-nav">
             {navItems.map(({ href, label, emoji }) => (
-              <Link key={href} href={href} style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "8px 16px",
-                minHeight: "44px",
-                borderRadius: "8px",
-                fontSize: "14px",
-                fontWeight: "600",
-                textDecoration: "none",
-                backgroundColor: isActive(href) ? "var(--primary)" : "transparent",
-                color: isActive(href) ? "#0a0f1a" : "var(--text-muted)",
-                border: isActive(href) ? "none" : "1px solid var(--border)",
-                transition: "all 0.15s",
-                whiteSpace: "nowrap",
-              }}>
+              <Link
+                key={href}
+                href={href}
+                className={`nav-link${isActive(href) ? " active" : ""}`}
+              >
                 {emoji} {label}
               </Link>
             ))}
           </nav>
         </div>
       </header>
-
-      {/* スマホ用下部タブバー */}
-      <nav className="bottom-tab-bar" style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        backgroundColor: "var(--surface)",
-        borderTop: "1px solid var(--border)",
-        justifyContent: "space-around",
-        alignItems: "center",
-        height: "64px",
-        paddingBottom: "env(safe-area-inset-bottom)",
-      }}>
-        {navItems.map(({ href, label, emoji }) => (
-          <Link key={href} href={href} style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "2px",
-            flex: 1,
-            padding: "8px 4px",
-            textDecoration: "none",
-            color: isActive(href) ? "var(--primary)" : "var(--text-muted)",
-            transition: "color 0.15s",
-          }}>
-            <span style={{ fontSize: "22px", lineHeight: 1 }}>{emoji}</span>
-            <span style={{
-              fontSize: "10px",
-              fontWeight: "700",
-              letterSpacing: "0.5px",
-              color: isActive(href) ? "var(--primary)" : "var(--text-muted)",
-            }}>
-              {label}
-            </span>
-          </Link>
-        ))}
-      </nav>
     </>
   );
 }

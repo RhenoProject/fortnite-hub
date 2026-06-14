@@ -3,17 +3,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { UpdateItem, CompetitivePlaylist } from "@/lib/fortniteApi";
 
-const modeLabel: Record<number, string> = {
-  1: "ソロ",
-  2: "デュオ",
-  3: "トリオ",
-  4: "スクワッド",
-};
-
-function getModeLabel(maxPlayers: number): string {
-  return modeLabel[maxPlayers] ?? `${maxPlayers}人`;
-}
-
 function UpdateCard({ item }: { item: UpdateItem }) {
   const [expanded, setExpanded] = useState(false);
   return (
@@ -60,46 +49,43 @@ function UpdateCard({ item }: { item: UpdateItem }) {
 }
 
 function PlaylistCard({ playlist }: { playlist: CompetitivePlaylist }) {
-  const mode = getModeLabel(playlist.maxPlayers);
+  const displayName = playlist.subName
+    ? `${playlist.name} — ${playlist.subName}`
+    : playlist.name;
+
   return (
     <div style={{
       backgroundColor: "var(--card)",
       borderRadius: "10px",
       padding: "14px 16px",
-      border: `1px solid ${playlist.isTournament ? "#ffd70044" : "var(--border)"}`,
+      border: "1px solid #ffd70033",
       display: "flex",
       flexDirection: "column",
-      gap: "6px",
+      gap: "8px",
     }}>
-      {playlist.isTournament && (
-        <span style={{
-          fontSize: "10px",
-          fontWeight: "800",
-          color: "#ffd700",
-          backgroundColor: "#ffd70018",
-          border: "1px solid #ffd70033",
-          borderRadius: "20px",
-          padding: "2px 8px",
-          alignSelf: "flex-start",
-        }}>
-          大会
-        </span>
-      )}
       <p style={{ fontSize: "14px", fontWeight: "700", color: "var(--text)", lineHeight: 1.4 }}>
-        {playlist.name}
+        {displayName}
       </p>
-      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
         <span style={{
-          fontSize: "11px", fontWeight: "600", color: "var(--primary)",
+          fontSize: "11px", fontWeight: "700", color: "var(--primary)",
           backgroundColor: "#00c8ff18", borderRadius: "6px", padding: "2px 8px",
+          border: "1px solid #00c8ff33",
         }}>
-          {mode}
+          {playlist.mode}
         </span>
         <span style={{
           fontSize: "11px", fontWeight: "600", color: "var(--text-muted)",
           backgroundColor: "var(--border)", borderRadius: "6px", padding: "2px 8px",
         }}>
           最大 {playlist.maxPlayers}人
+        </span>
+        <span style={{
+          fontSize: "11px", fontWeight: "800", color: "#ffd700",
+          backgroundColor: "#ffd70018", borderRadius: "6px", padding: "2px 8px",
+          border: "1px solid #ffd70033",
+        }}>
+          大会
         </span>
       </div>
     </div>
@@ -117,10 +103,39 @@ export function UpdatesClient({
     <>
       {/* 競技モード */}
       <section style={{ marginBottom: "40px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
           <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--primary)", letterSpacing: "1px" }}>
-            🏆 現在の競技モード
+            🏆 競技モード一覧
           </h2>
+          <a
+            href="https://www.fortnite.com/competitive"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: "12px",
+              fontWeight: "700",
+              color: "var(--primary)",
+              textDecoration: "none",
+              border: "1px solid #00c8ff44",
+              borderRadius: "20px",
+              padding: "4px 12px",
+            }}
+          >
+            公式日程を確認 →
+          </a>
+        </div>
+
+        <div style={{
+          fontSize: "12px",
+          color: "var(--text-muted)",
+          backgroundColor: "var(--card)",
+          border: "1px solid var(--border)",
+          borderRadius: "8px",
+          padding: "10px 14px",
+          marginBottom: "14px",
+          lineHeight: 1.6,
+        }}>
+          ⚠️ 大会の具体的な日時・参加条件は<strong>公式競技ページ</strong>でご確認ください。以下は現在登録されている競技モードの一覧です。
         </div>
 
         {playlists.length === 0 ? (
@@ -137,33 +152,50 @@ export function UpdatesClient({
             </a>
           </div>
         ) : (
-          <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "10px", marginBottom: "12px" }}>
-              {playlists.map(p => <PlaylistCard key={p.id} playlist={p} />)}
-            </div>
-            <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "8px" }}>
-              ※ 大会の詳細日程は{" "}
-              <a
-                href="https://www.fortnite.com/competitive"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--primary)" }}
-              >
-                公式競技ページ
-              </a>
-              {" "}でご確認ください
-            </p>
-          </>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "10px" }}>
+            {playlists.map(p => <PlaylistCard key={p.id} playlist={p} />)}
+          </div>
         )}
       </section>
 
-      {/* 最新アップデート */}
+      {/* パッチノートリンク */}
+      <section style={{ marginBottom: "40px" }}>
+        <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "12px" }}>
+          📋 パッチノート
+        </h2>
+        <a
+          href="https://www.fortnite.com/en-US/news/patch-notes"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 20px",
+            backgroundColor: "var(--card)",
+            border: "1px solid var(--border)",
+            borderRadius: "12px",
+            textDecoration: "none",
+            transition: "border-color 0.15s",
+          }}
+        >
+          <div>
+            <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--text)", marginBottom: "4px" }}>
+              Epic Games 公式パッチノート
+            </p>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+              各バージョンの変更内容・新機能の詳細はこちら
+            </p>
+          </div>
+          <span style={{ fontSize: "20px", color: "var(--primary)", flexShrink: 0, marginLeft: "12px" }}>→</span>
+        </a>
+      </section>
+
+      {/* 最新アップデート情報 */}
       <section>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-          <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px" }}>
-            🆕 最新アップデート情報
-          </h2>
-        </div>
+        <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "16px" }}>
+          🆕 ゲーム内最新情報
+        </h2>
 
         {updates.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-muted)" }}>
