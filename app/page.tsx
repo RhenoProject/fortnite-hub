@@ -15,6 +15,47 @@ export default async function ShopPage() {
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px 16px" }}>
+      {/* クリエイターコードバナー */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        backgroundColor: "#ffd70015",
+        border: "1px solid #ffd70055",
+        borderRadius: "12px",
+        padding: "12px 16px",
+        marginBottom: "20px",
+        flexWrap: "wrap",
+      }}>
+        <span style={{ fontSize: "20px" }}>⭐</span>
+        <div style={{ flex: 1, minWidth: "200px" }}>
+          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "2px" }}>
+            V-Bucks・バトルパス購入時はクリエイターコードで応援してね！
+          </p>
+          <p style={{ fontSize: "15px", fontWeight: "900", color: "#ffd700", letterSpacing: "2px" }}>
+            RHENO
+          </p>
+        </div>
+        <a
+          href="https://www.fortnite.com/?lang=ja"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#0a0f1a",
+            backgroundColor: "#ffd700",
+            borderRadius: "8px",
+            padding: "6px 14px",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          ゲームを開く →
+        </a>
+      </div>
+
       <div style={{ marginBottom: "20px" }}>
         <h1 style={{ fontSize: "22px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "4px" }}>
           🛍️ 今日のアイテムショップ
