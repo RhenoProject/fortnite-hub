@@ -52,11 +52,11 @@ export function UpdatesClient() {
       {/* パッチノート */}
       <section>
         <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "16px" }}>
-          📋 パッチノート
+          📊 プレイヤー統計
         </h2>
 
         <a
-          href="https://fortnite.fandom.com/wiki/Patch_Notes"
+          href="https://tracker.gg/fortnite"
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -74,10 +74,10 @@ export function UpdatesClient() {
         >
           <div>
             <p style={{ fontSize: "16px", fontWeight: "800", color: "var(--text)", marginBottom: "4px" }}>
-              フォートナイト Wiki — パッチノート一覧
+              Fortnite Tracker で統計を確認
             </p>
             <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-              各バージョンの変更内容・新武器・バランス調整の詳細はこちら
+              自分のキル数・勝率・ランクなどをプレイヤー名で検索
             </p>
           </div>
           <span style={{ fontSize: "22px", color: "var(--primary)", flexShrink: 0 }}>→</span>
