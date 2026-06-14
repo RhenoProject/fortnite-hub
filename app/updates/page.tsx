@@ -1,20 +1,16 @@
-import { fetchUpdates, fetchCompetitivePlaylists, fetchGameVersion } from "@/lib/fortniteApi";
+import { fetchGameVersion } from "@/lib/fortniteApi";
 import { UpdatesClient } from "@/components/UpdatesClient";
 import type { Metadata } from "next";
 
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "アップデート・競技情報 | フォトナHub",
-  description: "フォートナイトの最新アップデート情報と競技モード・日程をチェック。",
+  description: "フォートナイトの最新パッチノートと競技日程を確認。",
 };
 
 export default async function UpdatesPage() {
-  const [updates, playlists, version] = await Promise.all([
-    fetchUpdates().catch(() => []),
-    fetchCompetitivePlaylists().catch(() => []),
-    fetchGameVersion().catch(() => null),
-  ]);
+  const version = await fetchGameVersion().catch(() => null);
 
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px 16px" }}>
@@ -38,11 +34,11 @@ export default async function UpdatesPage() {
           )}
         </div>
         <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-          最新のゲーム情報と競技モードを確認
+          競技日程とパッチノートを確認
         </p>
       </div>
 
-      <UpdatesClient updates={updates} playlists={playlists} />
+      <UpdatesClient />
     </div>
   );
 }
