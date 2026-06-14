@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { NewsItem, NewsCategory } from "@/lib/fortniteApi";
 import { NewsCard } from "@/components/NewsCard";
 
@@ -19,6 +20,12 @@ const categoryColor: Record<NewsCategory, string> = {
 
 export function NewsClient({ items }: { items: NewsItem[] }) {
   const [filter, setFilter] = useState<NewsCategory | typeof ALL>(ALL);
+  const router = useRouter();
+
+  useEffect(() => {
+    const id = setInterval(() => router.refresh(), 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, [router]);
 
   const filtered = filter === ALL ? items : items.filter(i => i.category === filter);
 
