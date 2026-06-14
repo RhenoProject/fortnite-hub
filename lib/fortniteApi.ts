@@ -9,7 +9,6 @@ export interface NewsItem {
   image: string;
   date: string;
   category: NewsCategory;
-  isJaLocalized: boolean;
 }
 
 export interface GameVersion {
@@ -30,7 +29,7 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
   const { br, stw, creative } = json.data ?? {};
 
   const brItems: NewsItem[] = (br?.motds ?? [])
-    .filter((m: any) => !m.hidden)
+    .filter((m: any) => !m.hidden && hasJapanese(m.title || m.body || ''))
     .map((m: any) => ({
       id: `br-${m.id}`,
       title: m.title,
@@ -38,22 +37,22 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       image: m.tileImage || m.image || '',
       date: br.date,
       category: 'br' as NewsCategory,
-      isJaLocalized: hasJapanese(m.title || '') || hasJapanese(m.body || ''),
     }));
 
-  const stwItems: NewsItem[] = (stw?.messages ?? []).map((m: any, i: number) => ({
-    id: `stw-${i}`,
-    title: m.title,
-    body: m.body,
-    image: m.image || '',
-    date: stw?.date ?? '',
-    category: 'stw' as NewsCategory,
-    isJaLocalized: hasJapanese(m.title || '') || hasJapanese(m.body || ''),
-  }));
+  const stwItems: NewsItem[] = (stw?.messages ?? [])
+    .filter((m: any) => hasJapanese(m.title || m.body || ''))
+    .map((m: any, i: number) => ({
+      id: `stw-${i}`,
+      title: m.title,
+      body: m.body,
+      image: m.image || '',
+      date: stw?.date ?? '',
+      category: 'stw' as NewsCategory,
+    }));
 
   const creativeRaw = creative?.motds ?? creative?.messages ?? [];
   const creativeItems: NewsItem[] = creativeRaw
-    .filter((m: any) => !m.hidden)
+    .filter((m: any) => !m.hidden && hasJapanese(m.title || m.body || ''))
     .map((m: any, i: number) => ({
       id: `creative-${m.id ?? i}`,
       title: m.title,
@@ -61,7 +60,6 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       image: m.tileImage || m.image || '',
       date: creative?.date ?? '',
       category: 'creative' as NewsCategory,
-      isJaLocalized: hasJapanese(m.title || '') || hasJapanese(m.body || ''),
     }));
 
   return [...brItems, ...stwItems, ...creativeItems];
