@@ -49,7 +49,7 @@ URL: https://fortnite-hub-delta.vercel.app
 | P1-1 | モバイルUX改善 | Vercel Analytics の直帰率を見てから着手 | 未着手 |
 | P1-2 | ショップSEO強化 | 「フォートナイト ショップ 今日」検索順位を確認してから | 未着手 |
 | P1-4 | カスタムドメイン取得 | アクセス数確認後 | 保留 |
-| P1-5 | iOSホーム画面アイコン修正 | apple-touch-icon.png 配置済みだが「フ」のままになる問題 | 持ち越し |
+| P1-5 | iOSホーム画面アイコン修正 | apple-touch-icon.png 配置済みだが「フ」のままになる問題 | ✅ 改善済み（2026-06-15） |
 
 ---
 
