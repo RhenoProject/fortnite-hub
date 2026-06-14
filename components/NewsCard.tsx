@@ -38,7 +38,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
         <div style={{
           position: "relative",
           width: "100%",
-          aspectRatio: expanded ? "16/9" : "16/9",
+          aspectRatio: "16/9",
         }}>
           <Image
             src={item.image}
@@ -53,20 +53,35 @@ export function NewsCard({ item }: { item: NewsItem }) {
       )}
 
       <div style={{ padding: "14px", flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-        {/* カテゴリーバッジ */}
-        <span style={{
-          display: "inline-block",
-          padding: "2px 10px",
-          borderRadius: "20px",
-          fontSize: "11px",
-          fontWeight: "700",
-          backgroundColor: `${color}22`,
-          color: color,
-          border: `1px solid ${color}44`,
-          alignSelf: "flex-start",
-        }}>
-          {label}
-        </span>
+        {/* バッジ行 */}
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          <span style={{
+            display: "inline-block",
+            padding: "2px 10px",
+            borderRadius: "20px",
+            fontSize: "11px",
+            fontWeight: "700",
+            backgroundColor: `${color}22`,
+            color: color,
+            border: `1px solid ${color}44`,
+          }}>
+            {label}
+          </span>
+          {!item.isJaLocalized && (
+            <span style={{
+              display: "inline-block",
+              padding: "2px 8px",
+              borderRadius: "20px",
+              fontSize: "11px",
+              fontWeight: "700",
+              backgroundColor: "#ffffff12",
+              color: "var(--text-muted)",
+              border: "1px solid var(--border)",
+            }}>
+              英語版
+            </span>
+          )}
+        </div>
 
         {/* タイトル */}
         <h2 style={{
