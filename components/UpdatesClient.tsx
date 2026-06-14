@@ -56,7 +56,7 @@ export function UpdatesClient() {
         </h2>
 
         <a
-          href="https://www.fortnite.com/en-US/news/patch-notes"
+          href="https://www.fortnite.com/news"
           target="_blank"
           rel="noopener noreferrer"
           style={{
