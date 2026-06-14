@@ -25,7 +25,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
       onClick={() => setExpanded(!expanded)}
       style={{
         backgroundColor: "var(--card)",
-        borderRadius: "12px",
+        borderRadius: "16px",
         overflow: "hidden",
         border: `1px solid ${expanded ? color + "66" : "var(--border)"}`,
         display: "flex",
@@ -35,45 +35,56 @@ export function NewsCard({ item }: { item: NewsItem }) {
       }}
     >
       {item.image ? (
-        <div style={{
-          position: "relative",
-          width: "100%",
-          aspectRatio: "16/9",
-        }}>
+        <div style={{ position: "relative", width: "100%", aspectRatio: "16/7" }}>
           <Image
             src={item.image}
             alt={item.title}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, 1100px"
             style={{ objectFit: "cover" }}
+            priority
           />
+          {/* カテゴリーバッジを画像上に重ねる */}
+          <span style={{
+            position: "absolute",
+            top: "14px",
+            left: "14px",
+            padding: "4px 12px",
+            borderRadius: "20px",
+            fontSize: "12px",
+            fontWeight: "700",
+            backgroundColor: `${color}dd`,
+            color: "#0a0f1a",
+          }}>
+            {label}
+          </span>
         </div>
       ) : (
-        <div style={{ width: "100%", aspectRatio: "16/9", backgroundColor: "var(--border)" }} />
+        <div style={{ width: "100%", aspectRatio: "16/7", backgroundColor: "var(--border)", position: "relative" }}>
+          <span style={{
+            position: "absolute",
+            top: "14px",
+            left: "14px",
+            padding: "4px 12px",
+            borderRadius: "20px",
+            fontSize: "12px",
+            fontWeight: "700",
+            backgroundColor: `${color}dd`,
+            color: "#0a0f1a",
+          }}>
+            {label}
+          </span>
+        </div>
       )}
 
-      <div style={{ padding: "14px", flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-        {/* カテゴリーバッジ */}
-        <span style={{
-          display: "inline-block",
-          padding: "2px 10px",
-          borderRadius: "20px",
-          fontSize: "11px",
-          fontWeight: "700",
-          backgroundColor: `${color}22`,
-          color: color,
-          border: `1px solid ${color}44`,
-          alignSelf: "flex-start",
-        }}>
-          {label}
-        </span>
-
+      <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: "12px" }}>
         {/* タイトル */}
         <h2 style={{
-          fontSize: "15px",
-          fontWeight: "800",
+          fontSize: "20px",
+          fontWeight: "900",
           color: "var(--text)",
           lineHeight: 1.4,
+          letterSpacing: "0.5px",
         }}>
           {item.title}
         </h2>
@@ -81,12 +92,12 @@ export function NewsCard({ item }: { item: NewsItem }) {
         {/* 本文 */}
         {item.body && (
           <p style={{
-            fontSize: "13px",
+            fontSize: "15px",
             color: "var(--text-muted)",
-            lineHeight: 1.7,
+            lineHeight: 1.8,
             overflow: expanded ? "visible" : "hidden",
             display: "-webkit-box",
-            WebkitLineClamp: expanded ? "unset" : 3,
+            WebkitLineClamp: expanded ? "unset" : 5,
             WebkitBoxOrient: "vertical" as any,
             whiteSpace: "pre-wrap",
           }}>
@@ -99,9 +110,8 @@ export function NewsCard({ item }: { item: NewsItem }) {
           display: "flex",
           alignItems: "center",
           gap: "4px",
-          marginTop: "4px",
           color: color,
-          fontSize: "12px",
+          fontSize: "13px",
           fontWeight: "700",
         }}>
           <span>{expanded ? "▲ 閉じる" : "▼ 続きを読む"}</span>

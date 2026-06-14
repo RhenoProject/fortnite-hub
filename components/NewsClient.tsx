@@ -61,7 +61,7 @@ export function NewsClient({ items }: { items: NewsItem[] }) {
       </div>
 
       {/* ニュース一覧 */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {filtered.map(item => (
           <NewsCard key={item.id} item={item} />
         ))}
