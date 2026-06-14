@@ -56,7 +56,7 @@ export function UpdatesClient() {
         </h2>
 
         <a
-          href="https://www.fortnite.com/news"
+          href="https://ja.fortnite.fandom.com/wiki/%E3%83%91%E3%83%83%E3%83%81%E3%83%8E%E3%83%BC%E3%83%88"
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -74,10 +74,10 @@ export function UpdatesClient() {
         >
           <div>
             <p style={{ fontSize: "16px", fontWeight: "800", color: "var(--text)", marginBottom: "4px" }}>
-              Epic Games 公式パッチノート
+              フォートナイト Wiki — パッチノート一覧
             </p>
             <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>
-              各バージョンの変更内容・新機能の詳細はこちら
+              各バージョンの変更内容・新武器・バランス調整の詳細はこちら
             </p>
           </div>
           <span style={{ fontSize: "22px", color: "var(--primary)", flexShrink: 0 }}>→</span>
