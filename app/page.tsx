@@ -32,28 +32,10 @@ export default async function ShopPage() {
           <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "2px" }}>
             V-Bucks・バトルパス購入時はクリエイターコードで応援してね！
           </p>
-          <p style={{ fontSize: "15px", fontWeight: "900", color: "#ffd700", letterSpacing: "2px" }}>
+          <p style={{ fontSize: "22px", fontWeight: "900", color: "#ffd700", letterSpacing: "3px" }}>
             RHENO
           </p>
         </div>
-        <a
-          href="https://www.fortnite.com/?lang=ja"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            fontSize: "12px",
-            fontWeight: "700",
-            color: "#0a0f1a",
-            backgroundColor: "#ffd700",
-            borderRadius: "8px",
-            padding: "6px 14px",
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          ゲームを開く →
-        </a>
       </div>
 
       <div style={{ marginBottom: "20px" }}>
