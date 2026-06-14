@@ -62,7 +62,8 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       category: 'creative' as NewsCategory,
     }));
 
-  return [...brItems, ...stwItems, ...creativeItems];
+  return [...brItems, ...stwItems, ...creativeItems]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export async function fetchGameVersion(): Promise<GameVersion | null> {
