@@ -15,6 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: "https://fortnite-hub-delta.vercel.app/updates",
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
+    {
       url: "https://fortnite-hub-delta.vercel.app/cosmetics",
       lastModified: new Date(),
       changeFrequency: "daily",

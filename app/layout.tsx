@@ -51,6 +51,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "フォトナHub",
+  url: "https://fortnite-hub-delta.vercel.app",
+  description: "フォートナイトのアイテムショップ・最新ニュースを毎日チェック。日本一見やすいフォトナ情報サイト。",
+  inLanguage: "ja",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://fortnite-hub-delta.vercel.app/?q={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -58,6 +72,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" style={{ backgroundColor: "var(--bg)" }}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Header />
         <main style={{ flex: 1 }}>{children}</main>

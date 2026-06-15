@@ -5,8 +5,16 @@ import type { Metadata } from "next";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "アップデート・競技情報 | フォトナHub",
-  description: "フォートナイトの最新パッチノートと競技日程を確認。",
+  title: "フォートナイト アップデート・パッチノート | フォトナHub",
+  description: "フォートナイトの最新アップデート情報・パッチノート・バージョン・競技日程をまとめてチェック。新シーズン・新武器・バランス調整もここで確認。",
+  openGraph: {
+    title: "フォートナイト アップデート・パッチノート | フォトナHub",
+    description: "フォートナイトの最新アップデート・パッチノート・競技日程を確認。",
+  },
+  twitter: {
+    title: "フォートナイト アップデート・パッチノート | フォトナHub",
+    description: "フォートナイトの最新アップデート・パッチノート・競技日程を確認。",
+  },
 };
 
 export default async function UpdatesPage() {

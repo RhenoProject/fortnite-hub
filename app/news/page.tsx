@@ -4,10 +4,40 @@ import type { Metadata } from "next";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "フォートナイト最新ニュース | フォトナHub",
-  description: "フォートナイトの最新ニュース・アップデート情報をいち早くチェック。バトルロイヤル・STW・クリエイティブの情報をまとめて確認できます。",
-};
+async function getOgImage(): Promise<string> {
+  try {
+    const res = await fetch("https://fortnite-api.com/v2/news?language=ja", {
+      next: { revalidate: 3600 },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      const first = (json.data?.br?.motds ?? []).find(
+        (m: any) => !m.hidden && (m.tileImage || m.image)
+      );
+      if (first) return first.tileImage || first.image;
+    }
+  } catch {}
+  return "/og-image.jpg";
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ogImage = await getOgImage();
+  return {
+    title: "フォートナイト 最新ニュース | フォトナHub",
+    description: "フォートナイトの最新ニュース・イベント・シーズン情報をいち早くチェック。バトルロイヤル・クリエイティブ・コラボ情報を日本語でまとめて確認。",
+    openGraph: {
+      title: "フォートナイト 最新ニュース | フォトナHub",
+      description: "フォートナイトの最新ニュース・イベント・シーズン情報を日本語でチェック。",
+      images: [{ url: ogImage, width: 1920, height: 1080, alt: "フォートナイト最新ニュース" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "フォートナイト 最新ニュース | フォトナHub",
+      description: "フォートナイトの最新ニュース・イベント・シーズン情報を日本語でチェック。",
+      images: [ogImage],
+    },
+  };
+}
 
 export default async function NewsPage() {
   let items = await fetchFortniteNews().catch(() => []);
