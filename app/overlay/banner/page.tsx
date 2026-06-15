@@ -24,11 +24,15 @@ export default function BannerOverlayPage() {
     <>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+          width: 1920px;
+          height: 54px;
+          background: transparent;
+          overflow: hidden;
+        }
         .banner {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
+          width: 1920px;
+          height: 54px;
           background: linear-gradient(90deg, rgba(0,200,255,0.15), rgba(0,200,255,0.04));
           border-top: 1px solid rgba(0,200,255,0.4);
           padding: 10px 20px;
