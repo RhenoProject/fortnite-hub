@@ -345,7 +345,13 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         }}>🔍</span>
         <input
           ref={searchInputRef}
-          type="text"
+          type="search"
+          enterKeyHint="search"
+          inputMode="search"
+          autoCapitalize="none"
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck={false}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="全スキンから名前で検索..."
@@ -461,11 +467,15 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
               width: "100%", maxHeight: "82vh",
               backgroundColor: "var(--bg)",
               borderRadius: "20px 20px 0 0",
-              padding: "20px 16px 0",
+              padding: "12px 16px 0",
               overflowY: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* ドラッグハンドル */}
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
+              <div style={{ width: "36px", height: "4px", borderRadius: "2px", backgroundColor: "var(--border)" }} />
+            </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
               <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)" }}>
                 ❤️ ほしいものリスト ({wishCount}件)
@@ -488,7 +498,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
                 まだ何も登録されていません
               </p>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px", paddingBottom: "24px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px", paddingBottom: "max(env(safe-area-inset-bottom), 24px)" }}>
                 {wishlistItems.map(wItem => {
                   const inShop = shopItemMap.has(wItem.id);
                   const color = rarityColors[wItem.rarity] ?? rarityColors.common;

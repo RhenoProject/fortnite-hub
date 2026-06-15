@@ -3,6 +3,10 @@
     {
       "path": "/api/push/send",
       "schedule": "5 0 * * *"
+    },
+    {
+      "path": "/api/x/post-shop",
+      "schedule": "15 0 * * *"
     }
   ]
 }

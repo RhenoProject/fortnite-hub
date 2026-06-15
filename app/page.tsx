@@ -4,31 +4,51 @@ import { ShopClient } from "@/components/ShopClient";
 
 export const revalidate = 600;
 
-export const metadata: Metadata = {
-  title: "フォートナイト アイテムショップ 今日 | フォトナHub",
-  description: "フォートナイトの今日のアイテムショップを毎日更新。注目スキン・バンドル・エモートをいち早くチェック。クリエイターコード RHENO を使って応援してね！",
-  openGraph: {
-    title: "フォートナイト アイテムショップ 今日 | フォトナHub",
-    description: "今日のフォートナイト アイテムショップをチェック。毎日更新。",
-  },
-  twitter: {
-    title: "フォートナイト アイテムショップ 今日 | フォトナHub",
-    description: "今日のフォートナイト アイテムショップをチェック。毎日更新。",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const today = new Date().toLocaleDateString("ja-JP", {
+    year: "numeric", month: "long", day: "numeric", weekday: "short",
+    timeZone: "Asia/Tokyo",
+  });
+  const title = `フォートナイト アイテムショップ 今日 ${today} | フォトナHub`;
+  const description = "フォートナイトの今日のアイテムショップを毎日更新。注目スキン・バンドル・エモートをいち早くチェック。クリエイターコード RHENO を使って応援してね！";
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+    twitter: { title, description },
+  };
+}
 
 export default async function ShopPage() {
   let entries = await fetchShop().catch(() => []);
 
   const today = new Date().toLocaleDateString("ja-JP", {
     year: "numeric", month: "long", day: "numeric", weekday: "short",
+    timeZone: "Asia/Tokyo",
   });
 
   const featured = entries.filter(e => e.featured);
   const regular = entries.filter(e => !e.featured);
 
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `フォートナイト 今日のアイテムショップ ${today}`,
+    "description": `${today}のフォートナイト アイテムショップ一覧`,
+    "numberOfItems": entries.length,
+    "itemListElement": entries.slice(0, 20).map((e, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": e.name,
+    })),
+  };
+
   return (
     <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px 16px" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       {/* クリエイターコードバナー */}
       <div style={{
         display: "flex",

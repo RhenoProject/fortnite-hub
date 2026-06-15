@@ -26,5 +26,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.7,
     },
+    {
+      url: "https://fortnite-hub-delta.vercel.app/info",
+      lastModified: new Date("2026-06-16"),
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
   ];
 }
