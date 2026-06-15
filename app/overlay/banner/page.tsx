@@ -14,7 +14,7 @@ export default function BannerOverlayPage() {
   useEffect(() => {
     const first = setTimeout(() => {
       showBanner();
-      const interval = setInterval(showBanner, 5 * 60 * 1000);
+      const interval = setInterval(showBanner, 3 * 60 * 1000);
       return () => clearInterval(interval);
     }, 3000);
     return () => clearTimeout(first);
