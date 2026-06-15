@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PushSubscribeButton } from "@/components/PushSubscribeButton";
 
 const navItems = [
   { href: "/", label: "ショップ", emoji: "🛍️" },
@@ -122,6 +123,7 @@ export function Header() {
                 {emoji} {label}
               </Link>
             ))}
+            <PushSubscribeButton />
           </nav>
         </div>
       </header>
