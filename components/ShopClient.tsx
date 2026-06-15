@@ -31,6 +31,14 @@ interface WishableItem {
   price: number;
 }
 
+interface CosmeticSearchResult {
+  id: string;
+  name: string;
+  image: string;
+  rarity: string;
+  typeDisplay: string;
+}
+
 function ItemCard({
   item, large, wished, onToggleWish,
 }: {
@@ -79,6 +87,71 @@ function ItemCard({
           <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: large ? "13px" : "12px" }}>⟁</span>
           <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: large ? "13px" : "12px" }}>{item.price.toLocaleString()}</span>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SearchResultCard({
+  item, inShop, shopPrice, wished, onToggleWish,
+}: {
+  item: CosmeticSearchResult;
+  inShop: boolean;
+  shopPrice?: number;
+  wished: boolean;
+  onToggleWish: (item: WishableItem) => void;
+}) {
+  const color = rarityColors[item.rarity] ?? rarityColors.common;
+  return (
+    <div style={{
+      backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
+      border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
+    }}>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
+        {item.image ? (
+          <Image src={item.image} alt={item.name} fill sizes="(max-width: 640px) 33vw, 160px" style={{ objectFit: "cover" }} />
+        ) : (
+          <div style={{ width: "100%", height: "100%", backgroundColor: "var(--border)" }} />
+        )}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0,
+          backgroundColor: inShop ? "rgba(0,180,80,0.88)" : "rgba(0,0,0,0.55)",
+          fontSize: "9px", fontWeight: "800",
+          color: inShop ? "white" : "#999",
+          textAlign: "center", padding: "3px 4px", lineHeight: 1.4,
+        }}>
+          {inShop ? "🛍️ 今日のショップにあります！" : "ショップ外"}
+        </div>
+        <button
+          onClick={() => onToggleWish({ id: item.id, name: item.name, image: item.image, rarity: item.rarity, price: shopPrice ?? 0 })}
+          aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
+          style={{
+            position: "absolute", top: "6px", right: "6px",
+            background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%",
+            width: "28px", height: "28px", fontSize: "15px",
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          {wished ? "❤️" : "🤍"}
+        </button>
+      </div>
+      <div style={{ height: "3px", backgroundColor: color }} />
+      <div style={{ padding: "8px" }}>
+        <p style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase", marginBottom: "2px" }}>
+          {item.typeDisplay}
+        </p>
+        <p style={{
+          fontSize: "12px", fontWeight: "700", color: "var(--text)", lineHeight: 1.3, marginBottom: "6px",
+          overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any,
+        }}>
+          {item.name}
+        </p>
+        {inShop && shopPrice != null && (
+          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+            <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>⟁</span>
+            <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>{shopPrice.toLocaleString()}</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -140,17 +213,20 @@ function BundleCard({ bundle }: { bundle: ShopBundle; large?: boolean }) {
 export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regular: ShopEntry[] }) {
   const [filter, setFilter] = useState<string>(ALL);
   const [searchQuery, setSearchQuery] = useState("");
+  const [apiResults, setApiResults] = useState<CosmeticSearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [showWishlist, setShowWishlist] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const shopIds = useMemo(() => {
-    const ids = new Set<string>();
+  const shopItemMap = useMemo(() => {
+    const map = new Map<string, ShopItem>();
     [...featured, ...regular].forEach(e => {
-      if (e.kind === "item") ids.add(e.id);
+      if (e.kind === "item") map.set(e.id, e as ShopItem);
     });
-    return ids;
+    return map;
   }, [featured, regular]);
 
   useEffect(() => {
@@ -171,6 +247,30 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
       setWishlistItems(items);
     }
   }, [featured, regular]);
+
+  // デバウンス付き全スキン検索
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) {
+      setApiResults([]);
+      setIsSearching(false);
+      return;
+    }
+    setIsSearching(true);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/cosmetics/search?q=${encodeURIComponent(q)}`);
+        const json = await res.json();
+        setApiResults(json.items ?? []);
+      } catch {
+        setApiResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery]);
 
   const toggleWish = useCallback((item: WishableItem) => {
     setWishlist((prev) => {
@@ -196,15 +296,6 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     });
   }, []);
 
-  const q = searchQuery.trim().toLowerCase();
-  const isSearching = q.length > 0;
-
-  const searchResults = useMemo(() => {
-    if (!isSearching) return [];
-    const all = [...featured, ...regular].filter(e => e.kind === "item") as ShopItem[];
-    return all.filter(e => e.name.toLowerCase().startsWith(q));
-  }, [q, isSearching, featured, regular]);
-
   const availableTypes = Array.from(
     new Set(regular.filter(e => e.kind === "item").map(e => (e as ShopItem).typeValue).filter(Boolean))
   );
@@ -225,6 +316,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
   });
 
   const wishCount = wishlistItems.length;
+  const showSearch = searchQuery.trim().length >= 2;
 
   return (
     <>
@@ -256,7 +348,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           type="text"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          placeholder="スキン名で検索..."
+          placeholder="全スキンから名前で検索..."
           style={{
             width: "100%", boxSizing: "border-box",
             padding: "10px 36px 10px 40px",
@@ -265,7 +357,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
             outline: "none",
           }}
         />
-        {isSearching && (
+        {searchQuery && (
           <button
             onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }}
             style={{
@@ -277,18 +369,30 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         )}
       </div>
 
-      {isSearching ? (
+      {showSearch ? (
         <section>
           <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "14px" }}>
-            {searchResults.length > 0
-              ? <><b style={{ color: "var(--text)" }}>{searchResults.length}件</b> ヒット</>
-              : `「${searchQuery}」に一致するアイテムはありません`
+            {isSearching
+              ? "検索中..."
+              : apiResults.length > 0
+                ? <><b style={{ color: "var(--text)" }}>{apiResults.length}件</b> ヒット（全スキン対象）</>
+                : `「${searchQuery}」に一致するスキンはありません`
             }
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
-            {searchResults.map(e => (
-              <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
-            ))}
+            {apiResults.map(item => {
+              const shopItem = shopItemMap.get(item.id);
+              return (
+                <SearchResultCard
+                  key={item.id}
+                  item={item}
+                  inShop={!!shopItem}
+                  shopPrice={shopItem?.price}
+                  wished={wishlist.has(item.id)}
+                  onToggleWish={toggleWish}
+                />
+              );
+            })}
           </div>
         </section>
       ) : (
@@ -386,7 +490,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px", paddingBottom: "24px" }}>
                 {wishlistItems.map(wItem => {
-                  const inShop = shopIds.has(wItem.id);
+                  const inShop = shopItemMap.has(wItem.id);
                   const color = rarityColors[wItem.rarity] ?? rarityColors.common;
                   return (
                     <div key={wItem.id} style={{
@@ -430,10 +534,12 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
                         }}>
                           {wItem.name}
                         </p>
-                        <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-                          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>⟁</span>
-                          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>{wItem.price.toLocaleString()}</span>
-                        </div>
+                        {wItem.price > 0 && (
+                          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                            <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>⟁</span>
+                            <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>{wItem.price.toLocaleString()}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
