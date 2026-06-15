@@ -35,6 +35,10 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] ショップページ SEO 強化（title・description・h1 最適化）— 2026-06-15
 - [x] Google Search Console 登録・サイトマップ送信済み — 2026-06-15
 - [x] GA4 自動取得スクリプト構築（scripts/analytics.js・サービスアカウント連携）— 2026-06-16
+- [x] 技術SEO強化（sitemap /updates追加・JSON-LD・各ページmeta・ニュースOGP画像）— 2026-06-16
+- [x] ブラウザプッシュ通知（Web Push + Firestore + Vercel Cron・毎日9:10 JST自動送信）— 2026-06-16
+- [x] 訪問3秒後に通知許可バナーを自動表示（PushBanner）— 2026-06-16
+- [x] ほしいものリスト通知（❤️ボタン・スキン名入り1通にまとめ配信）— 2026-06-16
 
 ---
 
