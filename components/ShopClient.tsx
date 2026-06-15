@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
 import { ShopEntry, ShopItem, ShopBundle, rarityColors } from "@/lib/shopApi";
 import {
@@ -139,9 +139,11 @@ function BundleCard({ bundle }: { bundle: ShopBundle; large?: boolean }) {
 
 export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regular: ShopEntry[] }) {
   const [filter, setFilter] = useState<string>(ALL);
+  const [searchQuery, setSearchQuery] = useState("");
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [showWishlist, setShowWishlist] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const shopIds = useMemo(() => {
     const ids = new Set<string>();
@@ -157,7 +159,6 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     setWishlist(new Set(ids));
 
     if (ids.length > 0 && items.length === 0) {
-      // 旧フォーマット移行: IDだけある場合、今日のショップから名前・画像を補完
       const allShopItems = [...featured, ...regular].filter(e => e.kind === "item") as ShopItem[];
       const migrated = allShopItems
         .filter(e => ids.includes(e.id))
@@ -195,6 +196,15 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     });
   }, []);
 
+  const q = searchQuery.trim().toLowerCase();
+  const isSearching = q.length > 0;
+
+  const searchResults = useMemo(() => {
+    if (!isSearching) return [];
+    const all = [...featured, ...regular].filter(e => e.kind === "item") as ShopItem[];
+    return all.filter(e => e.name.toLowerCase().includes(q));
+  }, [q, isSearching, featured, regular]);
+
   const availableTypes = Array.from(
     new Set(regular.filter(e => e.kind === "item").map(e => (e as ShopItem).typeValue).filter(Boolean))
   );
@@ -224,7 +234,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           style={{
             display: "flex", alignItems: "center", gap: "8px",
             backgroundColor: "#ff006615", border: "1px solid #ff006633",
-            borderRadius: "10px", padding: "10px 14px", marginBottom: "20px",
+            borderRadius: "10px", padding: "10px 14px", marginBottom: "16px",
             fontSize: "13px", color: "var(--text-muted)",
             width: "100%", cursor: "pointer", textAlign: "left",
           }}
@@ -235,53 +245,103 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         </button>
       )}
 
-      {featured.length > 0 && (
-        <section style={{ marginBottom: "32px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-            <span style={{ fontSize: "18px" }}>⭐</span>
-            <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--primary)", letterSpacing: "1px" }}>
-              今日のおすすめ
-            </h2>
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Epic公式が注目するアイテム</span>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px" }}>
-            {featured.map(e => e.kind === "bundle"
-              ? <BundleCard key={e.id} bundle={e} large />
-              : <ItemCard key={e.id} item={e} large wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
-            )}
+      {/* 検索ボックス */}
+      <div style={{ position: "relative", marginBottom: "24px" }}>
+        <span style={{
+          position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
+          fontSize: "16px", pointerEvents: "none", userSelect: "none",
+        }}>🔍</span>
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="スキン名で検索..."
+          style={{
+            width: "100%", boxSizing: "border-box",
+            padding: "10px 36px 10px 40px",
+            backgroundColor: "var(--card)", border: "1px solid var(--border)",
+            borderRadius: "10px", color: "var(--text)", fontSize: "14px",
+            outline: "none",
+          }}
+        />
+        {isSearching && (
+          <button
+            onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }}
+            style={{
+              position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",
+              background: "none", border: "none", cursor: "pointer",
+              color: "var(--text-muted)", fontSize: "18px", lineHeight: 1, padding: "2px 4px",
+            }}
+          >✕</button>
+        )}
+      </div>
+
+      {isSearching ? (
+        <section>
+          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "14px" }}>
+            {searchResults.length > 0
+              ? <><b style={{ color: "var(--text)" }}>{searchResults.length}件</b> ヒット</>
+              : `「${searchQuery}」に一致するアイテムはありません`
+            }
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
+            {searchResults.map(e => (
+              <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
+            ))}
           </div>
         </section>
+      ) : (
+        <>
+          {featured.length > 0 && (
+            <section style={{ marginBottom: "32px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                <span style={{ fontSize: "18px" }}>⭐</span>
+                <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--primary)", letterSpacing: "1px" }}>
+                  今日のおすすめ
+                </h2>
+                <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Epic公式が注目するアイテム</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px" }}>
+                {featured.map(e => e.kind === "bundle"
+                  ? <BundleCard key={e.id} bundle={e} large />
+                  : <ItemCard key={e.id} item={e} large wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
+                )}
+              </div>
+            </section>
+          )}
+
+          <section>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px" }}>
+                🛒 全アイテム
+              </h2>
+            </div>
+
+            <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto", paddingBottom: "4px" }}>
+              <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>すべて ({regular.length})</button>
+              {bundleCount > 0 && (
+                <button style={tabStyle(BUNDLE)} onClick={() => setFilter(BUNDLE)}>セット ({bundleCount})</button>
+              )}
+              {availableTypes.map(type => {
+                const count = regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === type).length;
+                return (
+                  <button key={type} style={tabStyle(type)} onClick={() => setFilter(type)}>
+                    {typeLabels[type] ?? type} ({count})
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
+              {filteredRegular.map(e => e.kind === "bundle"
+                ? <BundleCard key={e.id} bundle={e} />
+                : <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
+              )}
+            </div>
+          </section>
+        </>
       )}
-
-      <section>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-          <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px" }}>
-            🛒 全アイテム
-          </h2>
-        </div>
-
-        <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto", paddingBottom: "4px" }}>
-          <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>すべて ({regular.length})</button>
-          {bundleCount > 0 && (
-            <button style={tabStyle(BUNDLE)} onClick={() => setFilter(BUNDLE)}>セット ({bundleCount})</button>
-          )}
-          {availableTypes.map(type => {
-            const count = regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === type).length;
-            return (
-              <button key={type} style={tabStyle(type)} onClick={() => setFilter(type)}>
-                {typeLabels[type] ?? type} ({count})
-              </button>
-            );
-          })}
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
-          {filteredRegular.map(e => e.kind === "bundle"
-            ? <BundleCard key={e.id} bundle={e} />
-            : <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
-          )}
-        </div>
-      </section>
 
       {showWishlist && (
         <div
