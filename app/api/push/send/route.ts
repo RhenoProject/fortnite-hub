@@ -10,22 +10,22 @@ webpush.setVapidDetails(
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
-async function fetchTodayShopIds(): Promise<Set<string>> {
+async function fetchTodayShop(): Promise<Map<string, string>> {
   try {
     const res = await fetch("https://fortnite-api.com/v2/shop?language=ja");
-    if (!res.ok) return new Set();
+    if (!res.ok) return new Map();
     const json = await res.json();
     const entries: any[] = json.data?.entries ?? [];
-    const ids = new Set<string>();
+    const map = new Map<string, string>();
     for (const entry of entries) {
       const items: any[] = entry.brItems ?? entry.items ?? [];
       for (const item of items) {
-        if (item.id) ids.add(item.id);
+        if (item.id && item.name) map.set(item.id, item.name);
       }
     }
-    return ids;
+    return map;
   } catch {
-    return new Set();
+    return new Map();
   }
 }
 
@@ -34,9 +34,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [db, shopIds] = await Promise.all([
+  const [db, shopMap] = await Promise.all([
     Promise.resolve(getDb()),
-    fetchTodayShopIds(),
+    fetchTodayShop(),
   ]);
 
   const snapshot = await db.collection("push_subscriptions").get();
@@ -47,15 +47,16 @@ export async function POST(req: NextRequest) {
 
   await Promise.all(
     snapshot.docs.map(async (doc) => {
-      const { subscription, wishlist } = doc.data();
-      const matched = Array.isArray(wishlist)
-        ? wishlist.filter((id: string) => shopIds.has(id))
+      const { subscription, wishlist } = doc.data() as { subscription: any; wishlist?: string[] };
+
+      const matchedNames = Array.isArray(wishlist)
+        ? wishlist.filter((id) => shopMap.has(id)).map((id) => shopMap.get(id)!)
         : [];
 
-      const payload = matched.length > 0
+      const payload = matchedNames.length > 0
         ? JSON.stringify({
             title: "❤️ 欲しいスキンがショップに出ました！",
-            body: `今すぐチェックしよう`,
+            body: matchedNames.join("、"),
             url: "https://fortnite-hub-delta.vercel.app",
             icon: "/icon-192x192.png",
           })
