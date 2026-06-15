@@ -40,11 +40,11 @@ export default function BannerOverlayPage() {
           align-items: center;
           justify-content: space-between;
           gap: 12px;
-          transform: translateY(100%);
-          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity: 0;
+          transition: opacity 0.5s ease;
           font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
         }
-        .banner.show { transform: translateY(0); }
+        .banner.show { opacity: 1; }
         .banner-left { display: flex; align-items: center; gap: 10px; }
         .banner-icon { font-size: 20px; }
         .banner-title {
