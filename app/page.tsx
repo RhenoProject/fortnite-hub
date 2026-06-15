@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import { fetchShop } from "@/lib/shopApi";
 import { ShopClient } from "@/components/ShopClient";
 
 export const revalidate = 600;
+
+export const metadata: Metadata = {
+  title: "フォートナイト アイテムショップ 今日 | フォトナHub",
+  description: "フォートナイトの今日のアイテムショップを毎日更新。注目スキン・バンドル・エモートをいち早くチェック。クリエイターコード RHENO を使って応援してね！",
+  openGraph: {
+    title: "フォートナイト アイテムショップ 今日 | フォトナHub",
+    description: "今日のフォートナイト アイテムショップをチェック。毎日更新。",
+  },
+  twitter: {
+    title: "フォートナイト アイテムショップ 今日 | フォトナHub",
+    description: "今日のフォートナイト アイテムショップをチェック。毎日更新。",
+  },
+};
 
 export default async function ShopPage() {
   let entries = await fetchShop().catch(() => []);
@@ -40,7 +54,7 @@ export default async function ShopPage() {
 
       <div style={{ marginBottom: "20px" }}>
         <h1 style={{ fontSize: "22px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "4px" }}>
-          🛍️ 今日のアイテムショップ
+          <span aria-hidden="true">🛍️ </span>今日のフォートナイト アイテムショップ
         </h1>
         <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>{today}</p>
       </div>
