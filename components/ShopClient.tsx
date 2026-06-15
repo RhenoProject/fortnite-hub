@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ShopEntry, ShopItem, ShopBundle, rarityColors } from "@/lib/shopApi";
+import { getWishlist, saveWishlist, syncWishlistToServer } from "@/lib/pushUtils";
 
 const ALL = "all";
 const BUNDLE = "bundle";
@@ -19,18 +20,35 @@ const typeLabels: Record<string, string> = {
   emoji: "エモートアイコン",
 };
 
-function ItemCard({ item, large }: { item: ShopItem; large?: boolean }) {
+function ItemCard({
+  item, large, wished, onToggleWish,
+}: {
+  item: ShopItem; large?: boolean; wished: boolean; onToggleWish: (id: string) => void;
+}) {
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
     <div style={{
       backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
       border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
+      position: "relative",
     }}>
       {item.image ? (
         <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
           <Image src={item.image} alt={item.name} fill
             sizes={large ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 33vw, 160px"}
             style={{ objectFit: "cover" }} />
+          <button
+            onClick={() => onToggleWish(item.id)}
+            aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
+            style={{
+              position: "absolute", top: "6px", right: "6px",
+              background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%",
+              width: "28px", height: "28px", fontSize: "15px",
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            {wished ? "❤️" : "🤍"}
+          </button>
         </div>
       ) : (
         <div style={{ width: "100%", aspectRatio: "1/1", backgroundColor: "var(--border)" }} />
@@ -55,7 +73,7 @@ function ItemCard({ item, large }: { item: ShopItem; large?: boolean }) {
   );
 }
 
-function BundleCard({ bundle, large }: { bundle: ShopBundle; large?: boolean }) {
+function BundleCard({ bundle }: { bundle: ShopBundle; large?: boolean }) {
   const color = rarityColors[bundle.rarity] ?? rarityColors.legendary;
   return (
     <div style={{
@@ -110,6 +128,22 @@ function BundleCard({ bundle, large }: { bundle: ShopBundle; large?: boolean }) 
 
 export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regular: ShopEntry[] }) {
   const [filter, setFilter] = useState<string>(ALL);
+  const [wishlist, setWishlist] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    setWishlist(new Set(getWishlist()));
+  }, []);
+
+  const toggleWish = useCallback((id: string) => {
+    setWishlist((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      const arr = Array.from(next);
+      saveWishlist(arr);
+      syncWishlistToServer(arr);
+      return next;
+    });
+  }, []);
 
   const availableTypes = Array.from(
     new Set(regular.filter(e => e.kind === "item").map(e => (e as ShopItem).typeValue).filter(Boolean))
@@ -123,22 +157,28 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
       : regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === filter);
 
   const tabStyle = (key: string): React.CSSProperties => ({
-    padding: "6px 14px",
-    borderRadius: "20px",
-    fontSize: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    border: "none",
+    padding: "6px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
+    cursor: "pointer", border: "none",
     backgroundColor: filter === key ? "var(--primary)" : "var(--card)",
     color: filter === key ? "#0a0f1a" : "var(--text-muted)",
-    transition: "all 0.15s",
-    whiteSpace: "nowrap" as const,
-    flexShrink: 0,
+    transition: "all 0.15s", whiteSpace: "nowrap" as const, flexShrink: 0,
   });
+
+  const wishCount = wishlist.size;
 
   return (
     <>
-      {/* 今日のおすすめ */}
+      {wishCount > 0 && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: "8px",
+          backgroundColor: "#ff006615", border: "1px solid #ff006633",
+          borderRadius: "10px", padding: "10px 14px", marginBottom: "20px",
+          fontSize: "13px", color: "var(--text-muted)",
+        }}>
+          ❤️ <span><b style={{ color: "var(--text)" }}>{wishCount}件</b> ほしいものリストに登録中。ショップに出たら通知でお知らせします。</span>
+        </div>
+      )}
+
       {featured.length > 0 && (
         <section style={{ marginBottom: "32px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
@@ -151,13 +191,12 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px" }}>
             {featured.map(e => e.kind === "bundle"
               ? <BundleCard key={e.id} bundle={e} large />
-              : <ItemCard key={e.id} item={e} large />
+              : <ItemCard key={e.id} item={e} large wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
             )}
           </div>
         </section>
       )}
 
-      {/* 全アイテム */}
       <section>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
           <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px" }}>
@@ -165,15 +204,10 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           </h2>
         </div>
 
-        {/* カテゴリーフィルター */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto", paddingBottom: "4px" }}>
-          <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>
-            すべて ({regular.length})
-          </button>
+          <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>すべて ({regular.length})</button>
           {bundleCount > 0 && (
-            <button style={tabStyle(BUNDLE)} onClick={() => setFilter(BUNDLE)}>
-              セット ({bundleCount})
-            </button>
+            <button style={tabStyle(BUNDLE)} onClick={() => setFilter(BUNDLE)}>セット ({bundleCount})</button>
           )}
           {availableTypes.map(type => {
             const count = regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === type).length;
@@ -188,7 +222,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
           {filteredRegular.map(e => e.kind === "bundle"
             ? <BundleCard key={e.id} bundle={e} />
-            : <ItemCard key={e.id} item={e} />
+            : <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
           )}
         </div>
       </section>

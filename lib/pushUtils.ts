@@ -1,5 +1,27 @@
 export const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
 
+const WISHLIST_KEY = "push_wishlist";
+
+export function getWishlist(): string[] {
+  try { return JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? "[]"); } catch { return []; }
+}
+
+export function saveWishlist(ids: string[]): void {
+  localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
+}
+
+export async function syncWishlistToServer(wishlist: string[]): Promise<void> {
+  if (!("serviceWorker" in navigator)) return;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (!sub) return;
+  await fetch("/api/push/subscribe", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ endpoint: sub.endpoint, wishlist }),
+  });
+}
+
 export function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -20,7 +42,7 @@ export async function registerAndSubscribe(): Promise<boolean> {
   await fetch("/api/push/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(sub),
+    body: JSON.stringify({ ...sub.toJSON(), wishlist: getWishlist() }),
   });
   return true;
 }
