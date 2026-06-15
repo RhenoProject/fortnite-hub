@@ -202,7 +202,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
   const searchResults = useMemo(() => {
     if (!isSearching) return [];
     const all = [...featured, ...regular].filter(e => e.kind === "item") as ShopItem[];
-    return all.filter(e => e.name.toLowerCase().includes(q));
+    return all.filter(e => e.name.toLowerCase().startsWith(q));
   }, [q, isSearching, featured, regular]);
 
   const availableTypes = Array.from(
