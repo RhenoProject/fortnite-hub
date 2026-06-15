@@ -1,8 +1,11 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { ShopEntry, ShopItem, ShopBundle, rarityColors } from "@/lib/shopApi";
-import { getWishlist, saveWishlist, syncWishlistToServer } from "@/lib/pushUtils";
+import {
+  getWishlist, getWishlistItems, saveWishlistItems,
+  syncWishlistToServer, WishlistItem,
+} from "@/lib/pushUtils";
 
 const ALL = "all";
 const BUNDLE = "bundle";
@@ -20,10 +23,18 @@ const typeLabels: Record<string, string> = {
   emoji: "エモートアイコン",
 };
 
+interface WishableItem {
+  id: string;
+  name: string;
+  image: string;
+  rarity: string;
+  price: number;
+}
+
 function ItemCard({
   item, large, wished, onToggleWish,
 }: {
-  item: ShopItem; large?: boolean; wished: boolean; onToggleWish: (id: string) => void;
+  item: ShopItem; large?: boolean; wished: boolean; onToggleWish: (item: WishableItem) => void;
 }) {
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
@@ -38,7 +49,7 @@ function ItemCard({
             sizes={large ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 33vw, 160px"}
             style={{ objectFit: "cover" }} />
           <button
-            onClick={() => onToggleWish(item.id)}
+            onClick={() => onToggleWish(item)}
             aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
             style={{
               position: "absolute", top: "6px", right: "6px",
@@ -129,19 +140,58 @@ function BundleCard({ bundle }: { bundle: ShopBundle; large?: boolean }) {
 export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regular: ShopEntry[] }) {
   const [filter, setFilter] = useState<string>(ALL);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [showWishlist, setShowWishlist] = useState(false);
+
+  const shopIds = useMemo(() => {
+    const ids = new Set<string>();
+    [...featured, ...regular].forEach(e => {
+      if (e.kind === "item") ids.add(e.id);
+    });
+    return ids;
+  }, [featured, regular]);
 
   useEffect(() => {
-    setWishlist(new Set(getWishlist()));
-  }, []);
+    const ids = getWishlist();
+    const items = getWishlistItems();
+    setWishlist(new Set(ids));
 
-  const toggleWish = useCallback((id: string) => {
+    if (ids.length > 0 && items.length === 0) {
+      // 旧フォーマット移行: IDだけある場合、今日のショップから名前・画像を補完
+      const allShopItems = [...featured, ...regular].filter(e => e.kind === "item") as ShopItem[];
+      const migrated = allShopItems
+        .filter(e => ids.includes(e.id))
+        .map(e => ({ id: e.id, name: e.name, image: e.image, rarity: e.rarity, price: e.price }));
+      if (migrated.length > 0) {
+        saveWishlistItems(migrated);
+        setWishlistItems(migrated);
+      }
+    } else {
+      setWishlistItems(items);
+    }
+  }, [featured, regular]);
+
+  const toggleWish = useCallback((item: WishableItem) => {
     setWishlist((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      const arr = Array.from(next);
-      saveWishlist(arr);
-      syncWishlistToServer(arr);
+      if (next.has(item.id)) {
+        next.delete(item.id);
+      } else {
+        next.add(item.id);
+      }
+      syncWishlistToServer(Array.from(next));
       return next;
+    });
+    setWishlistItems((prev) => {
+      const exists = prev.find(i => i.id === item.id);
+      let newItems: WishlistItem[];
+      if (exists) {
+        newItems = prev.filter(i => i.id !== item.id);
+      } else {
+        newItems = [...prev, { id: item.id, name: item.name, image: item.image, rarity: item.rarity, price: item.price }];
+      }
+      saveWishlistItems(newItems);
+      return newItems;
     });
   }, []);
 
@@ -164,19 +214,25 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     transition: "all 0.15s", whiteSpace: "nowrap" as const, flexShrink: 0,
   });
 
-  const wishCount = wishlist.size;
+  const wishCount = wishlistItems.length;
 
   return (
     <>
       {wishCount > 0 && (
-        <div style={{
-          display: "flex", alignItems: "center", gap: "8px",
-          backgroundColor: "#ff006615", border: "1px solid #ff006633",
-          borderRadius: "10px", padding: "10px 14px", marginBottom: "20px",
-          fontSize: "13px", color: "var(--text-muted)",
-        }}>
-          ❤️ <span><b style={{ color: "var(--text)" }}>{wishCount}件</b> ほしいものリストに登録中。ショップに出たら通知でお知らせします。</span>
-        </div>
+        <button
+          onClick={() => setShowWishlist(true)}
+          style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            backgroundColor: "#ff006615", border: "1px solid #ff006633",
+            borderRadius: "10px", padding: "10px 14px", marginBottom: "20px",
+            fontSize: "13px", color: "var(--text-muted)",
+            width: "100%", cursor: "pointer", textAlign: "left",
+          }}
+        >
+          <span>❤️</span>
+          <span><b style={{ color: "var(--text)" }}>{wishCount}件</b> ほしいものリストに登録中。ショップに出たら通知でお知らせします。</span>
+          <span style={{ marginLeft: "auto", fontSize: "11px", color: "var(--primary)", whiteSpace: "nowrap" }}>確認する →</span>
+        </button>
       )}
 
       {featured.length > 0 && (
@@ -226,6 +282,107 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           )}
         </div>
       </section>
+
+      {showWishlist && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            backgroundColor: "rgba(0,0,0,0.75)",
+            display: "flex", alignItems: "flex-end",
+          }}
+          onClick={() => setShowWishlist(false)}
+        >
+          <div
+            style={{
+              width: "100%", maxHeight: "82vh",
+              backgroundColor: "var(--bg)",
+              borderRadius: "20px 20px 0 0",
+              padding: "20px 16px 0",
+              overflowY: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)" }}>
+                ❤️ ほしいものリスト ({wishCount}件)
+              </h2>
+              <button
+                onClick={() => setShowWishlist(false)}
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "var(--text-muted)", fontSize: "22px", lineHeight: 1, padding: "4px 8px",
+                }}
+              >✕</button>
+            </div>
+
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
+              ショップに登場した日に通知でお知らせします。
+            </p>
+
+            {wishlistItems.length === 0 ? (
+              <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px 0" }}>
+                まだ何も登録されていません
+              </p>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px", paddingBottom: "24px" }}>
+                {wishlistItems.map(wItem => {
+                  const inShop = shopIds.has(wItem.id);
+                  const color = rarityColors[wItem.rarity] ?? rarityColors.common;
+                  return (
+                    <div key={wItem.id} style={{
+                      backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
+                      border: `1px solid ${color}44`, position: "relative",
+                    }}>
+                      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
+                        {wItem.image ? (
+                          <Image src={wItem.image} alt={wItem.name} fill sizes="150px" style={{ objectFit: "cover" }} />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", backgroundColor: "var(--border)" }} />
+                        )}
+                        <div style={{
+                          position: "absolute", top: 0, left: 0, right: 0,
+                          backgroundColor: inShop ? "rgba(0,180,80,0.88)" : "rgba(0,0,0,0.55)",
+                          fontSize: "9px", fontWeight: "800",
+                          color: inShop ? "white" : "#bbb",
+                          textAlign: "center", padding: "3px 4px", lineHeight: 1.4,
+                        }}>
+                          {inShop ? "🛍️ 今日のショップにあります！" : "⏳ 入荷待ち"}
+                        </div>
+                        <button
+                          onClick={() => toggleWish(wItem)}
+                          aria-label="ほしいものリストから削除"
+                          style={{
+                            position: "absolute", top: "6px", right: "6px",
+                            background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%",
+                            width: "28px", height: "28px", fontSize: "15px",
+                            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                          }}
+                        >
+                          ❤️
+                        </button>
+                      </div>
+                      <div style={{ height: "3px", backgroundColor: color }} />
+                      <div style={{ padding: "8px" }}>
+                        <p style={{
+                          fontSize: "12px", fontWeight: "700", color: "var(--text)",
+                          lineHeight: 1.3, marginBottom: "4px",
+                          overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any,
+                        }}>
+                          {wItem.name}
+                        </p>
+                        <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>⟁</span>
+                          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>{wItem.price.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

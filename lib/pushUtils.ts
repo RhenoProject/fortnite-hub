@@ -1,6 +1,15 @@
 export const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
 
 const WISHLIST_KEY = "push_wishlist";
+const WISHLIST_ITEMS_KEY = "push_wishlist_items";
+
+export interface WishlistItem {
+  id: string;
+  name: string;
+  image: string;
+  rarity: string;
+  price: number;
+}
 
 export function getWishlist(): string[] {
   try { return JSON.parse(localStorage.getItem(WISHLIST_KEY) ?? "[]"); } catch { return []; }
@@ -8,6 +17,15 @@ export function getWishlist(): string[] {
 
 export function saveWishlist(ids: string[]): void {
   localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
+}
+
+export function getWishlistItems(): WishlistItem[] {
+  try { return JSON.parse(localStorage.getItem(WISHLIST_ITEMS_KEY) ?? "[]"); } catch { return []; }
+}
+
+export function saveWishlistItems(items: WishlistItem[]): void {
+  localStorage.setItem(WISHLIST_ITEMS_KEY, JSON.stringify(items));
+  saveWishlist(items.map(i => i.id));
 }
 
 export async function syncWishlistToServer(wishlist: string[]): Promise<void> {
