@@ -1,25 +1,4 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-
 export default function BannerOverlayPage() {
-  const [visible, setVisible] = useState(false);
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function showBanner() {
-    setVisible(true);
-    if (hideTimer.current) clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => setVisible(false), 6000);
-  }
-
-  useEffect(() => {
-    const first = setTimeout(() => {
-      showBanner();
-      const interval = setInterval(showBanner, 3 * 60 * 1000);
-      return () => clearInterval(interval);
-    }, 3000);
-    return () => clearTimeout(first);
-  }, []);
-
   return (
     <>
       <style>{`
@@ -30,6 +9,17 @@ export default function BannerOverlayPage() {
           background: transparent;
           overflow: hidden;
         }
+
+        /* 3分サイクル: 3秒後に出て6秒表示、残りは非表示 */
+        @keyframes banner-cycle {
+          0%     { opacity: 0; }
+          1.6%   { opacity: 0; }
+          2%     { opacity: 1; }
+          5%     { opacity: 1; }
+          5.5%   { opacity: 0; }
+          100%   { opacity: 0; }
+        }
+
         .banner {
           width: 1920px;
           height: 54px;
@@ -40,11 +30,9 @@ export default function BannerOverlayPage() {
           align-items: center;
           justify-content: space-between;
           gap: 12px;
-          opacity: 0;
-          transition: opacity 0.5s ease;
+          animation: banner-cycle 180s linear infinite;
           font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
         }
-        .banner.show { opacity: 1; }
         .banner-left { display: flex; align-items: center; gap: 10px; }
         .banner-icon { font-size: 20px; }
         .banner-title {
@@ -65,7 +53,7 @@ export default function BannerOverlayPage() {
         }
       `}</style>
 
-      <div className={`banner${visible ? " show" : ""}`}>
+      <div className="banner">
         <div className="banner-left">
           <span className="banner-icon">🛍️</span>
           <div>
