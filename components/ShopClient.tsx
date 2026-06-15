@@ -251,7 +251,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
   // デバウンス付き全スキン検索
   useEffect(() => {
     const q = searchQuery.trim();
-    if (q.length < 2) {
+    if (q.length < 1) {
       setApiResults([]);
       setIsSearching(false);
       return;
@@ -316,7 +316,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
   });
 
   const wishCount = wishlistItems.length;
-  const showSearch = searchQuery.trim().length >= 2;
+  const showSearch = searchQuery.trim().length >= 1;
 
   return (
     <>
