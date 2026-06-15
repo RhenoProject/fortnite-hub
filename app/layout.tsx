@@ -22,6 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL("https://fortnite-hub-delta.vercel.app"),
+    verification: {
+      google: "XZaQpzZ7BJ7x9sag3JTN1PG1BI_4aAZEtQveYnF70uQ",
+    },
     icons: {
       apple: "/apple-touch-icon.png",
     },
