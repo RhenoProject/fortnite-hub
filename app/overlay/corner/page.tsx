@@ -3,9 +3,16 @@ export default function CornerOverlayPage() {
     <>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: fit-content; height: fit-content; background: transparent; }
+        html, body {
+          width: 250px;
+          height: 84px;
+          background: transparent;
+          overflow: hidden;
+        }
         .corner {
-          display: inline-flex;
+          width: 250px;
+          height: 84px;
+          display: flex;
           align-items: center;
           gap: 10px;
           background: rgba(10, 15, 26, 0.85);
