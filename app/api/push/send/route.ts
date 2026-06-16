@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getDb } from "@/lib/firestore";
 import webpush from "web-push";
 
@@ -78,6 +79,8 @@ export async function POST(req: NextRequest) {
   );
 
   await Promise.all(removes.map((id) => db.collection("push_subscriptions").doc(id).delete()));
+
+  revalidatePath("/");
 
   return NextResponse.json({ sent, failed, removed: removes.length });
 }
