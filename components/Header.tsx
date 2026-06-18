@@ -7,6 +7,7 @@ const navItems = [
   { href: "/", label: "ショップ", emoji: "🛍️" },
   { href: "/news", label: "ニュース", emoji: "📰" },
   { href: "/updates", label: "アプデ・競技", emoji: "🏆" },
+  { href: "/devices", label: "デバイス", emoji: "🎮" },
 ];
 
 export function Header() {
