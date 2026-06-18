@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { PushBanner } from "@/components/PushBanner";
+import { PageRefresher } from "@/components/PageRefresher";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
@@ -92,6 +93,7 @@ export default function RootLayout({
           © 2026 フォトナHub — This site is not affiliated with or endorsed by Epic Games. Fortnite and related marks are trademarks of Epic Games, Inc.
         </footer>
         <PushBanner />
+        <PageRefresher />
         <Analytics />
         <GoogleAnalytics gaId="G-QHK3562CSH" />
       </body>
