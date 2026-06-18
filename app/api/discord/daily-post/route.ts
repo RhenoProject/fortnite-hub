@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchShop, ShopItem } from "@/lib/shopApi";
 
-export async function POST(req: NextRequest) {
+async function handleRequest(req: NextRequest) {
   if (
     process.env.CRON_SECRET &&
     req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
@@ -66,3 +66,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true });
 }
+
+export const GET = handleRequest;
+export const POST = handleRequest;
