@@ -18,24 +18,22 @@
 /* 背景グラデーション+斜めラインをhtmlに直接設定（iOS Safari対応） */
 html {
   min-height: 100%;
-  background-color: #000;
+  background-color: #0070a8;
   background-image:
     repeating-linear-gradient(
       -55deg,
       transparent 0px,
       transparent 22px,
-      rgba(0, 200, 245, 0.05) 22px,
-      rgba(0, 200, 245, 0.05) 23px
+      rgba(0, 200, 245, 0.07) 22px,
+      rgba(0, 200, 245, 0.07) 23px
     ),
-    radial-gradient(ellipse 200% 75% at 50% 55%,
-      rgba(0, 160, 210, 0.95) 0%,
-      rgba(0, 110, 170, 0.82) 22%,
-      rgba(0,  60, 120, 0.65) 42%,
-      rgba(0,  22,  65, 0.40) 60%,
-      transparent 80%
-    ),
-    radial-gradient(ellipse 80% 55% at 10% 50%, rgba(0, 55, 160, 0.30) 0%, transparent 65%),
-    radial-gradient(ellipse 80% 55% at 90% 50%, rgba(0, 55, 160, 0.30) 0%, transparent 65%);
+    linear-gradient(
+      160deg,
+      #0090cc 0%,
+      #0078b8 40%,
+      #0068a8 70%,
+      #005a98 100%
+    );
 }
 
 body {
