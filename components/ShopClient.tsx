@@ -47,23 +47,25 @@ function ItemCard({
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
     <div style={{
-      backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
+      backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
       border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
       position: "relative",
     }}>
       {item.image ? (
         <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
           <Image src={item.image} alt={item.name} fill
-            sizes={large ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 33vw, 160px"}
+            sizes={large ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 50vw, 160px"}
             style={{ objectFit: "cover" }} />
           <button
             onClick={() => onToggleWish(item)}
             aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
             style={{
               position: "absolute", top: "6px", right: "6px",
-              background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%",
-              width: "28px", height: "28px", fontSize: "15px",
+              background: wished ? "rgba(255,0,80,0.75)" : "rgba(0,0,0,0.55)",
+              border: "none", borderRadius: "50%",
+              width: "34px", height: "34px", fontSize: "16px",
               cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "transform 0.15s, background 0.15s",
             }}
           >
             {wished ? "❤️" : "🤍"}
@@ -74,7 +76,7 @@ function ItemCard({
       )}
       <div style={{ height: "3px", backgroundColor: color }} />
       <div style={{ padding: large ? "10px" : "8px" }}>
-        <p style={{ fontSize: large ? "11px" : "10px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase", marginBottom: "2px" }}>
+        <p style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: "600", textTransform: "uppercase", marginBottom: "2px" }}>
           {item.rarityDisplay || item.typeDisplay}
         </p>
         <p style={{
@@ -84,8 +86,8 @@ function ItemCard({
           {item.name}
         </p>
         <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: large ? "13px" : "12px" }}>⟁</span>
-          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: large ? "13px" : "12px" }}>{item.price.toLocaleString()}</span>
+          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "13px" }}>⟁</span>
+          <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "13px" }}>{item.price.toLocaleString()}</span>
         </div>
       </div>
     </div>
@@ -104,12 +106,12 @@ function SearchResultCard({
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
     <div style={{
-      backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
+      backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
       border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
     }}>
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
         {item.image ? (
-          <Image src={item.image} alt={item.name} fill sizes="(max-width: 640px) 33vw, 160px" style={{ objectFit: "cover" }} />
+          <Image src={item.image} alt={item.name} fill sizes="(max-width: 640px) 50vw, 160px" style={{ objectFit: "cover" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", backgroundColor: "var(--border)" }} />
         )}
@@ -127,8 +129,9 @@ function SearchResultCard({
           aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
           style={{
             position: "absolute", top: "6px", right: "6px",
-            background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%",
-            width: "28px", height: "28px", fontSize: "15px",
+            background: wished ? "rgba(255,0,80,0.75)" : "rgba(0,0,0,0.55)",
+            border: "none", borderRadius: "50%",
+            width: "34px", height: "34px", fontSize: "16px",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
           }}
         >
@@ -157,11 +160,11 @@ function SearchResultCard({
   );
 }
 
-function BundleCard({ bundle }: { bundle: ShopBundle; large?: boolean }) {
+function BundleCard({ bundle }: { bundle: ShopBundle }) {
   const color = rarityColors[bundle.rarity] ?? rarityColors.legendary;
   return (
     <div style={{
-      backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
+      backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
       border: `1px solid ${color}66`, display: "flex", flexDirection: "column",
       gridColumn: "span 2",
     }}>
@@ -173,7 +176,7 @@ function BundleCard({ bundle }: { bundle: ShopBundle; large?: boolean }) {
         ) : (
           <div style={{ width: "50%", aspectRatio: "1/1", backgroundColor: "var(--border)", flexShrink: 0 }} />
         )}
-        <div style={{ flex: 1, padding: "10px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <div style={{ flex: 1, padding: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div>
             <span style={{
               display: "inline-block", padding: "2px 8px", borderRadius: "20px", fontSize: "10px", fontWeight: "800",
@@ -233,29 +236,20 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     const ids = getWishlist();
     const items = getWishlistItems();
     setWishlist(new Set(ids));
-
     if (ids.length > 0 && items.length === 0) {
       const allShopItems = [...featured, ...regular].filter(e => e.kind === "item") as ShopItem[];
       const migrated = allShopItems
         .filter(e => ids.includes(e.id))
         .map(e => ({ id: e.id, name: e.name, image: e.image, rarity: e.rarity, price: e.price }));
-      if (migrated.length > 0) {
-        saveWishlistItems(migrated);
-        setWishlistItems(migrated);
-      }
+      if (migrated.length > 0) { saveWishlistItems(migrated); setWishlistItems(migrated); }
     } else {
       setWishlistItems(items);
     }
   }, [featured, regular]);
 
-  // デバウンス付き全スキン検索
   useEffect(() => {
     const q = searchQuery.trim();
-    if (q.length < 1) {
-      setApiResults([]);
-      setIsSearching(false);
-      return;
-    }
+    if (q.length < 1) { setApiResults([]); setIsSearching(false); return; }
     setIsSearching(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
@@ -263,11 +257,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         const res = await fetch(`/api/cosmetics/search?q=${encodeURIComponent(q)}`);
         const json = await res.json();
         setApiResults(json.items ?? []);
-      } catch {
-        setApiResults([]);
-      } finally {
-        setIsSearching(false);
-      }
+      } catch { setApiResults([]); } finally { setIsSearching(false); }
     }, 300);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [searchQuery]);
@@ -275,22 +265,13 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
   const toggleWish = useCallback((item: WishableItem) => {
     setWishlist((prev) => {
       const next = new Set(prev);
-      if (next.has(item.id)) {
-        next.delete(item.id);
-      } else {
-        next.add(item.id);
-      }
+      next.has(item.id) ? next.delete(item.id) : next.add(item.id);
       syncWishlistToServer(Array.from(next));
       return next;
     });
     setWishlistItems((prev) => {
       const exists = prev.find(i => i.id === item.id);
-      let newItems: WishlistItem[];
-      if (exists) {
-        newItems = prev.filter(i => i.id !== item.id);
-      } else {
-        newItems = [...prev, { id: item.id, name: item.name, image: item.image, rarity: item.rarity, price: item.price }];
-      }
+      const newItems = exists ? prev.filter(i => i.id !== item.id) : [...prev, item];
       saveWishlistItems(newItems);
       return newItems;
     });
@@ -300,7 +281,6 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     new Set(regular.filter(e => e.kind === "item").map(e => (e as ShopItem).typeValue).filter(Boolean))
   );
   const bundleCount = regular.filter(e => e.kind === "bundle").length;
-
   const filteredRegular = filter === ALL
     ? regular
     : filter === BUNDLE
@@ -308,41 +288,168 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
       : regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === filter);
 
   const tabStyle = (key: string): React.CSSProperties => ({
-    padding: "6px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
+    padding: "7px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
     cursor: "pointer",
-    border: filter === key ? "none" : "1px solid rgba(0, 195, 240, 0.18)",
-    backgroundColor: filter === key ? "var(--primary)" : "rgba(0, 195, 240, 0.07)",
+    border: filter === key ? "none" : "1px solid rgba(0, 195, 240, 0.20)",
+    backgroundColor: filter === key ? "var(--primary)" : "rgba(0, 195, 240, 0.08)",
     color: filter === key ? "#0a0f1a" : "var(--text-muted)",
     transition: "all 0.15s", whiteSpace: "nowrap" as const, flexShrink: 0,
+    minHeight: "36px",
   });
 
   const wishCount = wishlistItems.length;
+  const inShopCount = wishlistItems.filter(w => shopItemMap.has(w.id)).length;
   const showSearch = searchQuery.trim().length >= 1;
 
   return (
     <>
+      <style>{`
+        /* モバイル: カードグリッド2列固定 */
+        .shop-grid-featured {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 12px;
+        }
+        .shop-grid-regular {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+          gap: 10px;
+        }
+        @media (max-width: 480px) {
+          .shop-grid-featured { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          .shop-grid-regular  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        }
+
+        /* フィルタータブ: 横スクロール＋スクロールバー非表示 */
+        .filter-tabs {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 4px;
+          margin-bottom: 16px;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .filter-tabs::-webkit-scrollbar { display: none; }
+
+        /* ほしいものリストモーダル */
+        .wishlist-overlay {
+          position: fixed; inset: 0; z-index: 1000;
+          background: rgba(0,0,0,0.78);
+          display: flex; align-items: flex-end;
+        }
+        .wishlist-panel {
+          width: 100%;
+          max-height: 86vh;
+          background: var(--surface);
+          border-radius: 20px 20px 0 0;
+          overflow-y: auto;
+          padding: 0 0 max(env(safe-area-inset-bottom), 16px);
+        }
+        /* PCではセンターモーダルに変える */
+        @media (min-width: 640px) {
+          .wishlist-overlay { align-items: center; justify-content: center; }
+          .wishlist-panel {
+            width: 560px;
+            max-height: 80vh;
+            border-radius: 20px;
+          }
+        }
+
+        /* ほしいものリスト横並びアイテム */
+        .wish-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 16px;
+          border-bottom: 1px solid var(--border);
+        }
+        .wish-item:last-child { border-bottom: none; }
+        .wish-item-thumb {
+          width: 56px; height: 56px;
+          border-radius: 8px;
+          overflow: hidden;
+          flex-shrink: 0;
+          position: relative;
+          background: var(--card);
+        }
+        .wish-item-info { flex: 1; min-width: 0; }
+        .wish-item-name {
+          font-size: 13px; font-weight: 700;
+          color: var(--text); line-height: 1.3;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          margin-bottom: 4px;
+        }
+        .wish-item-badge {
+          display: inline-flex; align-items: center; gap: 4px;
+          font-size: 11px; font-weight: 700;
+          padding: 2px 8px; border-radius: 20px;
+        }
+        .wish-item-badge.in-shop {
+          background: rgba(0,200,80,0.18);
+          color: #00d860;
+          border: 1px solid rgba(0,200,80,0.35);
+        }
+        .wish-item-badge.waiting {
+          background: rgba(255,255,255,0.07);
+          color: var(--text-muted);
+          border: 1px solid rgba(255,255,255,0.12);
+        }
+        .wish-remove-btn {
+          width: 32px; height: 32px;
+          background: rgba(255,50,80,0.12);
+          border: 1px solid rgba(255,50,80,0.25);
+          border-radius: 8px;
+          color: #ff4060;
+          font-size: 14px;
+          cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+          transition: background 0.15s;
+        }
+        .wish-remove-btn:hover { background: rgba(255,50,80,0.25); }
+      `}</style>
+
+      {/* ほしいものリストバナー */}
       {wishCount > 0 && (
         <button
           onClick={() => setShowWishlist(true)}
           style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            backgroundColor: "#ff006615", border: "1px solid #ff006633",
-            borderRadius: "10px", padding: "10px 14px", marginBottom: "16px",
-            fontSize: "13px", color: "var(--text-muted)",
+            display: "flex", alignItems: "center", gap: "10px",
+            background: inShopCount > 0
+              ? "linear-gradient(135deg, rgba(0,200,80,0.15) 0%, rgba(0,200,80,0.05) 100%)"
+              : "rgba(255,0,80,0.08)",
+            border: inShopCount > 0 ? "1px solid rgba(0,200,80,0.4)" : "1px solid rgba(255,0,80,0.25)",
+            borderRadius: "12px", padding: "12px 16px", marginBottom: "16px",
             width: "100%", cursor: "pointer", textAlign: "left",
           }}
         >
-          <span>❤️</span>
-          <span><b style={{ color: "var(--text)" }}>{wishCount}件</b> ほしいものリストに登録中。ショップに出たら通知でお知らせします。</span>
-          <span style={{ marginLeft: "auto", fontSize: "11px", color: "var(--primary)", whiteSpace: "nowrap" }}>確認する →</span>
+          <span style={{ fontSize: "22px", flexShrink: 0 }}>{inShopCount > 0 ? "🛍️" : "❤️"}</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {inShopCount > 0 ? (
+              <>
+                <p style={{ fontSize: "13px", fontWeight: "800", color: "#00d860", marginBottom: "2px" }}>
+                  ほしいスキンが {inShopCount}件 今日のショップに出ています！
+                </p>
+                <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                  残り {wishCount - inShopCount}件 は入荷待ち
+                </p>
+              </>
+            ) : (
+              <p style={{ fontSize: "13px", fontWeight: "700", color: "var(--text)" }}>
+                <b style={{ color: "var(--primary)" }}>{wishCount}件</b> ほしいものリストに登録中 — 入荷待ち
+              </p>
+            )}
+          </div>
+          <span style={{ fontSize: "11px", color: "var(--primary)", whiteSpace: "nowrap", flexShrink: 0 }}>確認 →</span>
         </button>
       )}
 
       {/* 検索ボックス */}
-      <div style={{ position: "relative", marginBottom: "24px" }}>
+      <div style={{ position: "relative", marginBottom: "20px" }}>
         <span style={{
           position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
-          fontSize: "16px", pointerEvents: "none", userSelect: "none",
+          fontSize: "16px", pointerEvents: "none",
         }}>🔍</span>
         <input
           ref={searchInputRef}
@@ -358,9 +465,9 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           placeholder="全スキンから名前で検索..."
           style={{
             width: "100%", boxSizing: "border-box",
-            padding: "10px 36px 10px 40px",
-            backgroundColor: "var(--card)", border: "1px solid var(--border)",
-            borderRadius: "10px", color: "var(--text)", fontSize: "14px",
+            padding: "12px 36px 12px 42px",
+            background: "var(--card)", border: "1px solid var(--border)",
+            borderRadius: "12px", color: "var(--text)", fontSize: "15px",
             outline: "none",
           }}
         />
@@ -370,7 +477,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
             style={{
               position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)",
               background: "none", border: "none", cursor: "pointer",
-              color: "var(--text-muted)", fontSize: "18px", lineHeight: 1, padding: "2px 4px",
+              color: "var(--text-muted)", fontSize: "18px", padding: "4px",
             }}
           >✕</button>
         )}
@@ -386,18 +493,13 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
                 : `「${searchQuery}」に一致するスキンはありません`
             }
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
+          <div className="shop-grid-regular">
             {apiResults.map(item => {
               const shopItem = shopItemMap.get(item.id);
               return (
-                <SearchResultCard
-                  key={item.id}
-                  item={item}
-                  inShop={!!shopItem}
-                  shopPrice={shopItem?.price}
-                  wished={wishlist.has(item.id)}
-                  onToggleWish={toggleWish}
-                />
+                <SearchResultCard key={item.id} item={item}
+                  inShop={!!shopItem} shopPrice={shopItem?.price}
+                  wished={wishlist.has(item.id)} onToggleWish={toggleWish} />
               );
             })}
           </div>
@@ -413,9 +515,9 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
                 </h2>
                 <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Epic公式が注目するアイテム</span>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px" }}>
+              <div className="shop-grid-featured">
                 {featured.map(e => e.kind === "bundle"
-                  ? <BundleCard key={e.id} bundle={e} large />
+                  ? <BundleCard key={e.id} bundle={e} />
                   : <ItemCard key={e.id} item={e} large wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
                 )}
               </div>
@@ -424,12 +526,13 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
 
           <section>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-              <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)" }}>
                 🛒 全アイテム
               </h2>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{regular.length}件</span>
             </div>
 
-            <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto", paddingBottom: "4px" }}>
+            <div className="filter-tabs">
               <button style={tabStyle(ALL)} onClick={() => setFilter(ALL)}>すべて ({regular.length})</button>
               {bundleCount > 0 && (
                 <button style={tabStyle(BUNDLE)} onClick={() => setFilter(BUNDLE)}>セット ({bundleCount})</button>
@@ -444,7 +547,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
               })}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
+            <div className="shop-grid-regular">
               {filteredRegular.map(e => e.kind === "bundle"
                 ? <BundleCard key={e.id} bundle={e} />
                 : <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
@@ -454,104 +557,80 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         </>
       )}
 
+      {/* ほしいものリストモーダル */}
       {showWishlist && (
-        <div
-          style={{
-            position: "fixed", inset: 0, zIndex: 1000,
-            backgroundColor: "rgba(0,0,0,0.75)",
-            display: "flex", alignItems: "flex-end",
-          }}
-          onClick={() => setShowWishlist(false)}
-        >
-          <div
-            style={{
-              width: "100%", maxHeight: "82vh",
-              backgroundColor: "var(--bg)",
-              borderRadius: "20px 20px 0 0",
-              padding: "12px 16px 0",
-              overflowY: "auto",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* ドラッグハンドル */}
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
-              <div style={{ width: "36px", height: "4px", borderRadius: "2px", backgroundColor: "var(--border)" }} />
+        <div className="wishlist-overlay" onClick={() => setShowWishlist(false)}>
+          <div className="wishlist-panel" onClick={e => e.stopPropagation()}>
+            {/* ドラッグハンドル（モバイルのみ見た目上意味あり） */}
+            <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 0" }}>
+              <div style={{ width: "36px", height: "4px", borderRadius: "2px", background: "var(--border)" }} />
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)" }}>
-                ❤️ ほしいものリスト ({wishCount}件)
-              </h2>
+
+            {/* ヘッダー */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 8px" }}>
+              <div>
+                <h2 style={{ fontSize: "17px", fontWeight: "900", color: "var(--text)", marginBottom: "2px" }}>
+                  ❤️ ほしいものリスト
+                </h2>
+                <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                  {wishCount}件登録中
+                  {inShopCount > 0 && <span style={{ color: "#00d860", marginLeft: "8px" }}>● {inShopCount}件 今日のショップにあります</span>}
+                </p>
+              </div>
               <button
                 onClick={() => setShowWishlist(false)}
                 style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  color: "var(--text-muted)", fontSize: "22px", lineHeight: 1, padding: "4px 8px",
+                  background: "rgba(255,255,255,0.08)", border: "none", cursor: "pointer",
+                  color: "var(--text)", fontSize: "16px", borderRadius: "8px",
+                  width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >✕</button>
             </div>
 
-            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
-              ショップに登場した日に通知でお知らせします。
-            </p>
+            <div style={{ height: "1px", background: "var(--border)", margin: "0 16px 4px" }} />
 
+            {/* アイテムリスト */}
             {wishlistItems.length === 0 ? (
-              <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px 0" }}>
+              <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "48px 0", fontSize: "14px" }}>
                 まだ何も登録されていません
               </p>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px", paddingBottom: "max(env(safe-area-inset-bottom), 24px)" }}>
+              <div>
                 {wishlistItems.map(wItem => {
                   const inShop = shopItemMap.has(wItem.id);
                   const color = rarityColors[wItem.rarity] ?? rarityColors.common;
                   return (
-                    <div key={wItem.id} style={{
-                      backgroundColor: "var(--card)", borderRadius: "10px", overflow: "hidden",
-                      border: `1px solid ${color}44`, position: "relative",
-                    }}>
-                      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
+                    <div key={wItem.id} className="wish-item">
+                      {/* サムネイル */}
+                      <div className="wish-item-thumb" style={{ border: `2px solid ${color}55` }}>
                         {wItem.image ? (
-                          <Image src={wItem.image} alt={wItem.name} fill sizes="150px" style={{ objectFit: "cover" }} />
+                          <Image src={wItem.image} alt={wItem.name} fill sizes="56px" style={{ objectFit: "cover" }} />
                         ) : (
-                          <div style={{ width: "100%", height: "100%", backgroundColor: "var(--border)" }} />
+                          <div style={{ width: "100%", height: "100%", background: "var(--border)" }} />
                         )}
-                        <div style={{
-                          position: "absolute", top: 0, left: 0, right: 0,
-                          backgroundColor: inShop ? "rgba(0,180,80,0.88)" : "rgba(0,0,0,0.55)",
-                          fontSize: "9px", fontWeight: "800",
-                          color: inShop ? "white" : "#bbb",
-                          textAlign: "center", padding: "3px 4px", lineHeight: 1.4,
-                        }}>
-                          {inShop ? "🛍️ 今日のショップにあります！" : "⏳ 入荷待ち"}
+                      </div>
+
+                      {/* 情報 */}
+                      <div className="wish-item-info">
+                        <p className="wish-item-name">{wItem.name}</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                          <span className={`wish-item-badge ${inShop ? "in-shop" : "waiting"}`}>
+                            {inShop ? "🛍️ 今日あります" : "⏳ 入荷待ち"}
+                          </span>
+                          {wItem.price > 0 && (
+                            <span style={{ fontSize: "12px", color: "var(--accent)", fontWeight: "800" }}>
+                              ⟁ {wItem.price.toLocaleString()}
+                            </span>
+                          )}
                         </div>
-                        <button
-                          onClick={() => toggleWish(wItem)}
-                          aria-label="ほしいものリストから削除"
-                          style={{
-                            position: "absolute", top: "6px", right: "6px",
-                            background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%",
-                            width: "28px", height: "28px", fontSize: "15px",
-                            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                          }}
-                        >
-                          ❤️
-                        </button>
                       </div>
-                      <div style={{ height: "3px", backgroundColor: color }} />
-                      <div style={{ padding: "8px" }}>
-                        <p style={{
-                          fontSize: "12px", fontWeight: "700", color: "var(--text)",
-                          lineHeight: 1.3, marginBottom: "4px",
-                          overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any,
-                        }}>
-                          {wItem.name}
-                        </p>
-                        {wItem.price > 0 && (
-                          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-                            <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>⟁</span>
-                            <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "12px" }}>{wItem.price.toLocaleString()}</span>
-                          </div>
-                        )}
-                      </div>
+
+                      {/* 削除ボタン */}
+                      <button
+                        className="wish-remove-btn"
+                        onClick={() => toggleWish(wItem)}
+                        aria-label="リストから削除"
+                      >✕</button>
                     </div>
                   );
                 })}
