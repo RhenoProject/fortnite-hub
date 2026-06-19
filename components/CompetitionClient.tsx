@@ -2,31 +2,36 @@
 
 type EventKind = "fncs" | "cashcup" | "open" | "none";
 
-interface WeekDay {
-  dayIndex: number; // 0=Sun, 6=Sat
-  jp: string;
-  kind: EventKind;
-  label: string;
-  time?: string;
-  sublabel?: string;
-}
-
-const schedule: WeekDay[] = [
-  { dayIndex: 0, jp: "日", kind: "fncs",    label: "FNCS ファイナル",  sublabel: "グランドファイナル" },
-  { dayIndex: 1, jp: "月", kind: "none",    label: "練習日",           sublabel: "公式大会なし" },
-  { dayIndex: 2, jp: "火", kind: "none",    label: "練習日",           sublabel: "公式大会なし" },
-  { dayIndex: 3, jp: "水", kind: "open",    label: "オープン大会",     sublabel: "ソロ / デュオ" },
-  { dayIndex: 4, jp: "木", kind: "cashcup", label: "キャッシュカップ", sublabel: "デュオ部門" },
-  { dayIndex: 5, jp: "金", kind: "cashcup", label: "キャッシュカップ", sublabel: "ソロ部門" },
-  { dayIndex: 6, jp: "土", kind: "fncs",    label: "FNCS ヒート",      sublabel: "クォリファイア" },
-];
-
 const kindStyle: Record<EventKind, { border: string; text: string; badgeBg: string }> = {
   fncs:    { border: "#ffd700", text: "#ffd700", badgeBg: "#ffd70020" },
   cashcup: { border: "#00e676", text: "#00e676", badgeBg: "#00e67620" },
   open:    { border: "#00c8ff", text: "#00c8ff", badgeBg: "#00c8ff20" },
   none:    { border: "var(--border)", text: "var(--text-muted)", badgeBg: "transparent" },
 };
+
+// その曜日（0=日〜6=土）の今週の日付を返す
+function getDateThisWeek(dayOfWeek: number): Date {
+  const today = new Date();
+  const diff = dayOfWeek - today.getDay();
+  const d = new Date(today);
+  d.setDate(today.getDate() + diff);
+  return d;
+}
+
+function fmt(d: Date) {
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+const DAYS_JP = ["日", "月", "火", "水", "木", "金", "土"];
+
+// 今週の主要な競技イベント（水〜日）
+const weekEvents = [
+  { dayIndex: 3, kind: "open"    as EventKind, label: "オープン大会",    sublabel: "ソロ / デュオ" },
+  { dayIndex: 4, kind: "cashcup" as EventKind, label: "キャッシュカップ", sublabel: "デュオ部門" },
+  { dayIndex: 5, kind: "cashcup" as EventKind, label: "キャッシュカップ", sublabel: "ソロ部門" },
+  { dayIndex: 6, kind: "fncs"    as EventKind, label: "FNCS ヒート",      sublabel: "FNCS期間中のみ" },
+  { dayIndex: 0, kind: "fncs"    as EventKind, label: "FNCS ファイナル", sublabel: "FNCS期間中のみ" },
+];
 
 const guides = [
   {
@@ -48,8 +53,8 @@ const guides = [
   {
     kind: "open" as EventKind,
     emoji: "🎮",
-    title: "オープンリーグ",
-    full: "Open League",
+    title: "オープン大会",
+    full: "Open Division",
     badge: "入門向け",
     desc: "誰でも参加できる日常大会。ランク戦と同じ競技形式で、大会に慣れるための練習に最適。賞金はないが競技経験を積める。",
   },
@@ -80,64 +85,76 @@ const links = [
 ];
 
 export function CompetitionClient() {
-  const todayIndex = new Date().getDay();
+  const today = new Date();
+  const todayIndex = today.getDay();
 
   return (
     <>
       <style>{`
-        .comp-week {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 8px;
+        .comp-schedule-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
-        .comp-day {
+        .comp-schedule-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 18px;
           background: var(--card);
           border-radius: 12px;
-          padding: 10px 6px;
           border: 1px solid var(--border);
+        }
+        .comp-schedule-row.today {
+          border-color: var(--primary);
+          background: #00c8ff0a;
+        }
+        .comp-schedule-row.past {
+          opacity: 0.45;
+        }
+        .comp-date-block {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 5px;
-          text-align: center;
+          min-width: 46px;
+          flex-shrink: 0;
         }
-        .comp-day.today {
-          outline: 2px solid var(--primary);
-          outline-offset: 2px;
-        }
-        .comp-day-jp {
+        .comp-date-day {
           font-size: 11px;
           font-weight: 700;
           color: var(--text-muted);
-          letter-spacing: 0.5px;
         }
-        .comp-day-jp.today { color: var(--primary); }
-        .comp-day-name {
-          font-size: 10px;
+        .comp-date-num {
+          font-size: 20px;
+          font-weight: 900;
+          line-height: 1.1;
+          color: var(--text);
+        }
+        .comp-date-today-badge {
+          font-size: 9px;
+          font-weight: 700;
+          color: var(--primary);
+          margin-top: 2px;
+        }
+        .comp-event-info {
+          flex: 1;
+        }
+        .comp-event-title {
+          font-size: 14px;
           font-weight: 800;
           line-height: 1.3;
         }
-        .comp-day-time {
-          font-size: 9px;
+        .comp-event-sub {
+          font-size: 12px;
           color: var(--text-muted);
+          margin-top: 2px;
         }
-        .comp-day-sub {
-          font-size: 9px;
-          color: var(--text-muted);
-          line-height: 1.3;
-        }
-        .comp-legend {
-          display: flex;
-          gap: 14px;
-          margin-top: 12px;
-          flex-wrap: wrap;
-        }
-        .comp-legend-item {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 11px;
-          color: var(--text-muted);
+        .comp-event-badge {
+          font-size: 10px;
+          font-weight: 700;
+          border-radius: 20px;
+          padding: 3px 10px;
+          flex-shrink: 0;
         }
         .comp-guide-grid {
           display: grid;
@@ -161,12 +178,10 @@ export function CompetitionClient() {
         }
         .comp-link-card:hover { opacity: 0.85; }
         @media (max-width: 639px) {
-          .comp-week { grid-template-columns: repeat(4, 1fr); }
           .comp-guide-grid { grid-template-columns: 1fr; }
           .comp-links-grid { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 380px) {
-          .comp-week { grid-template-columns: repeat(3, 1fr); }
+          .comp-schedule-row { padding: 12px 14px; gap: 10px; }
+          .comp-date-num { font-size: 18px; }
         }
       `}</style>
 
@@ -183,49 +198,85 @@ export function CompetitionClient() {
       }}>
         <span style={{ fontSize: "16px", flexShrink: 0 }}>⚠️</span>
         <p style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
-          このページの週間スケジュールは<strong style={{ color: "var(--text)" }}>一般的なパターンの参考情報</strong>です。実際の開催日・時間・開催有無はシーズンにより大きく変動します。正確な情報は必ず<a href="https://www.fortnite.com/competitive" target="_blank" rel="noopener noreferrer" style={{ color: "#ffd700", textDecoration: "underline" }}>Epic Games 公式競技ページ</a>でご確認ください。
+          キャッシュカップの日程は毎週固定です。FNCS・オープン大会の詳細は
+          <a href="https://www.fortnite.com/competitive" target="_blank" rel="noopener noreferrer"
+            style={{ color: "#ffd700", textDecoration: "underline" }}>公式競技ページ</a>でご確認ください。
         </p>
       </div>
 
-      {/* 週間スケジュール */}
+      {/* 今週の競技日程 */}
       <section style={{ marginBottom: "32px" }}>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", flexWrap: "wrap", gap: "8px" }}>
           <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--primary)", letterSpacing: "1px" }}>
-            📅 週間競技スケジュール（参考）
+            📅 今週の競技日程
           </h2>
+          <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+            {today.getFullYear()}年{today.getMonth() + 1}月
+          </span>
         </div>
 
-        <div className="comp-week">
-          {schedule.map((day) => {
-            const s = kindStyle[day.kind];
-            const isToday = day.dayIndex === todayIndex;
+        <div className="comp-schedule-list">
+          {weekEvents.map(({ dayIndex, kind, label, sublabel }) => {
+            const s = kindStyle[kind];
+            const date = getDateThisWeek(dayIndex);
+            const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const isToday = dayIndex === todayIndex;
+            const isFncs = kind === "fncs";
+
             return (
               <div
-                key={day.dayIndex}
-                className={`comp-day${isToday ? " today" : ""}`}
-                style={{ borderColor: day.kind !== "none" ? s.border + "55" : undefined }}
+                key={dayIndex}
+                className={`comp-schedule-row${isToday ? " today" : ""}${isPast ? " past" : ""}`}
+                style={{ borderColor: !isPast && kind !== "none" ? s.border + "55" : undefined }}
               >
-                <div className={`comp-day-jp${isToday ? " today" : ""}`}>
-                  {day.jp}曜{isToday && <span style={{ marginLeft: "2px", fontSize: "8px" }}>◀</span>}
+                {/* 日付ブロック */}
+                <div className="comp-date-block">
+                  <div className="comp-date-day" style={{ color: isToday ? "var(--primary)" : undefined }}>
+                    {DAYS_JP[dayIndex]}曜
+                  </div>
+                  <div className="comp-date-num" style={{ color: isToday ? "var(--primary)" : undefined }}>
+                    {fmt(date)}
+                  </div>
+                  {isToday && <div className="comp-date-today-badge">今日</div>}
                 </div>
-                <div className="comp-day-name" style={{ color: s.text }}>
-                  {day.label}
-                </div>
-                {day.time && <div className="comp-day-time">{day.time}</div>}
-                {day.sublabel && <div className="comp-day-sub">{day.sublabel}</div>}
-              </div>
-            );
-          })}
-        </div>
 
-        <div className="comp-legend">
-          {(["fncs", "cashcup", "open"] as EventKind[]).map((kind) => {
-            const s = kindStyle[kind];
-            const label = kind === "fncs" ? "FNCS" : kind === "cashcup" ? "キャッシュカップ" : "オープンリーグ";
-            return (
-              <div key={kind} className="comp-legend-item">
-                <div style={{ width: "10px", height: "10px", borderRadius: "3px", backgroundColor: s.border, opacity: 0.8 }} />
-                {label}
+                {/* 仕切り */}
+                <div style={{ width: "1px", alignSelf: "stretch", background: "var(--border)", flexShrink: 0 }} />
+
+                {/* イベント情報 */}
+                <div className="comp-event-info">
+                  <div className="comp-event-title" style={{ color: s.text }}>
+                    {label}
+                  </div>
+                  <div className="comp-event-sub">
+                    {sublabel}
+                    {isFncs && (
+                      <span style={{
+                        marginLeft: "8px",
+                        fontSize: "10px",
+                        color: "#ffd700",
+                        backgroundColor: "#ffd70015",
+                        border: "1px solid #ffd70033",
+                        borderRadius: "10px",
+                        padding: "1px 6px",
+                      }}>
+                        FNCS期間中のみ
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* バッジ */}
+                <span
+                  className="comp-event-badge"
+                  style={{
+                    color: s.border,
+                    backgroundColor: s.badgeBg,
+                    border: `1px solid ${s.border}44`,
+                  }}
+                >
+                  {kind === "cashcup" ? "毎週固定" : kind === "open" ? "毎週" : "期間限定"}
+                </span>
               </div>
             );
           })}
