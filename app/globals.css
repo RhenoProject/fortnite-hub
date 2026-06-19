@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #040b16;
-  --surface: #080f1e;
-  --card: #0c1728;
-  --border: #162236;
-  --primary: #00d4ff;
+  --bg: #000000;
+  --surface: #050d18;
+  --card: #0b1e30;
+  --border: #0f3050;
+  --primary: #00ccf0;
   --accent: #ffd700;
-  --text: #dff0ff;
-  --text-muted: #4d7090;
+  --text: #dff4ff;
+  --text-muted: #3a7894;
 }
 
 * {
@@ -16,7 +16,7 @@
 }
 
 body {
-  background-color: var(--bg);
+  background-color: #000;
   color: var(--text);
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,68 +24,50 @@ body {
   position: relative;
 }
 
-/* グリッド＋スキャンライン */
+/* フォートナイトショップ風 — 中央下からのティールグロー */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-image:
-    linear-gradient(rgba(0, 212, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom,
-      transparent 0%,
-      rgba(0, 212, 255, 0.06) 50%,
-      transparent 100%
-    );
-  background-size: 40px 40px, 40px 40px, 100% 120px;
-  background-position: 0 0, 0 0, 0 0;
-  animation: scan 8s linear infinite;
+  background:
+    radial-gradient(ellipse 170% 80% at 50% 80%,  rgba(0, 190, 235, 0.45) 0%, rgba(0, 90, 155, 0.30) 32%, rgba(0, 25, 75, 0.18) 58%, transparent 78%),
+    radial-gradient(ellipse 70%  60% at 8%   55%,  rgba(0, 55,  175, 0.16) 0%, transparent 65%),
+    radial-gradient(ellipse 70%  60% at 92%  55%,  rgba(0, 55,  175, 0.16) 0%, transparent 65%);
   pointer-events: none;
+  animation: fn-pulse 9s ease-in-out infinite;
 }
 
-@keyframes scan {
-  from { background-position: 0 0, 0 0, 0 -120px; }
-  to   { background-position: 0 0, 0 0, 0 100vh; }
-}
-
-/* ラジアルグロー — マルチカラー光源 */
+/* フォートナイトUI風 斜め細ラインテクスチャ */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(ellipse 110% 50% at 50% -10%, rgba(0, 212, 255, 0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 70% at -5%  50%,  rgba(0,  80, 220, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 70% at 105% 50%,  rgba(120,  0, 255, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 90% 35% at 50%  110%, rgba(0,  40, 120, 0.18) 0%, transparent 60%);
-  animation: ambient-pulse 9s ease-in-out infinite;
+  background-image:
+    repeating-linear-gradient(
+      -55deg,
+      transparent 0px,
+      transparent 24px,
+      rgba(0, 195, 235, 0.028) 24px,
+      rgba(0, 195, 235, 0.028) 25px
+    );
   pointer-events: none;
 }
 
-@keyframes ambient-pulse {
-  0%, 100% { opacity: 0.8; }
-  50%       { opacity: 1; }
+@keyframes fn-pulse {
+  0%, 100% { opacity: 0.82; }
+  50%       { opacity: 1.0; }
 }
 
-/* ヘッダー — グロー強化 */
+/* ヘッダー */
 header {
-  box-shadow: 0 1px 32px rgba(0, 212, 255, 0.12), 0 0 1px rgba(0, 212, 255, 0.4) !important;
-  border-bottom-color: rgba(0, 212, 255, 0.25) !important;
+  box-shadow: 0 1px 24px rgba(0, 200, 240, 0.14), 0 0 1px rgba(0, 200, 240, 0.45) !important;
+  border-bottom-color: rgba(0, 200, 240, 0.22) !important;
   backdrop-filter: blur(12px);
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.35);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 212, 255, 0.6);
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 200, 240, 0.35); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 200, 240, 0.6); }
