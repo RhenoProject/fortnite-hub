@@ -71,7 +71,8 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
     .sort((a, b) => {
       const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime();
       if (dateDiff !== 0) return dateDiff;
-      return b._sp - a._sp;
+      // 同日付の場合はsortingPriority昇順（低い値ほど後から追加された新しい記事）
+      return a._sp - b._sp;
     })
     .map(({ _sp, ...item }) => item);
 }

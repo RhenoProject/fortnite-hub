@@ -12,13 +12,13 @@ interface WeekDay {
 }
 
 const schedule: WeekDay[] = [
-  { dayIndex: 0, jp: "日", kind: "fncs",    label: "FNCS ファイナル",   time: "17:00〜", sublabel: "グランドファイナル" },
-  { dayIndex: 1, jp: "月", kind: "none",    label: "練習日",            sublabel: "公式大会なし" },
-  { dayIndex: 2, jp: "火", kind: "none",    label: "練習日",            sublabel: "公式大会なし" },
-  { dayIndex: 3, jp: "水", kind: "open",    label: "オープンリーグ",    time: "20:00〜", sublabel: "ソロ / デュオ" },
-  { dayIndex: 4, jp: "木", kind: "cashcup", label: "キャッシュカップ",  time: "20:00〜", sublabel: "デュオ部門" },
-  { dayIndex: 5, jp: "金", kind: "cashcup", label: "キャッシュカップ",  time: "20:00〜", sublabel: "ソロ部門" },
-  { dayIndex: 6, jp: "土", kind: "fncs",    label: "FNCS ヒート",       time: "20:00〜", sublabel: "クォリファイア" },
+  { dayIndex: 0, jp: "日", kind: "fncs",    label: "FNCS ファイナル",  sublabel: "グランドファイナル" },
+  { dayIndex: 1, jp: "月", kind: "none",    label: "練習日",           sublabel: "公式大会なし" },
+  { dayIndex: 2, jp: "火", kind: "none",    label: "練習日",           sublabel: "公式大会なし" },
+  { dayIndex: 3, jp: "水", kind: "open",    label: "オープン大会",     sublabel: "ソロ / デュオ" },
+  { dayIndex: 4, jp: "木", kind: "cashcup", label: "キャッシュカップ", sublabel: "デュオ部門" },
+  { dayIndex: 5, jp: "金", kind: "cashcup", label: "キャッシュカップ", sublabel: "ソロ部門" },
+  { dayIndex: 6, jp: "土", kind: "fncs",    label: "FNCS ヒート",      sublabel: "クォリファイア" },
 ];
 
 const kindStyle: Record<EventKind, { border: string; text: string; badgeBg: string }> = {
@@ -43,7 +43,7 @@ const guides = [
     title: "キャッシュカップ",
     full: "Cash Cup",
     badge: "毎週開催",
-    desc: "毎週木・金に開催される賞金制大会。コンテンダー以上のアリーナポイントがあれば参加可能。上位入賞で賞金獲得のチャンス。",
+    desc: "毎週木・金に開催される賞金制大会。一定のランクに到達したプレイヤーが参加可能。上位入賞で賞金獲得のチャンス。",
   },
   {
     kind: "open" as EventKind,
@@ -51,7 +51,7 @@ const guides = [
     title: "オープンリーグ",
     full: "Open League",
     badge: "入門向け",
-    desc: "誰でも参加できる日常大会。アリーナ（ランク戦）と同じ形式で、競技の基礎を練習するのに最適。賞金はないがポイント獲得できる。",
+    desc: "誰でも参加できる日常大会。ランク戦と同じ競技形式で、大会に慣れるための練習に最適。賞金はないが競技経験を積める。",
   },
 ];
 
@@ -170,15 +170,29 @@ export function CompetitionClient() {
         }
       `}</style>
 
+      {/* 免責バナー */}
+      <div style={{
+        background: "#ffd70012",
+        border: "1px solid #ffd70033",
+        borderRadius: "12px",
+        padding: "12px 16px",
+        marginBottom: "24px",
+        display: "flex",
+        gap: "10px",
+        alignItems: "flex-start",
+      }}>
+        <span style={{ fontSize: "16px", flexShrink: 0 }}>⚠️</span>
+        <p style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
+          このページの週間スケジュールは<strong style={{ color: "var(--text)" }}>一般的なパターンの参考情報</strong>です。実際の開催日・時間・開催有無はシーズンにより大きく変動します。正確な情報は必ず<a href="https://www.fortnite.com/competitive" target="_blank" rel="noopener noreferrer" style={{ color: "#ffd700", textDecoration: "underline" }}>Epic Games 公式競技ページ</a>でご確認ください。
+        </p>
+      </div>
+
       {/* 週間スケジュール */}
       <section style={{ marginBottom: "32px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
           <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--primary)", letterSpacing: "1px" }}>
-            📅 週間競技スケジュール
+            📅 週間競技スケジュール（参考）
           </h2>
-          <span style={{ fontSize: "11px", color: "var(--text-muted)", fontStyle: "italic" }}>
-            ※ シーズンにより変動あり
-          </span>
         </div>
 
         <div className="comp-week">
@@ -262,10 +276,10 @@ export function CompetitionClient() {
         <div style={{ background: "var(--card)", borderRadius: "14px", padding: "20px 24px", border: "1px solid var(--border)" }}>
           <ol style={{ paddingLeft: "22px", margin: 0, display: "flex", flexDirection: "column", gap: "14px" }}>
             {[
-              { step: "アリーナモードでポイントを貯める", note: "コンテンダー以上でキャッシュカップ参加資格が得られる" },
+              { step: "ランク戦でランクを上げる", note: "キャッシュカップは一定ランク以上のプレイヤーが参加可能。FNCSのオープン予選は誰でも参加できる" },
               { step: "ゲーム内「競技」タブを開く", note: "エントリーはゲーム内で完結。外部サイトへの登録は不要" },
-              { step: "開催中の大会を選んで参加", note: "開始時間になったら自動でエントリー受付が始まる" },
-              { step: "上位を目指して賞金・限定報酬を獲得", note: "FNCSはキャラクタースキンなど限定コスメティックも" },
+              { step: "開催中の大会を選んで参加", note: "開始時間になったらエントリーして試合を続けてポイントを稼ぐ" },
+              { step: "上位入賞で賞金・限定報酬を獲得", note: "FNCSは限定コスメティック報酬あり。キャッシュカップは賞金獲得のチャンス" },
             ].map(({ step, note }, i) => (
               <li key={i} style={{ fontSize: "14px", fontWeight: "700", color: "var(--text)" }}>
                 {step}
