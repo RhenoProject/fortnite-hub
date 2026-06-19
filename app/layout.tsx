@@ -73,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" style={{ backgroundColor: "var(--bg)" }}>
+    <html lang="ja">
       <head>
         <script
           type="application/ld+json"
