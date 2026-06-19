@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #000000;
-  --surface: #050d18;
-  --card: #0b1e30;
-  --border: #0f3050;
+  --bg: #042238;
+  --surface: #072e4a;
+  --card: #0c3d5e;
+  --border: #145070;
   --primary: #00ccf0;
   --accent: #ffd700;
-  --text: #dff4ff;
-  --text-muted: #3a7894;
+  --text: #dff6ff;
+  --text-muted: #4a96b4;
 }
 
 * {
@@ -16,7 +16,7 @@
 }
 
 body {
-  background-color: #000;
+  background-color: var(--bg);
   color: var(--text);
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -31,9 +31,9 @@ body::before {
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(ellipse 170% 80% at 50% 80%,  rgba(0, 190, 235, 0.45) 0%, rgba(0, 90, 155, 0.30) 32%, rgba(0, 25, 75, 0.18) 58%, transparent 78%),
-    radial-gradient(ellipse 70%  60% at 8%   55%,  rgba(0, 55,  175, 0.16) 0%, transparent 65%),
-    radial-gradient(ellipse 70%  60% at 92%  55%,  rgba(0, 55,  175, 0.16) 0%, transparent 65%);
+    radial-gradient(ellipse 170% 85% at 50% 80%, rgba(0, 200, 245, 0.55) 0%, rgba(0, 110, 165, 0.35) 32%, transparent 65%),
+    radial-gradient(ellipse 75%  60% at 8%  55%, rgba(0,  70, 180, 0.20) 0%, transparent 65%),
+    radial-gradient(ellipse 75%  60% at 92% 55%, rgba(0,  70, 180, 0.20) 0%, transparent 65%);
   pointer-events: none;
   animation: fn-pulse 9s ease-in-out infinite;
 }
@@ -49,21 +49,21 @@ body::after {
       -55deg,
       transparent 0px,
       transparent 24px,
-      rgba(0, 195, 235, 0.028) 24px,
-      rgba(0, 195, 235, 0.028) 25px
+      rgba(0, 200, 245, 0.04) 24px,
+      rgba(0, 200, 245, 0.04) 25px
     );
   pointer-events: none;
 }
 
 @keyframes fn-pulse {
-  0%, 100% { opacity: 0.82; }
+  0%, 100% { opacity: 0.85; }
   50%       { opacity: 1.0; }
 }
 
 /* ヘッダー */
 header {
-  box-shadow: 0 1px 24px rgba(0, 200, 240, 0.14), 0 0 1px rgba(0, 200, 240, 0.45) !important;
-  border-bottom-color: rgba(0, 200, 240, 0.22) !important;
+  box-shadow: 0 1px 24px rgba(0, 200, 240, 0.18), 0 0 1px rgba(0, 200, 240, 0.50) !important;
+  border-bottom-color: rgba(0, 200, 240, 0.25) !important;
   backdrop-filter: blur(12px);
 }
 

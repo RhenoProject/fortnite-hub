@@ -309,8 +309,9 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
 
   const tabStyle = (key: string): React.CSSProperties => ({
     padding: "6px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
-    cursor: "pointer", border: "none",
-    backgroundColor: filter === key ? "var(--primary)" : "var(--card)",
+    cursor: "pointer",
+    border: filter === key ? "none" : "1px solid rgba(0, 195, 240, 0.18)",
+    backgroundColor: filter === key ? "var(--primary)" : "rgba(0, 195, 240, 0.07)",
     color: filter === key ? "#0a0f1a" : "var(--text-muted)",
     transition: "all 0.15s", whiteSpace: "nowrap" as const, flexShrink: 0,
   });
