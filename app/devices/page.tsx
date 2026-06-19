@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DeviceImage } from "@/components/DeviceImage";
 
+const parsePrice = (price: string) => parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
+
 export const metadata: Metadata = {
   title: "おすすめゲーミングデバイス | フォトナHub",
   description: "フォートナイトをもっと楽しむためのおすすめゲーミングデバイスを紹介。マウス・キーボード・ヘッドセット・イヤホン・マイク・モニター・マウスパッドなど厳選アイテム。",
@@ -160,7 +162,7 @@ export default function DevicesPage() {
             <div className="category-title">{category.category}</div>
             <div className="category-desc">{category.description}</div>
             <div className="device-grid">
-              {category.items.map((item) => (
+              {[...category.items].sort((a, b) => parsePrice(a.price) - parsePrice(b.price)).map((item) => (
                 <div key={item.name} className="device-card">
                   <DeviceImage
                     asin={item.asin}
