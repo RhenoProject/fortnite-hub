@@ -5,6 +5,10 @@
       "schedule": "5 0 * * *"
     },
     {
+      "path": "/api/push/send-noon",
+      "schedule": "0 3 * * *"
+    },
+    {
       "path": "/api/x/post-shop",
       "schedule": "15 0 * * *"
     },
