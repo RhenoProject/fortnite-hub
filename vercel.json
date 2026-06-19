@@ -15,7 +15,7 @@
     },
     {
       "path": "/api/push/send-noon",
-      "schedule": "0 3 * * *"
+      "schedule": "0 13 * * *"
     },
     {
       "path": "/api/x/post-shop",
