@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 const img = (asin: string) =>
-  `https://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=JP&ASIN=${asin}&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=SL250`;
+  `https://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=JP&ASIN=${asin}&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL250_&tag=yoshidashuya0-22`;
 
 const devices: {
   category: string;
