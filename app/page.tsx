@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
     timeZone: "Asia/Tokyo",
   });
   const title = `フォートナイト アイテムショップ 今日 ${today} | フォトナHub`;
-  const description = "フォートナイトの今日のアイテムショップを毎日更新。注目スキン・バンドル・エモートをいち早くチェック。クリエイターコード RHENO を使って応援してね！";
+  const description = "フォートナイトの今日のアイテムショップを毎日更新。注目スキン・バンドル・エモートをいち早くチェック。";
   return {
     title,
     description,
@@ -49,28 +49,31 @@ export default async function ShopPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
-      {/* クリエイターコードバナー */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        backgroundColor: "#ffd70015",
-        border: "1px solid #ffd70055",
-        borderRadius: "12px",
-        padding: "12px 16px",
-        marginBottom: "20px",
-        flexWrap: "wrap",
-      }}>
-        <span style={{ fontSize: "20px" }}>⭐</span>
-        <div style={{ flex: 1, minWidth: "200px" }}>
-          <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "2px" }}>
-            アイテムを買うときはコードを使って応援してくれると嬉しいです！
-          </p>
-          <p style={{ fontSize: "22px", fontWeight: "900", color: "#ffd700", letterSpacing: "3px" }}>
-            RHENO
-          </p>
+      {/* デバイスページ誘導バナー */}
+      <a href="/devices" style={{ textDecoration: "none", display: "block", marginBottom: "20px" }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          backgroundColor: "#00c8ff10",
+          border: "1px solid #00c8ff40",
+          borderRadius: "12px",
+          padding: "12px 16px",
+          flexWrap: "wrap",
+          cursor: "pointer",
+          transition: "background-color 0.15s",
+        }}>
+          <span style={{ fontSize: "24px" }}>🎮</span>
+          <div style={{ flex: 1, minWidth: "200px" }}>
+            <p style={{ fontSize: "13px", fontWeight: "700", color: "var(--text)", marginBottom: "2px" }}>
+              フォートナイト向けおすすめゲーミングデバイス
+            </p>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+              マウス・モニター・マウスパッドなど51商品を厳選掲載 →
+            </p>
+          </div>
         </div>
-      </div>
+      </a>
 
       <div style={{ marginBottom: "20px" }}>
         <h1 style={{ fontSize: "22px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "4px" }}>
