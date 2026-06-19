@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/health-check",
+      "schedule": "0 15 * * *"
+    },
+    {
       "path": "/api/push/send",
       "schedule": "5 0 * * *"
     },
