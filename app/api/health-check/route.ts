@@ -40,16 +40,20 @@ async function runChecks(): Promise<CheckResult[]> {
     detail: vapidOk ? "VAPID鍵OK" : "VAPID鍵が未設定",
   });
 
-  // 4. Firebase設定
-  const firebaseOk =
-    !!process.env.FIREBASE_PROJECT_ID &&
-    !!process.env.FIREBASE_CLIENT_EMAIL &&
-    !!process.env.FIREBASE_PRIVATE_KEY;
-  results.push({
-    name: "Firebase設定",
-    ok: firebaseOk,
-    detail: firebaseOk ? "認証情報OK" : "認証情報が未設定",
-  });
+  // 4. Firebase設定（GOOGLE_SERVICE_ACCOUNT_KEY がJSON文字列として設定されているか）
+  let firebaseOk = false;
+  let firebaseDetail = "GOOGLE_SERVICE_ACCOUNT_KEYが未設定";
+  try {
+    const raw = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      firebaseOk = !!parsed.project_id && !!parsed.client_email && !!parsed.private_key;
+      firebaseDetail = firebaseOk ? `認証情報OK (${parsed.project_id})` : "JSONのキーが不足";
+    }
+  } catch {
+    firebaseDetail = "GOOGLE_SERVICE_ACCOUNT_KEYのJSON解析失敗";
+  }
+  results.push({ name: "Firebase設定", ok: firebaseOk, detail: firebaseDetail });
 
   // 5. Discord Webhook設定
   const discordOk = !!process.env.DISCORD_WEBHOOK_URL;
