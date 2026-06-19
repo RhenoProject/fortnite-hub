@@ -21,6 +21,45 @@ body {
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  position: relative;
+}
+
+/* グリッドパターン — ホログラム HUD 風 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(0, 200, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+/* ラジアルグロー — 光源レイヤー */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 130% 55% at 50% -8%, rgba(0, 200, 255, 0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 35% at 100% 100%, rgba(80, 20, 220, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 0% 80%, rgba(0, 100, 180, 0.06) 0%, transparent 60%);
+  animation: ambient-pulse 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ambient-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 1; }
+}
+
+/* ヘッダー下部のグロー */
+header {
+  box-shadow: 0 1px 28px rgba(0, 200, 255, 0.07) !important;
+  border-bottom-color: rgba(0, 200, 255, 0.18) !important;
 }
 
 ::-webkit-scrollbar {
@@ -30,6 +69,9 @@ body {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: rgba(0, 200, 255, 0.3);
   border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 200, 255, 0.5);
 }
