@@ -7,7 +7,7 @@ const navItems = [
   { href: "/", label: "ショップ", emoji: "🛍️" },
   { href: "/news", label: "ニュース", emoji: "📰" },
   { href: "/updates", label: "アプデ・競技", emoji: "🏆" },
-  { href: "/devices", label: "デバイス", emoji: "🎮" },
+  // デバイスページ: アフィリエイトリンク登録後に再表示
 ];
 
 export function Header() {

@@ -1,7 +1,7 @@
 # フォトナHub — タスク管理
 
 > CTO: ジョブズ（Claude）｜オーナー: しゅうや
-> 最終更新: 2026-06-19（AI_CTO.mdフレームワーク導入・Affiliate事業責任者兼任確定）
+> 最終更新: 2026-06-19（昼12時プッシュ通知追加・背景近未来化・Cron GET修正）
 
 ---
 
@@ -51,6 +51,9 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] 管理ドキュメント整備（PROJECT_VISION.md / ROADMAP.md / AI_TASKS.md / LEARNINGS.md / DAILY_REPORT.md）— 2026-06-19
 - [x] 自立作業モード設定（.claude/settings.json・defaultMode:auto・Level1-2自動実行）— 2026-06-19
 - [x] AFFILIATE_STRATEGY.md 策定・Affiliate事業責任者をジョブズが兼任確定 — 2026-06-19
+- [x] Cron GET対応修正（push/send・x/post-shop）— 2026-06-19
+- [x] 背景を近未来デザインに変更（グリッド・スキャンライン・マルチカラーグロー）— 2026-06-19
+- [x] 昼12時プッシュ通知追加（/api/push/send-noon・6/21まで期限付き）— 2026-06-19
 
 ---
 
