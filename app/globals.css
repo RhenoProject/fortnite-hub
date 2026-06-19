@@ -36,6 +36,27 @@ html {
     );
 }
 
+@media (max-width: 639px) {
+  html {
+    background-color: #002e50;
+    background-image:
+      repeating-linear-gradient(
+        -55deg,
+        transparent 0px,
+        transparent 22px,
+        rgba(0, 200, 245, 0.06) 22px,
+        rgba(0, 200, 245, 0.06) 23px
+      ),
+      linear-gradient(
+        160deg,
+        #004a6e 0%,
+        #003a5c 40%,
+        #002c4c 70%,
+        #001e3a 100%
+      );
+  }
+}
+
 body {
   background: transparent;
   color: var(--text);
