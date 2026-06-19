@@ -30,7 +30,7 @@ async function fetchTodayShop(): Promise<Map<string, string>> {
   }
 }
 
-export async function POST(req: NextRequest) {
+async function handleRequest(req: NextRequest) {
   if (CRON_SECRET && req.headers.get("authorization") !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -84,3 +84,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ sent, failed, removed: removes.length });
 }
+
+export const GET = handleRequest;
+export const POST = handleRequest;

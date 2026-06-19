@@ -90,7 +90,7 @@ function buildTweetText(entries: Awaited<ReturnType<typeof fetchShop>>): string 
   return lines.join("\n");
 }
 
-export async function POST(req: NextRequest) {
+async function handleRequest(req: NextRequest) {
   if (
     process.env.CRON_SECRET &&
     req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
@@ -136,3 +136,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
+
+export const GET = handleRequest;
+export const POST = handleRequest;
