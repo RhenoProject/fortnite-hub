@@ -1,7 +1,7 @@
 # フォトナHub — タスク管理
 
 > CTO: ジョブズ（Claude）｜オーナー: しゅうや
-> 最終更新: 2026-06-18（デバイスページ作成・Discord自動投稿修正・PageRefresher追加）
+> 最終更新: 2026-06-19（AI_CTO.mdフレームワーク導入・Affiliate事業責任者兼任確定）
 
 ---
 
@@ -47,6 +47,10 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] P1-7: /info ページ作成（機能一覧・更新履歴タイムライン・今後の予定）ナビ非表示・URL直打ちでアクセス可— 2026-06-16
 - [x] P1-6 X自動投稿インフラ（/api/x/post-shop + OAuth 1.0a 実装・毎日9:15 JST Cron設定済み）API鍵待ち— 2026-06-16
 - [x] 9:05 JST push通知送信後にショップページキャッシュを即時破棄（revalidatePath）— 2026-06-16
+- [x] AI_CTO.md フレームワーク策定・fortnite-hub/ に保存 — 2026-06-19
+- [x] 管理ドキュメント整備（PROJECT_VISION.md / ROADMAP.md / AI_TASKS.md / LEARNINGS.md / DAILY_REPORT.md）— 2026-06-19
+- [x] 自立作業モード設定（.claude/settings.json・defaultMode:auto・Level1-2自動実行）— 2026-06-19
+- [x] AFFILIATE_STRATEGY.md 策定・Affiliate事業責任者をジョブズが兼任確定 — 2026-06-19
 
 ---
 
