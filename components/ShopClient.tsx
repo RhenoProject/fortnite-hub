@@ -61,11 +61,11 @@ function ItemCard({
             aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
             style={{
               position: "absolute", top: "6px", right: "6px",
-              background: wished ? "rgba(255,0,80,0.75)" : "rgba(0,0,0,0.55)",
+              background: "rgba(0,0,0,0.55)",
               border: "none", borderRadius: "50%",
               width: "34px", height: "34px", fontSize: "16px",
               cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "transform 0.15s, background 0.15s",
+              transition: "transform 0.15s",
             }}
           >
             {wished ? "❤️" : "🤍"}
@@ -129,7 +129,7 @@ function SearchResultCard({
           aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
           style={{
             position: "absolute", top: "6px", right: "6px",
-            background: wished ? "rgba(255,0,80,0.75)" : "rgba(0,0,0,0.55)",
+            background: "rgba(0,0,0,0.55)",
             border: "none", borderRadius: "50%",
             width: "34px", height: "34px", fontSize: "16px",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
