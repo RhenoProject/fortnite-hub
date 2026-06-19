@@ -46,7 +46,7 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       title: m.title,
       body: m.body,
       image: m.image || '',
-      date: m.date || stw?.date ?? '',
+      date: m.date || (stw?.date ?? ''),
       category: 'stw' as NewsCategory,
     }));
 
@@ -58,7 +58,7 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       title: m.title,
       body: m.body,
       image: m.tileImage || m.image || '',
-      date: m.date || creative?.date ?? '',
+      date: m.date || (creative?.date ?? ''),
       category: 'creative' as NewsCategory,
     }));
 
