@@ -60,7 +60,7 @@ export default async function ShopPage() {
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
-            <span style={{ fontSize: "30px", flexShrink: 0, lineHeight: 1 }}>🖱️</span>
+            <span style={{ fontSize: "30px", flexShrink: 0, lineHeight: 1 }}>🔥</span>
             <div>
               <div style={{ fontSize: "15px", fontWeight: 900, color: "#dff6ff", marginBottom: "4px", letterSpacing: "0.3px" }}>
                 フォートナイト向け おすすめゲーミングデバイス
