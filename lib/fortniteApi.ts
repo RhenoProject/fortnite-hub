@@ -28,18 +28,21 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
   const json = await response.json();
   const { br, stw, creative } = json.data ?? {};
 
-  const brItems: NewsItem[] = (br?.motds ?? [])
+  type WithPriority = NewsItem & { _sp: number };
+
+  const brItems: WithPriority[] = (br?.motds ?? [])
     .filter((m: any) => !m.hidden && hasJapanese(m.title || m.body || ''))
-    .map((m: any) => ({
+    .map((m: any, i: number) => ({
       id: `br-${m.id}`,
       title: m.title,
       body: m.body,
       image: m.tileImage || m.image || '',
       date: m.date || br.date,
       category: 'br' as NewsCategory,
+      _sp: m.sortingPriority ?? (1000 - i),
     }));
 
-  const stwItems: NewsItem[] = (stw?.messages ?? [])
+  const stwItems: WithPriority[] = (stw?.messages ?? [])
     .filter((m: any) => hasJapanese(m.title || m.body || ''))
     .map((m: any, i: number) => ({
       id: `stw-${i}`,
@@ -48,10 +51,11 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       image: m.image || '',
       date: m.date || (stw?.date ?? ''),
       category: 'stw' as NewsCategory,
+      _sp: m.sortingPriority ?? (1000 - i),
     }));
 
   const creativeRaw = creative?.motds ?? creative?.messages ?? [];
-  const creativeItems: NewsItem[] = creativeRaw
+  const creativeItems: WithPriority[] = creativeRaw
     .filter((m: any) => !m.hidden && hasJapanese(m.title || m.body || ''))
     .map((m: any, i: number) => ({
       id: `creative-${m.id ?? i}`,
@@ -60,10 +64,16 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       image: m.tileImage || m.image || '',
       date: m.date || (creative?.date ?? ''),
       category: 'creative' as NewsCategory,
+      _sp: m.sortingPriority ?? (1000 - i),
     }));
 
   return [...brItems, ...stwItems, ...creativeItems]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (dateDiff !== 0) return dateDiff;
+      return b._sp - a._sp;
+    })
+    .map(({ _sp, ...item }) => item);
 }
 
 export async function fetchGameVersion(): Promise<GameVersion | null> {
