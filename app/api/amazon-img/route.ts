@@ -25,26 +25,20 @@ async function proxyImage(url: string, ms = 4000): Promise<NextResponse> {
   });
 }
 
-async function extractImageUrlFromHtml(html: string): Promise<string | null> {
+function extractImageUrl(html: string): string | null {
   const match =
-    // hiRes — 最高画質（最優先）
     html.match(/"hiRes"\s*:\s*"(https:\/\/m\.media-amazon\.com\/images\/I\/[^"]+)"/) ||
-    // large
     html.match(/"large"\s*:\s*"(https:\/\/m\.media-amazon\.com\/images\/I\/[^"]+)"/) ||
-    // data-old-hires属性
-    html.match(/data-old-hires="(https:\/\/[^"]+)"/) ||
-    // landingImage src
+    html.match(/data-old-hires="(https:\/\/m\.media-amazon\.com\/[^"]+)"/) ||
     html.match(/id="landingImage"[^>]+src="(https:\/\/m\.media-amazon\.com\/[^"]+)"/) ||
-    // og:image
-    html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
-    html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i);
+    html.match(/<meta[^>]+property="og:image"[^>]+content="(https:\/\/m\.media-amazon\.com\/[^"]+)"/i) ||
+    html.match(/<meta[^>]+content="(https:\/\/m\.media-amazon\.com\/[^"]+)"[^>]+property="og:image"/i);
 
   if (!match?.[1]) return null;
-  // _AC_SL1500_ で最高画質に統一
   return match[1].replace(/\._[A-Z0-9_,]+_\./g, "._AC_SL1500_.");
 }
 
-async function tryPageScrape(asin: string, url: string, ua: string): Promise<NextResponse> {
+async function scrapeHiRes(url: string, ua: string): Promise<NextResponse> {
   const res = await withTimeout(
     fetch(url, {
       headers: {
@@ -56,23 +50,12 @@ async function tryPageScrape(asin: string, url: string, ua: string): Promise<Nex
     5000
   );
   if (!res.ok) throw new Error("page_fail");
-
   const html = await res.text();
+  if (html.length < 5000 || html.includes("api-services-support@amazon.com")) throw new Error("captcha");
 
-  // ボット検知ページはスキップ
-  if (
-    html.includes("api-services-support@amazon.com") ||
-    html.includes("robot check") ||
-    html.includes("Type the characters") ||
-    html.length < 5000
-  ) {
-    throw new Error("captcha");
-  }
-
-  const imageUrl = await extractImageUrlFromHtml(html);
+  const imageUrl = extractImageUrl(html);
   if (!imageUrl) throw new Error("no_match");
-
-  return proxyImage(imageUrl);
+  return proxyImage(imageUrl, 4000);
 }
 
 export async function GET(request: Request) {
@@ -83,31 +66,24 @@ export async function GET(request: Request) {
     return new NextResponse(null, { status: 400 });
   }
 
-  const desktopUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
-  const mobileUA  = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
+  const DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
+  const MOBILE_UA  = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
 
-  // Strategy 1: PCページでhiRes取得（最高画質）
+  // Strategy 1: PCとモバイルのAmazonページを並列スクレイピング → hiRes最高画質
   try {
-    return await tryPageScrape(asin, `https://www.amazon.co.jp/dp/${asin}`, desktopUA);
+    return await Promise.any([
+      scrapeHiRes(`https://www.amazon.co.jp/dp/${asin}`, DESKTOP_UA),
+      scrapeHiRes(`https://www.amazon.co.jp/gp/aw/d/${asin}`, MOBILE_UA),
+    ]);
   } catch {}
 
-  // Strategy 2: モバイルページ（ボット検知が異なる場合がある）
-  try {
-    return await tryPageScrape(asin, `https://www.amazon.co.jp/gp/aw/d/${asin}`, mobileUA);
-  } catch {}
-
-  // Strategy 3: 直接CDN URL（フォールバック）
-  const cdnPatterns = [
+  // Strategy 2: 直接CDN（フォールバック）
+  for (const url of [
     `https://m.media-amazon.com/images/P/${asin}.09._AC_SL1500_.jpg`,
     `https://m.media-amazon.com/images/P/${asin}.01._AC_SL1500_.jpg`,
-    `https://m.media-amazon.com/images/P/${asin}.09._SL1500_.jpg`,
-    `https://images-na.ssl-images-amazon.com/images/P/${asin}.01.L.jpg`,
-  ];
-
-  for (const url of cdnPatterns) {
-    try {
-      return await proxyImage(url, 3000);
-    } catch {}
+    `https://m.media-amazon.com/images/P/${asin}.09._SL500_.jpg`,
+  ]) {
+    try { return await proxyImage(url, 3000); } catch {}
   }
 
   return new NextResponse(null, { status: 404 });

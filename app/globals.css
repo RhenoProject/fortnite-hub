@@ -18,21 +18,21 @@
 /* 背景グラデーション+斜めラインをhtmlに直接設定（iOS Safari対応） */
 html {
   min-height: 100%;
-  background-color: #0070a8;
+  background-color: #003d62;
   background-image:
     repeating-linear-gradient(
       -55deg,
       transparent 0px,
       transparent 22px,
-      rgba(0, 200, 245, 0.07) 22px,
-      rgba(0, 200, 245, 0.07) 23px
+      rgba(0, 200, 245, 0.06) 22px,
+      rgba(0, 200, 245, 0.06) 23px
     ),
     linear-gradient(
       160deg,
-      #0090cc 0%,
-      #0078b8 40%,
-      #0068a8 70%,
-      #005a98 100%
+      #005a82 0%,
+      #004870 40%,
+      #003a5e 70%,
+      #002e4e 100%
     );
 }
 
