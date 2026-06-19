@@ -71,32 +71,29 @@ export function Header() {
           border-color: transparent;
         }
 
-        /* スマホ: ロゴ上・ナビ下の縦積みレイアウト */
+        /* スマホ: ロゴ上・ナビ折り返し */
         @media (max-width: 639px) {
           .header-inner {
             flex-direction: column;
             align-items: flex-start;
-            padding: 10px 16px 0;
+            padding: 10px 12px 0;
             gap: 8px;
           }
           .site-logo-name {
-            font-size: 22px;
+            font-size: 20px;
           }
           .top-nav {
             width: 100%;
-            overflow-x: auto;
+            flex-wrap: wrap;
+            gap: 6px;
             padding-bottom: 10px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-          }
-          .top-nav::-webkit-scrollbar {
-            display: none;
           }
           .nav-link {
-            padding: 7px 14px;
-            font-size: 13px;
-            min-height: 38px;
-            flex-shrink: 0;
+            flex: 1 0 auto;
+            justify-content: center;
+            padding: 7px 10px;
+            font-size: 12px;
+            min-height: 36px;
           }
         }
       `}</style>
