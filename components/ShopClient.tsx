@@ -332,6 +332,49 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         }
         .filter-tabs::-webkit-scrollbar { display: none; }
 
+        /* ほしいものリストバナー */
+        .wl-banner {
+          display: flex; align-items: center; gap: 12px;
+          border-radius: 14px; padding: 14px 16px;
+          margin-bottom: 16px; width: 100%; cursor: pointer;
+          text-align: left; border-width: 1.5px; border-style: solid;
+          transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .wl-banner.in-shop {
+          background: linear-gradient(135deg, rgba(0,220,90,0.13) 0%, rgba(0,180,70,0.06) 100%);
+          border-color: rgba(0,220,90,0.50);
+          animation: wl-glow 2.8s ease-in-out infinite;
+        }
+        .wl-banner.waiting {
+          background: linear-gradient(135deg, rgba(200,20,70,0.12) 0%, rgba(150,0,50,0.06) 100%);
+          border-color: rgba(255,60,100,0.40);
+        }
+        .wl-banner:hover { box-shadow: 0 0 22px rgba(0,200,255,0.14); border-color: rgba(0,200,255,0.50); }
+        .wl-banner-emoji { font-size: 26px; flex-shrink: 0; line-height: 1; }
+        .wl-banner-body { flex: 1; min-width: 0; }
+        .wl-banner-title { font-size: 14px; font-weight: 800; line-height: 1.4; margin-bottom: 2px; }
+        .wl-banner-sub { font-size: 11px; color: var(--text-muted); }
+        .wl-banner-cta {
+          font-size: 12px; font-weight: 800; padding: 7px 14px;
+          border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+        }
+        .wl-banner.in-shop .wl-banner-cta {
+          background: #00d860; color: #001a08;
+        }
+        .wl-banner.waiting .wl-banner-cta {
+          background: rgba(255,60,100,0.18); color: #ff6090;
+          border: 1px solid rgba(255,60,100,0.35);
+        }
+        @keyframes wl-glow {
+          0%, 100% { box-shadow: 0 0 8px rgba(0,220,90,0.15); }
+          50%       { box-shadow: 0 0 22px rgba(0,220,90,0.32); }
+        }
+        @media (max-width: 480px) {
+          .wl-banner { gap: 10px; padding: 12px 14px; }
+          .wl-banner-title { font-size: 13px; }
+          .wl-banner-cta { display: none; }
+        }
+
         /* ほしいものリストモーダル */
         .wishlist-overlay {
           position: fixed; inset: 0; z-index: 1000;
@@ -414,34 +457,31 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
       {wishCount > 0 && (
         <button
           onClick={() => setShowWishlist(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: "10px",
-            background: inShopCount > 0
-              ? "linear-gradient(135deg, rgba(0,200,80,0.15) 0%, rgba(0,200,80,0.05) 100%)"
-              : "rgba(255,0,80,0.08)",
-            border: inShopCount > 0 ? "1px solid rgba(0,200,80,0.4)" : "1px solid rgba(255,0,80,0.25)",
-            borderRadius: "12px", padding: "12px 16px", marginBottom: "16px",
-            width: "100%", cursor: "pointer", textAlign: "left",
-          }}
+          className={`wl-banner ${inShopCount > 0 ? "in-shop" : "waiting"}`}
         >
-          <span style={{ fontSize: "22px", flexShrink: 0 }}>{inShopCount > 0 ? "🛍️" : "❤️"}</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <span className="wl-banner-emoji">{inShopCount > 0 ? "🛍️" : "❤️"}</span>
+          <div className="wl-banner-body">
             {inShopCount > 0 ? (
               <>
-                <p style={{ fontSize: "13px", fontWeight: "800", color: "#00d860", marginBottom: "2px" }}>
+                <div className="wl-banner-title" style={{ color: "#00d860" }}>
                   ほしいスキンが {inShopCount}件 今日のショップに出ています！
-                </p>
-                <p style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                  残り {wishCount - inShopCount}件 は入荷待ち
-                </p>
+                </div>
+                <div className="wl-banner-sub">
+                  {wishCount - inShopCount > 0 ? `残り ${wishCount - inShopCount}件 は入荷待ち` : "リストのアイテムがすべて入荷中"}
+                </div>
               </>
             ) : (
-              <p style={{ fontSize: "13px", fontWeight: "700", color: "var(--text)" }}>
-                <b style={{ color: "var(--primary)" }}>{wishCount}件</b> ほしいものリストに登録中 — 入荷待ち
-              </p>
+              <>
+                <div className="wl-banner-title" style={{ color: "var(--text)" }}>
+                  <span style={{ color: "#ff6090" }}>{wishCount}件</span> ほしいものリストに登録中
+                </div>
+                <div className="wl-banner-sub">今日は入荷なし — 入荷時にプッシュ通知でお知らせ</div>
+              </>
             )}
           </div>
-          <span style={{ fontSize: "11px", color: "var(--primary)", whiteSpace: "nowrap", flexShrink: 0 }}>確認 →</span>
+          <span className="wl-banner-cta">
+            {inShopCount > 0 ? "今すぐ確認 →" : "リストを見る →"}
+          </span>
         </button>
       )}
 
