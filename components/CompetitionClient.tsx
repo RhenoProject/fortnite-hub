@@ -62,13 +62,6 @@ const guides = [
 
 const links = [
   {
-    href: "https://www.fortnite.com/competitive",
-    title: "公式競技ページ",
-    desc: "現在の開催スケジュール・賞金詳細・参加条件を確認",
-    badge: "Epic公式",
-    color: "#ffd700",
-  },
-  {
     href: "https://tracker.gg/fortnite",
     title: "Fortnite Tracker",
     desc: "プレイヤー名で自分の統計・ランク・KDを確認",
@@ -185,24 +178,34 @@ export function CompetitionClient() {
         }
       `}</style>
 
-      {/* 免責バナー */}
-      <div style={{
-        background: "#ffd70012",
-        border: "1px solid #ffd70033",
-        borderRadius: "12px",
-        padding: "12px 16px",
-        marginBottom: "24px",
-        display: "flex",
-        gap: "10px",
-        alignItems: "flex-start",
-      }}>
-        <span style={{ fontSize: "16px", flexShrink: 0 }}>⚠️</span>
-        <p style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
-          キャッシュカップの日程は毎週固定です。FNCS・オープン大会の詳細は
-          <a href="https://www.fortnite.com/competitive" target="_blank" rel="noopener noreferrer"
-            style={{ color: "#ffd700", textDecoration: "underline" }}>公式競技ページ</a>でご確認ください。
-        </p>
-      </div>
+      {/* 公式ページ誘導リンク */}
+      <a
+        href="https://www.fortnite.com/competitive"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "12px",
+          padding: "14px 18px",
+          marginBottom: "24px",
+          background: "var(--card)",
+          border: "1px solid #ffd70044",
+          borderRadius: "12px",
+          textDecoration: "none",
+        }}
+      >
+        <div>
+          <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text)", marginBottom: "2px" }}>
+            Epic Games 公式競技ページ
+          </div>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+            最新の開催日程・賞金・参加条件はこちらで確認
+          </div>
+        </div>
+        <span style={{ fontSize: "20px", color: "#ffd700", flexShrink: 0 }}>→</span>
+      </a>
 
       {/* 今週の競技日程 */}
       <section style={{ marginBottom: "32px" }}>
