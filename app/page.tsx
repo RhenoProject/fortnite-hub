@@ -50,85 +50,34 @@ export default async function ShopPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
       {/* デバイスページ誘導バナー */}
-      <style>{`
-        .device-banner {
-          display: block;
-          text-decoration: none;
-          margin-bottom: 20px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, #004f7a 0%, #003560 50%, #002a50 100%);
-          border: 1px solid #00c8ff55;
-          box-shadow: 0 0 18px rgba(0,200,255,0.10);
-          padding: 16px 20px;
-          transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .device-banner:hover {
-          border-color: #00c8ffaa;
-          box-shadow: 0 0 28px rgba(0,200,255,0.22);
-        }
-        .device-banner-inner {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-        .device-banner-left {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          flex: 1;
-          min-width: 0;
-        }
-        .device-banner-icons {
-          font-size: 28px;
-          flex-shrink: 0;
-          line-height: 1;
-        }
-        .device-banner-title {
-          font-size: 15px;
-          font-weight: 900;
-          color: var(--text);
-          letter-spacing: 0.3px;
-          margin-bottom: 4px;
-        }
-        .device-banner-cats {
-          font-size: 12px;
-          color: var(--text-muted);
-        }
-        .device-banner-cta {
-          font-size: 13px;
-          font-weight: 800;
-          color: #0a0f1a;
-          background: var(--primary);
-          border-radius: 20px;
-          padding: 8px 18px;
-          white-space: nowrap;
-          flex-shrink: 0;
-          transition: opacity 0.15s;
-        }
-        .device-banner:hover .device-banner-cta {
-          opacity: 0.85;
-        }
-        @media (max-width: 480px) {
-          .device-banner-cta { width: 100%; text-align: center; }
-          .device-banner-title { font-size: 14px; }
-        }
-      `}</style>
-      <a href="/devices" className="device-banner">
-        <div className="device-banner-inner">
-          <div className="device-banner-left">
-            <div className="device-banner-icons">🖱️</div>
+      <a href="/devices" style={{
+        display: "block", textDecoration: "none", marginBottom: "20px",
+        borderRadius: "14px",
+        background: "linear-gradient(135deg, #004f7a 0%, #003560 50%, #002a50 100%)",
+        border: "1.5px solid #00c8ff66",
+        boxShadow: "0 0 20px rgba(0,200,255,0.15)",
+        padding: "16px 20px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: "30px", flexShrink: 0, lineHeight: 1 }}>🖱️</span>
             <div>
-              <div className="device-banner-title">
+              <div style={{ fontSize: "15px", fontWeight: 900, color: "#dff6ff", marginBottom: "4px", letterSpacing: "0.3px" }}>
                 フォートナイト向け おすすめゲーミングデバイス
               </div>
-              <div className="device-banner-cats">
+              <div style={{ fontSize: "12px", color: "#5aa8c8" }}>
                 マウス・モニター・ヘッドセット・キーボードなど 51商品を厳選
               </div>
             </div>
           </div>
-          <div className="device-banner-cta">今すぐチェック →</div>
+          <div style={{
+            fontSize: "13px", fontWeight: 800,
+            color: "#0a0f1a", background: "#00ccf0",
+            borderRadius: "20px", padding: "9px 20px",
+            whiteSpace: "nowrap", flexShrink: 0,
+          }}>
+            今すぐチェック →
+          </div>
         </div>
       </a>
 
