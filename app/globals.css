@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #010d1a;
+  --bg: #000;
   --surface: #061825;
   --card: #082030;
   --border: #0d3348;
@@ -16,12 +16,32 @@
 }
 
 body {
-  background-color: #010d1a;
+  background-color: transparent;
   color: var(--text);
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   position: relative;
+}
+
+/* フォートナイトショップ風 — 中央に強い明るいティールグロー */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 200% 75% at 50% 55%,
+      rgba(0, 160, 210, 0.95) 0%,
+      rgba(0, 110, 170, 0.82) 22%,
+      rgba(0,  60, 120, 0.65) 42%,
+      rgba(0,  22,  65, 0.40) 60%,
+      transparent 80%
+    ),
+    radial-gradient(ellipse 80% 55% at 10% 50%, rgba(0, 55, 160, 0.30) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 55% at 90% 50%, rgba(0, 55, 160, 0.30) 0%, transparent 65%);
+  pointer-events: none;
+  animation: fn-pulse 9s ease-in-out infinite;
 }
 
 /* 斜め細ライン */
@@ -41,6 +61,10 @@ body::after {
   pointer-events: none;
 }
 
+@keyframes fn-pulse {
+  0%, 100% { opacity: 0.88; }
+  50%       { opacity: 1.0; }
+}
 
 header {
   box-shadow: 0 1px 24px rgba(0, 200, 240, 0.20), 0 0 1px rgba(0, 200, 240, 0.55) !important;
