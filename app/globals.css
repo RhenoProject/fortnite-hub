@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #042238;
-  --surface: #072e4a;
-  --card: #0c3d5e;
-  --border: #145070;
+  --bg: #000000;
+  --surface: #061825;
+  --card: #082030;
+  --border: #0d3348;
   --primary: #00ccf0;
   --accent: #ffd700;
   --text: #dff6ff;
-  --text-muted: #4a96b4;
+  --text-muted: #5aa8c8;
 }
 
 * {
@@ -16,7 +16,7 @@
 }
 
 body {
-  background-color: var(--bg);
+  background-color: #000;
   color: var(--text);
   font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,21 +24,27 @@ body {
   position: relative;
 }
 
-/* フォートナイトショップ風 — 中央下からのティールグロー */
+/* フォートナイトショップ風 — 中央に強い明るいティールグロー */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(ellipse 170% 85% at 50% 80%, rgba(0, 200, 245, 0.55) 0%, rgba(0, 110, 165, 0.35) 32%, transparent 65%),
-    radial-gradient(ellipse 75%  60% at 8%  55%, rgba(0,  70, 180, 0.20) 0%, transparent 65%),
-    radial-gradient(ellipse 75%  60% at 92% 55%, rgba(0,  70, 180, 0.20) 0%, transparent 65%);
+    radial-gradient(ellipse 200% 75% at 50% 55%,
+      rgba(0, 160, 210, 0.95) 0%,
+      rgba(0, 110, 170, 0.82) 22%,
+      rgba(0,  60, 120, 0.65) 42%,
+      rgba(0,  22,  65, 0.40) 60%,
+      transparent 80%
+    ),
+    radial-gradient(ellipse 80% 55% at 10% 50%, rgba(0, 55, 160, 0.30) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 55% at 90% 50%, rgba(0, 55, 160, 0.30) 0%, transparent 65%);
   pointer-events: none;
   animation: fn-pulse 9s ease-in-out infinite;
 }
 
-/* フォートナイトUI風 斜め細ラインテクスチャ */
+/* 斜め細ライン */
 body::after {
   content: '';
   position: fixed;
@@ -48,22 +54,21 @@ body::after {
     repeating-linear-gradient(
       -55deg,
       transparent 0px,
-      transparent 24px,
-      rgba(0, 200, 245, 0.04) 24px,
-      rgba(0, 200, 245, 0.04) 25px
+      transparent 22px,
+      rgba(0, 200, 245, 0.05) 22px,
+      rgba(0, 200, 245, 0.05) 23px
     );
   pointer-events: none;
 }
 
 @keyframes fn-pulse {
-  0%, 100% { opacity: 0.85; }
+  0%, 100% { opacity: 0.88; }
   50%       { opacity: 1.0; }
 }
 
-/* ヘッダー */
 header {
-  box-shadow: 0 1px 24px rgba(0, 200, 240, 0.18), 0 0 1px rgba(0, 200, 240, 0.50) !important;
-  border-bottom-color: rgba(0, 200, 240, 0.25) !important;
+  box-shadow: 0 1px 24px rgba(0, 200, 240, 0.20), 0 0 1px rgba(0, 200, 240, 0.55) !important;
+  border-bottom-color: rgba(0, 200, 240, 0.28) !important;
   backdrop-filter: blur(12px);
 }
 
