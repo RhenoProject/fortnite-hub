@@ -67,7 +67,8 @@ export async function registerAndSubscribe(): Promise<boolean> {
 
 export async function getSubscriptionStatus(): Promise<"subscribed" | "unsubscribed" | "unsupported"> {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) return "unsupported";
-  const reg = await navigator.serviceWorker.register("/sw.js");
+  const reg = await navigator.serviceWorker.getRegistration("/");
+  if (!reg) return "unsubscribed";
   const sub = await reg.pushManager.getSubscription();
   return sub ? "subscribed" : "unsubscribed";
 }
