@@ -36,14 +36,14 @@ async function fetchShopWithRetry(maxAttempts = 3): Promise<Awaited<ReturnType<t
   throw lastErr;
 }
 
-async function sendToDiscord(webhookUrl: string, content: string, maxAttempts = 3): Promise<void> {
+async function sendToDiscord(webhookUrl: string, payload: object, maxAttempts = 3): Promise<void> {
   let lastErr: unknown;
   for (let i = 0; i < maxAttempts; i++) {
     try {
       const res = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify(payload),
       });
       if (res.ok) return;
       const detail = await res.text().catch(() => "");
@@ -119,10 +119,22 @@ async function handleRequest(req: NextRequest) {
   lines.push("");
   lines.push("#フォートナイト #Fortnite #アイテムショップ");
 
-  const content = `📋 **今日のX投稿文面（コピペしてXに貼ってください）**\n\`\`\`\n${lines.join("\n")}\n\`\`\``;
+  const OG_IMAGE_URL = "https://fortnite-hub-delta.vercel.app/api/og/shop";
+
+  const payload = {
+    content: `📋 **今日のX投稿文面（コピペしてXに貼ってください）**\n\`\`\`\n${lines.join("\n")}\n\`\`\``,
+    embeds: [
+      {
+        title: `🛍️ 今日のショップ画像（Xに添付してください）`,
+        color: 51455, // #00C8FF
+        image: { url: OG_IMAGE_URL },
+        footer: { text: "画像を右クリック→保存→Xに投稿文と一緒に貼ってください" },
+      },
+    ],
+  };
 
   try {
-    await sendToDiscord(webhookUrl, content, 3);
+    await sendToDiscord(webhookUrl, payload, 3);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
