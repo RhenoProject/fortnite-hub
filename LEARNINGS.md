@@ -48,6 +48,19 @@
 - 結果: 修正後正常動作
 - 教訓: Vercel Cron はデフォルトで GET を送る。次回Cron実装時はGET対応を最初から設計する
 
+### Amazonアフィリエイト画像のホットリンク問題（2026-06-19解決）
+- 仮説: `m.media-amazon.com/images/P/ASIN.09._SL1500_.jpg` のCDN URLをimgタグで直接表示できる
+- 実施内容: ブラウザからCDN URLへの直接アクセス → Amazon側でホットリンクブロック
+- 結果: 白画像・表示不可
+- 根本原因: Amazonは第三者ドメインからのCDN直接参照をブロックしている（Refererチェック）
+- 解決策: Next.js APIルート（/api/amazon-img）をサーバーサイドプロキシとして実装。サーバーからAmazon商品ページのhiRes/og:image URLを取得→バイト転送
+- 教訓: Amazon画像はブラウザ側では取得不可。必ずサーバーサイドプロキシ経由で配信する。Cache-Control 1週間設定で重複リクエストも回避できる
+
+### デバイスページ本番公開（2026-06-19）
+- 実施内容: 8カテゴリ51商品・Amazonアソシエイトタグ yoshidashuya0-22・DeviceImageコンポーネント・価格安い順ソートをmainマージ
+- 結果: 本番稼働中（https://fortnite-hub-delta.vercel.app/devices）
+- 教訓: 商品数が多い場合は最初にASIN中心のデータ構造を設計し、画像取得を分離コンポーネントに委ねる設計が保守しやすい
+
 ### 技術SEO強化（2026-06-16実装）
 - 仮説: JSON-LD構造化データ・サイトマップ強化でGoogle検索流入が増える
 - 実施内容: JSON-LD WebSite/ItemList・/updates sitemap追加・各ページmeta強化
