@@ -6,6 +6,14 @@
   },
   "crons": [
     {
+      "path": "/api/shop/refresh",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/shop/refresh",
+      "schedule": "3 0 * * *"
+    },
+    {
       "path": "/api/health-check",
       "schedule": "0 15 * * *"
     },

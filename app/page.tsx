@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { fetchShop } from "@/lib/shopApi";
 import { ShopClient } from "@/components/ShopClient";
 
-export const revalidate = 600;
+export const revalidate = 30;
 
 export async function generateMetadata(): Promise<Metadata> {
   const today = new Date().toLocaleDateString("ja-JP", {

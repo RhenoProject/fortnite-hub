@@ -61,7 +61,7 @@ function getRarity(entry: any): string {
 }
 
 function getBestImage(item: any): string {
-  return item.images?.featured ?? item.images?.icon ?? item.images?.smallIcon ?? '';
+  return item.images?.featured ?? item.images?.icon ?? item.images?.smallIcon ?? item.images?.large ?? item.images?.small ?? '';
 }
 
 export async function fetchShop(): Promise<ShopEntry[]> {
@@ -77,25 +77,32 @@ export async function fetchShop(): Promise<ShopEntry[]> {
   for (const entry of entries) {
     if (!entry.bundle) continue;
     const brItems: any[] = entry.brItems ?? entry.items ?? [];
-    if (brItems.length < 2) continue;
+    const carItems: any[] = entry.cars ?? [];
+    const allItems = brItems.length > 0 ? brItems : carItems;
 
-    const mainItem = brItems[0];
-    const icons = brItems
-      .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? '')
+    if (allItems.length === 0) continue;
+
+    const isCar = brItems.length === 0 && carItems.length > 0;
+    const mainImage = isCar
+      ? (entry.newDisplayAsset?.renderImages?.image ?? carItems[0]?.images?.large ?? '')
+      : getBestImage(brItems[0]);
+
+    const icons = allItems
+      .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? i.images?.small ?? '')
       .filter(Boolean)
       .slice(0, 6);
 
-    brItems.forEach((i: any) => { if (i.name) bundleItemNames.add(i.name); });
+    allItems.forEach((i: any) => { if (i.name) bundleItemNames.add(i.name); });
 
     bundles.push({
       kind: 'bundle',
       id: entry.offerId ?? entry.bundle.name,
       name: entry.bundle.name,
-      rarity: getRarity(entry),
+      rarity: isCar ? (carItems[0]?.rarity?.value ?? 'legendary') : getRarity(entry),
       price: entry.finalPrice ?? entry.regularPrice ?? 0,
-      image: getBestImage(mainItem),
+      image: mainImage,
       icons,
-      itemCount: brItems.length,
+      itemCount: allItems.length,
       featured: isFeatured(entry),
     });
   }
@@ -106,16 +113,18 @@ export async function fetchShop(): Promise<ShopEntry[]> {
   for (const entry of entries) {
     if (entry.bundle) continue;
     const brItems: any[] = entry.brItems ?? entry.items ?? [];
+    const carItems: any[] = entry.cars ?? [];
+    const allEntryItems = brItems.length > 0 ? brItems : carItems;
     const entryFeatured = isFeatured(entry);
 
-    for (const item of brItems) {
+    for (const item of allEntryItems) {
       const name: string = item.name ?? '';
       if (!name || seenNames.has(name) || bundleItemNames.has(name)) continue;
       seenNames.add(name);
 
       items.push({
         kind: 'item',
-        id: item.id ?? entry.offerId,
+        id: item.id ?? item.vehicleId ?? entry.offerId,
         name,
         typeValue: item.type?.value ?? '',
         typeDisplay: item.type?.displayValue ?? '',
