@@ -81,6 +81,8 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] vercel.json に9:00/9:03 JST Cron追加（ショップ自動更新 + リトライ機構）— 2026-06-20
 - [x] 車バンドル（carsフィールド）対応：ピザ・プラネット・RAM 1500 RHO・レッドライン を表示 — 2026-06-20
 - [x] getBestImageにlarge/smallフィールドを追加（車アイテム画像の欠落を修正）— 2026-06-20
+- [x] ShopClient: フィルタータブ選択時にfeaturedアイテムも含めて表示（おすすめ→コスチューム等への振り分け修正）— 2026-06-20
+- [x] shopApi: bundleItemNames削除 → バンドル内にも存在する単品コスチューム13件を復元（チグサ・バズ・Ariana Grande等）— 2026-06-20
 
 ---
 
