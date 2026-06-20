@@ -277,15 +277,17 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
     });
   }, []);
 
+  const allEntries = useMemo(() => [...featured, ...regular], [featured, regular]);
+
   const availableTypes = Array.from(
-    new Set(regular.filter(e => e.kind === "item").map(e => (e as ShopItem).typeValue).filter(Boolean))
+    new Set(allEntries.filter(e => e.kind === "item").map(e => (e as ShopItem).typeValue).filter(Boolean))
   );
-  const bundleCount = regular.filter(e => e.kind === "bundle").length;
+  const bundleCount = allEntries.filter(e => e.kind === "bundle").length;
   const filteredRegular = filter === ALL
     ? regular
     : filter === BUNDLE
-      ? regular.filter(e => e.kind === "bundle")
-      : regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === filter);
+      ? allEntries.filter(e => e.kind === "bundle")
+      : allEntries.filter(e => e.kind === "item" && (e as ShopItem).typeValue === filter);
 
   const tabStyle = (key: string): React.CSSProperties => ({
     padding: "7px 14px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
@@ -546,7 +548,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
         </section>
       ) : (
         <>
-          {featured.length > 0 && (
+          {filter === ALL && featured.length > 0 && (
             <section style={{ marginBottom: "32px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
                 <span style={{ fontSize: "18px" }}>⭐</span>
@@ -569,7 +571,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
               <h2 style={{ fontSize: "16px", fontWeight: "900", color: "var(--text)" }}>
                 🛒 全アイテム
               </h2>
-              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{regular.length}件</span>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{filter === ALL ? regular.length : filteredRegular.length}件</span>
             </div>
 
             <div className="filter-tabs">
@@ -578,7 +580,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
                 <button style={tabStyle(BUNDLE)} onClick={() => setFilter(BUNDLE)}>セット ({bundleCount})</button>
               )}
               {availableTypes.map(type => {
-                const count = regular.filter(e => e.kind === "item" && (e as ShopItem).typeValue === type).length;
+                const count = allEntries.filter(e => e.kind === "item" && (e as ShopItem).typeValue === type).length;
                 return (
                   <button key={type} style={tabStyle(type)} onClick={() => setFilter(type)}>
                     {typeLabels[type] ?? type} ({count})
