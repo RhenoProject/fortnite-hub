@@ -85,7 +85,15 @@ export default async function ShopPage() {
         <h1 style={{ fontSize: "22px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "4px" }}>
           <span aria-hidden="true">🛍️ </span>今日のフォートナイト アイテムショップ
         </h1>
-        <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>{today}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px", margin: 0 }}>{today}</p>
+          <a
+            href={`/shop/${new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10)}`}
+            style={{ color: "#00c8ff", fontSize: "12px", textDecoration: "none", background: "#001828", border: "1px solid #00c8ff33", padding: "3px 10px", borderRadius: "20px" }}
+          >
+            📅 今日のアーカイブ
+          </a>
+        </div>
       </div>
 
       {entries.length === 0 ? (

@@ -80,7 +80,11 @@ async function handleRequest(req: NextRequest) {
 
   await Promise.all(removes.map((id) => db.collection("push_subscriptions").doc(id).delete()));
 
+  const jstToday = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const jstYesterday = new Date(Date.now() + 9 * 60 * 60 * 1000 - 86400000).toISOString().slice(0, 10);
   revalidatePath("/");
+  revalidatePath(`/shop/${jstToday}`);
+  revalidatePath(`/shop/${jstYesterday}`);
 
   return NextResponse.json({ sent, failed, removed: removes.length });
 }

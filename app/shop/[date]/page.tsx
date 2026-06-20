@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getDb } from "@/lib/firestore";
 import { fetchShop, rarityColors } from "@/lib/shopApi";
 
+// ショップ更新サイクル（10分）に合わせてキャッシュ。shop/refresh Cron が revalidatePath で強制クリアする。
+export const revalidate = 600;
+
 interface Props {
   params: Promise<{ date: string }>;
 }
