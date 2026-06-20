@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchShop, ShopItem } from "@/lib/shopApi";
 
 async function handleRequest(req: NextRequest) {
-  if (
-    process.env.CRON_SECRET &&
-    req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  const cronSecret = process.env.CRON_SECRET;
+  const manualKey = process.env.MANUAL_TRIGGER_KEY;
+  const authHeader = req.headers.get("authorization");
+  const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
+  const isManual = manualKey && authHeader === `Bearer ${manualKey}`;
+
+  if (!isCron && !isManual) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -14,7 +17,18 @@ async function handleRequest(req: NextRequest) {
     return NextResponse.json({ error: "DISCORD_WEBHOOK_URL not set" }, { status: 503 });
   }
 
-  const entries = await fetchShop();
+  let entries: Awaited<ReturnType<typeof fetchShop>>;
+  try {
+    entries = await fetchShop();
+  } catch (e) {
+    const errMsg = `fetchShop失敗: ${String(e)}`;
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: `🚨 daily-post エラー: ${errMsg}` }),
+    }).catch(() => {});
+    return NextResponse.json({ error: errMsg }, { status: 500 });
+  }
 
   const today = new Date().toLocaleDateString("ja-JP", {
     month: "numeric",
@@ -61,10 +75,11 @@ async function handleRequest(req: NextRequest) {
   });
 
   if (!res.ok) {
-    return NextResponse.json({ error: "Discord webhook failed" }, { status: 500 });
+    const detail = await res.text().catch(() => "");
+    return NextResponse.json({ error: "Discord webhook failed", status: res.status, detail }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, itemCount: totalCount });
 }
 
 export const GET = handleRequest;
