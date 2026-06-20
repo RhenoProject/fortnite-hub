@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchShop } from "@/lib/shopApi";
 import { getDb } from "@/lib/firestore";
 
-function jstDateStr(): string {
-  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+// UTC日付 = フォートナイトのショップ更新タイミングに合わせる
+function shopDateStr(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
 async function handleRequest(req: NextRequest) {
@@ -17,7 +18,7 @@ async function handleRequest(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const date = jstDateStr();
+  const date = shopDateStr();
 
   try {
     const db = getDb();

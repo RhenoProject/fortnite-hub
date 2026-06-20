@@ -5,9 +5,10 @@ import { ShopClient } from "@/components/ShopClient";
 export const revalidate = 30;
 
 export async function generateMetadata(): Promise<Metadata> {
+  // UTC日付 = フォートナイトのショップ更新タイミング（UTC 0:00 = JST 9:00）に合わせる
   const today = new Date().toLocaleDateString("ja-JP", {
     year: "numeric", month: "long", day: "numeric", weekday: "short",
-    timeZone: "Asia/Tokyo",
+    timeZone: "UTC",
   });
   const title = `フォートナイト アイテムショップ 今日 ${today} | フォトナHub`;
   const description = "フォートナイトの今日のアイテムショップを毎日更新。注目スキン・バンドル・エモートをいち早くチェック。";
@@ -24,7 +25,7 @@ export default async function ShopPage() {
 
   const today = new Date().toLocaleDateString("ja-JP", {
     year: "numeric", month: "long", day: "numeric", weekday: "short",
-    timeZone: "Asia/Tokyo",
+    timeZone: "UTC",
   });
 
   const featured = entries.filter(e => e.featured);
@@ -85,15 +86,7 @@ export default async function ShopPage() {
         <h1 style={{ fontSize: "22px", fontWeight: "900", color: "var(--text)", letterSpacing: "1px", marginBottom: "4px" }}>
           <span aria-hidden="true">🛍️ </span>今日のフォートナイト アイテムショップ
         </h1>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", margin: 0 }}>{today}</p>
-          <a
-            href={`/shop/${new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10)}`}
-            style={{ color: "#00c8ff", fontSize: "12px", textDecoration: "none", background: "#001828", border: "1px solid #00c8ff33", padding: "3px 10px", borderRadius: "20px" }}
-          >
-            📅 今日のアーカイブ
-          </a>
-        </div>
+        <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>{today}</p>
       </div>
 
       {entries.length === 0 ? (

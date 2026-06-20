@@ -10,10 +10,11 @@ export async function GET() {
     const others = entries.filter((e) => !e.featured);
     const items = [...featured, ...others].slice(0, 6);
 
-    const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
-    const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
+    // UTC日付 = フォートナイトのショップ更新タイミングに合わせる
+    const now = new Date();
+    const dateStr = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, "0")}/${String(now.getUTCDate()).padStart(2, "0")}`;
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const dateLabel = `${dateStr} (${weekdays[now.getDay()]})`;
+    const dateLabel = `${dateStr} (${weekdays[now.getUTCDay()]})`;
 
     return new ImageResponse(
       (

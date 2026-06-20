@@ -9,8 +9,9 @@ interface Props {
   params: Promise<{ date: string }>;
 }
 
-function jstToday(): string {
-  return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+// UTC日付 = フォートナイトのショップ更新タイミング（UTC 0:00 = JST 9:00）
+function shopToday(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
 function formatDateJa(dateStr: string): string {
@@ -41,7 +42,7 @@ type RawItem = {
 };
 
 async function getItemsForDate(date: string): Promise<RawItem[] | null> {
-  const today = jstToday();
+  const today = shopToday();
   if (date === today) {
     try {
       const entries = await fetchShop();
@@ -84,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ShopDatePage({ params }: Props) {
   const { date } = await params;
-  const today = jstToday();
+  const today = shopToday();
   const isToday = date === today;
   const isFuture = date > today;
   const dateJa = formatDateJa(date);
