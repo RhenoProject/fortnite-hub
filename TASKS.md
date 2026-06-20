@@ -83,6 +83,13 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] getBestImageにlarge/smallフィールドを追加（車アイテム画像の欠落を修正）— 2026-06-20
 - [x] ShopClient: フィルタータブ選択時にfeaturedアイテムも含めて表示（おすすめ→コスチューム等への振り分け修正）— 2026-06-20
 - [x] shopApi: bundleItemNames削除 → バンドル内にも存在する単品コスチューム13件を復元（チグサ・バズ・Ariana Grande等）— 2026-06-20
+- [x] /api/og/shop: X投稿用ショップ画像カード自動生成（1200×630・ImageResponse・レアリティボーダー）— 2026-06-21
+- [x] discord/daily-post: embed形式でショップ画像プレビュー付き送信に変更 — 2026-06-21
+- [x] /shop/[date]: 日付別ショップSEOページ（今日→API / 過去→Firestore・JSON-LD・日付ナビ）— 2026-06-21
+- [x] /api/shop/save-daily: 毎朝9:04 JST CronでFirestoreに日別ショップ保存 — 2026-06-21
+- [x] sitemap.ts: 過去30日分の日別URLを追加（SEO蓄積）— 2026-06-21
+- [x] 日付表示をUTC基準に統一（フォートナイトショップリセット UTC 0:00 = JST 9:00 に完全一致）— 2026-06-21
+- [x] shop/refresh・push/send: 日別ページキャッシュも同時 revalidatePath — 2026-06-21
 
 ---
 
