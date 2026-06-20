@@ -71,7 +71,6 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
   const entries: any[] = json.data?.entries ?? [];
 
-  const bundleItemNames = new Set<string>();
   const bundles: ShopBundle[] = [];
 
   for (const entry of entries) {
@@ -92,8 +91,6 @@ export async function fetchShop(): Promise<ShopEntry[]> {
       .filter(Boolean)
       .slice(0, 6);
 
-    allItems.forEach((i: any) => { if (i.name) bundleItemNames.add(i.name); });
-
     bundles.push({
       kind: 'bundle',
       id: entry.offerId ?? entry.bundle.name,
@@ -107,6 +104,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     });
   }
 
+  // seenNames で重複を防ぐ。バンドル内アイテムであっても単品エントリがあれば表示する。
   const seenNames = new Set<string>();
   const items: ShopItem[] = [];
 
@@ -119,7 +117,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
     for (const item of allEntryItems) {
       const name: string = item.name ?? '';
-      if (!name || seenNames.has(name) || bundleItemNames.has(name)) continue;
+      if (!name || seenNames.has(name)) continue;
       seenNames.add(name);
 
       items.push({
