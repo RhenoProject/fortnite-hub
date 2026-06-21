@@ -38,7 +38,7 @@ async function handleRequest(req: NextRequest) {
 
   // 6/21以降は自動停止
   const jstDateStr = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  if (jstDateStr > EXPIRY_DATE) {
+  if (jstDateStr >= EXPIRY_DATE) {
     return NextResponse.json({ skipped: `expired after ${EXPIRY_DATE}` });
   }
 
