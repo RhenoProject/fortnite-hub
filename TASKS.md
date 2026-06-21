@@ -137,7 +137,7 @@ URL: https://fortnite-hub-delta.vercel.app
 | 実施日時 | 内容 | 担当 |
 |---------|------|------|
 | 2026-06-21 夜（6/21の昼通知後） | vercel.json の `/api/push/send-noon` スケジュールを `0 3 * * *`（12:00 JST）→ `0 13 * * *`（22:00 JST）に変更・本番デプロイ | ジョブズ | ✅ 完了（send-noon cron自体を削除、20件バグのため停止）|
-| 2026-06-21 夜 | Firestoreの20件テスト購読をリセット（curl POST /api/admin/clear-subscriptions） | しゅうや | 未着手 |
+| 2026-06-21 夜 | Firestoreのテスト購読をリセット（34件削除完了） | ジョブズ | ✅ 完了 |
 
 ---
 
