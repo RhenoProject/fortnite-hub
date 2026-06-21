@@ -90,6 +90,7 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] sitemap.ts: 過去30日分の日別URLを追加（SEO蓄積）— 2026-06-21
 - [x] 日付表示をUTC基準に統一（フォートナイトショップリセット UTC 0:00 = JST 9:00 に完全一致）— 2026-06-21
 - [x] shop/refresh・push/send: 日別ページキャッシュも同時 revalidatePath — 2026-06-21
+- [x] 20件プッシュ通知バグ修正: send-noon cron停止（EXPIRY_DATE到達）・境界バグ修正(>→>=)・admin/clear-subscriptions API追加 — 2026-06-21
 
 ---
 
@@ -135,7 +136,8 @@ URL: https://fortnite-hub-delta.vercel.app
 
 | 実施日時 | 内容 | 担当 |
 |---------|------|------|
-| 2026-06-21 夜（6/21の昼通知後） | vercel.json の `/api/push/send-noon` スケジュールを `0 3 * * *`（12:00 JST）→ `0 13 * * *`（22:00 JST）に変更・本番デプロイ | ジョブズ |
+| 2026-06-21 夜（6/21の昼通知後） | vercel.json の `/api/push/send-noon` スケジュールを `0 3 * * *`（12:00 JST）→ `0 13 * * *`（22:00 JST）に変更・本番デプロイ | ジョブズ | ✅ 完了（send-noon cron自体を削除、20件バグのため停止）|
+| 2026-06-21 夜 | Firestoreの20件テスト購読をリセット（curl POST /api/admin/clear-subscriptions） | しゅうや | 未着手 |
 
 ---
 
