@@ -90,4 +90,32 @@
 
 ---
 
-*最終更新: 2026-06-19 by AI CTO ジョブズ（セッション終了時更新）*
+### 日付表示をUTC基準に統一（2026-06-21）
+- 問題: JST基準の日付計算だと深夜0〜8時59分に「翌日の日付なのにショップは前日のまま」の矛盾が発生
+- 根本原因: フォートナイトのショップリセットは UTC 0:00（= JST 9:00）。JST基準だと9時間ずれが生じる
+- 修正: 全ファイルの日付計算を UTC 基準に統一（`new Date().toISOString().slice(0, 10)`）
+- 教訓: **フォートナイトのデータは常にUTC基準で扱う**。JST表示が必要な場面でも、計算はUTCで行ってから表示形式を変換する
+
+### Vercel Cron EXPIRY_DATE の境界バグ（2026-06-21）
+- 問題: `if (jstDateStr > EXPIRY_DATE)` だと当日（equal）でも止まらない
+- 例: EXPIRY_DATE = "2026-06-21"、当日 = "2026-06-21" → `"2026-06-21" > "2026-06-21"` = false → 当日も発動
+- 修正: `>=` に変更
+- 教訓: **期限チェックには必ず `>=` を使う**。`>` は「翌日から停止」になる
+
+### Firestoreプッシュ購読の蓄積問題（2026-06-21）
+- 問題: しゅうやのPCに34通の通知が一斉に届いた
+- 根本原因: 開発・テスト中に複数ブラウザ/シークレットウィンドウで通知許可 → Firestoreに34件蓄積。Cronが全件に送信 → 34通同時配信
+- 仕組み: 購読は `docId = base64(endpoint)` でFirestoreに保存。同じブラウザなら同一docだが、異なるブラウザ・プロファイルは別doc
+- 解決: `scripts/clear-push-subscriptions.js` でga4-key.jsonを使い直接削除（34件全削除完了）
+- 教訓: **開発中にプッシュ通知テストをしたら、セッション後に必ずFirestoreの購読を清掃する**。清掃コマンド: `node scripts/clear-push-subscriptions.js`
+
+### Vercel 環境変数（Encrypted）はCLIで取得不可（2026-06-21）
+- 問題: `vercel env pull` で CRON_SECRET / GOOGLE_SERVICE_ACCOUNT_KEY / VAPID_PRIVATE_KEY が空（""）で返ってくる
+- 根本原因: Vercelの「Encrypted」マークが付いた変数はpull時に復号されない仕様
+- 解決策: `npx vercel env run` でコマンドに環境変数を注入して実行する（ただしこれもEncrypted変数は注入されないことがある）
+- 代替: Firestore操作は `ga4-key.json`（ローカルファイル）を使う `scripts/clear-push-subscriptions.js` で直接実行可能
+- 教訓: Encrypted変数はVercel Dashboardから直接確認する必要がある。ローカルスクリプトにはga4-key.jsonで代替できる
+
+---
+
+*最終更新: 2026-06-21 by AI CTO ジョブズ（セッション終了時更新）*
