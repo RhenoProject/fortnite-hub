@@ -106,14 +106,11 @@ function SearchResultCard({
 }) {
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
-    <div style={{
+    <Link href={`/cosmetics/${item.id}`} style={{
       backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
       border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
-      position: "relative",
+      textDecoration: "none",
     }}>
-      <Link href={`/cosmetics/${item.id}`} style={{
-        position: "absolute", inset: 0, zIndex: 0,
-      }} aria-label={`${item.name}の詳細を見る`} />
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
         {item.image ? (
           <Image src={item.image} alt={item.name} fill sizes="(max-width: 640px) 50vw, 160px" style={{ objectFit: "cover" }} />
@@ -130,7 +127,7 @@ function SearchResultCard({
           {inShop ? "🛍️ 今日のショップにあります！" : "ショップ外"}
         </div>
         <button
-          onClick={() => onToggleWish({ id: item.id, name: item.name, image: item.image, rarity: item.rarity, price: shopPrice ?? 0 })}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleWish({ id: item.id, name: item.name, image: item.image, rarity: item.rarity, price: shopPrice ?? 0 }); }}
           aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
           style={{
             position: "absolute", top: "6px", right: "6px",
@@ -138,7 +135,6 @@ function SearchResultCard({
             border: "none", borderRadius: "50%",
             width: "34px", height: "34px", fontSize: "16px",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            zIndex: 1,
           }}
         >
           {wished ? "❤️" : "🤍"}
@@ -162,7 +158,7 @@ function SearchResultCard({
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 
