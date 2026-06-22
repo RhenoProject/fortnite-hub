@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { fetchShop } from "@/lib/shopApi";
 import { ShopClient } from "@/components/ShopClient";
 
@@ -95,7 +96,9 @@ export default async function ShopPage() {
           <p style={{ fontSize: "13px" }}>しばらくしてからリロードしてください</p>
         </div>
       ) : (
-        <ShopClient featured={featured} regular={regular} />
+        <Suspense>
+          <ShopClient featured={featured} regular={regular} />
+        </Suspense>
       )}
     </div>
   );

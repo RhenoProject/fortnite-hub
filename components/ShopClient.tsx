@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ShopEntry, ShopItem, ShopBundle, rarityColors } from "@/lib/shopApi";
 import {
   getWishlist, getWishlistItems, saveWishlistItems,
@@ -216,8 +217,10 @@ function BundleCard({ bundle }: { bundle: ShopBundle }) {
 }
 
 export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regular: ShopEntry[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [filter, setFilter] = useState<string>(ALL);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
   const [apiResults, setApiResults] = useState<CosmeticSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
@@ -248,6 +251,15 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
       setWishlistItems(items);
     }
   }, [featured, regular]);
+
+  // 検索クエリをURLに同期（戻るボタンで復元できるように）
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const q = searchQuery.trim();
+      router.replace(q ? `/?q=${encodeURIComponent(q)}` : "/", { scroll: false });
+    }, 300);
+    return () => clearTimeout(t);
+  }, [searchQuery, router]);
 
   useEffect(() => {
     const q = searchQuery.trim();
