@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { fetchCosmeticById } from "@/lib/fortniteApi";
+import { BackButton } from "@/components/BackButton";
 import { rarityColors } from "@/lib/shopApi";
 
 export const revalidate = 86400;
@@ -67,14 +67,7 @@ export default async function CosmeticDetailPage({ params }: Props) {
     <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* 戻るリンク */}
-      <Link href="/" style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
-        fontSize: 13, color: "var(--text-muted)", textDecoration: "none",
-        marginBottom: 20,
-      }}>
-        ← ショップに戻る
-      </Link>
+      <BackButton />
 
       {/* ヒーロー画像 */}
       {heroImage && (

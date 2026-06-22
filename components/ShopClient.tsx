@@ -47,10 +47,10 @@ function ItemCard({
 }) {
   const color = rarityColors[item.rarity] ?? rarityColors.common;
   return (
-    <div style={{
+    <Link href={`/cosmetics/${item.id}`} style={{
       backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
       border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
-      position: "relative",
+      textDecoration: "none",
     }}>
       {item.image ? (
         <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
@@ -58,7 +58,7 @@ function ItemCard({
             sizes={large ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 50vw, 160px"}
             style={{ objectFit: "cover" }} />
           <button
-            onClick={() => onToggleWish(item)}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleWish(item); }}
             aria-label={wished ? "ほしいものリストから削除" : "ほしいものリストに追加"}
             style={{
               position: "absolute", top: "6px", right: "6px",
@@ -91,7 +91,7 @@ function ItemCard({
           <span style={{ color: "var(--accent)", fontWeight: "800", fontSize: "13px" }}>{item.price.toLocaleString()}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
