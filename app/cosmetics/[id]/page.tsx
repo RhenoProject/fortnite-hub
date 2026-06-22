@@ -151,6 +151,32 @@ export default async function CosmeticDetailPage({ params }: Props) {
         </div>
       </div>
 
+      {/* Xシェアボタン */}
+      {(() => {
+        const pageUrl = `https://fortnite-hub-delta.vercel.app/cosmetics/${id}`;
+        const text = `フォートナイト「${item.name}」- ${rarityLabel}スキン情報 #フォートナイト #Fortnite`;
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+        return (
+          <a
+            href={tweetUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "12px 20px", borderRadius: 12, marginBottom: 20,
+              background: "#000", border: "1px solid #333",
+              color: "#fff", textDecoration: "none",
+              fontSize: 14, fontWeight: 800,
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+            </svg>
+            Xでシェア
+          </a>
+        );
+      })()}
+
       {/* バリアント（スタイル） */}
       {item.variants && item.variants.length > 0 && (
         <section style={{ marginBottom: 20 }}>
