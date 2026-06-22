@@ -6,19 +6,19 @@ import type { FortniteMap, MapPOI } from "@/lib/fortniteApi";
 type Difficulty = "hot" | "medium" | "safe";
 
 const DROP_DATA: Record<string, { difficulty: Difficulty; tip: string }> = {
-  "Heatwave Harbor": { difficulty: "hot", tip: "港エリア。建物が密集して早期に激しい戦闘が起きやすい。" },
-  "Sinister Strip": { difficulty: "hot", tip: "市街地エリア。複数の建物で近距離戦が多発する。" },
-  "WonkeeLand": { difficulty: "hot", tip: "テーマパークエリア。人が集まりやすい人気スポット。" },
-  "The Battlewoods": { difficulty: "hot", tip: "名前の通り激戦区。中央寄りで戦闘が早い。" },
-  "Cluster Coast": { difficulty: "medium", tip: "海岸エリア。戦闘とルートのバランスが取りやすい。" },
-  "LAtte Landing": { difficulty: "medium", tip: "中規模エリア。アイテムが集めやすい。" },
-  "Calamari Canyon": { difficulty: "medium", tip: "渓谷エリア。地形を活かした立ち回りができる。" },
-  "Chopped Shop": { difficulty: "medium", tip: "工場・倉庫エリア。建物が多くアイテムが集めやすい。" },
-  "Lifty Lodge": { difficulty: "medium", tip: "ロッジエリア。安定した選択肢。" },
-  "Shaken Sanctuary": { difficulty: "medium", tip: "比較的静かめ。安定したゲームプランに向く。" },
-  "Sunken Shores": { difficulty: "safe", tip: "海岸の端。人が来にくく序盤を安全に進めやすい。" },
-  "Golden Grove": { difficulty: "safe", tip: "マップ端のエリア。バス経路次第で独占チャンスあり。" },
-  "Frosted Flats": { difficulty: "safe", tip: "雪エリア。人が少なく初心者・ソロに向いている。" },
+  "ヒートウェーブ・ハーバー": { difficulty: "hot", tip: "港エリア。建物が密集して早期に激しい戦闘が起きやすい。" },
+  "シニスター・ストリップ": { difficulty: "hot", tip: "市街地エリア。複数の建物で近距離戦が多発する。" },
+  "ウォンキーランド": { difficulty: "hot", tip: "テーマパークエリア。人が集まりやすい人気スポット。" },
+  "ザ・バトルウッズ": { difficulty: "hot", tip: "名前の通り激戦区。中央寄りで戦闘が早い。" },
+  "クラスター・コースト": { difficulty: "medium", tip: "海岸エリア。戦闘とルートのバランスが取りやすい。" },
+  "ラテ・ランディング": { difficulty: "medium", tip: "中規模エリア。アイテムが集めやすい。" },
+  "カラマリ・キャニオン": { difficulty: "medium", tip: "渓谷エリア。地形を活かした立ち回りができる。" },
+  "チョップド・ショップ": { difficulty: "medium", tip: "工場・倉庫エリア。建物が多くアイテムが集めやすい。" },
+  "リフティ・ロッジ": { difficulty: "medium", tip: "ロッジエリア。安定した選択肢。" },
+  "シェイクン・サンクチュアリー": { difficulty: "medium", tip: "比較的静かめ。安定したゲームプランに向く。" },
+  "サンクン・ショア": { difficulty: "safe", tip: "海岸の端。人が来にくく序盤を安全に進めやすい。" },
+  "ゴールデン・グローブ": { difficulty: "safe", tip: "マップ端のエリア。バス経路次第で独占チャンスあり。" },
+  "フロステッド・フラッツ": { difficulty: "safe", tip: "雪エリア。人が少なく初心者・ソロに向いている。" },
 };
 
 const DIFF = {
@@ -70,7 +70,7 @@ export function MapClient({ mapData }: Props) {
       e.preventDefault();
       const factor = e.deltaY < 0 ? 1.18 : 0.85;
       setScale(prev => {
-        const next = Math.min(6, Math.max(1, prev * factor));
+        const next = Math.min(10, Math.max(1, prev * factor));
         const rect = el.getBoundingClientRect();
         const mx = e.clientX - rect.left - rect.width / 2;
         const my = e.clientY - rect.top - rect.height / 2;
@@ -119,7 +119,7 @@ export function MapClient({ mapData }: Props) {
       if (lastPinchDist.current > 0) {
         const factor = dist / lastPinchDist.current;
         setScale(prev => {
-          const next = Math.min(6, Math.max(1, prev * factor));
+          const next = Math.min(10, Math.max(1, prev * factor));
           const el = containerRef.current;
           if (el) {
             const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
