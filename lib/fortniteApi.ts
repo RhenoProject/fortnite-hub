@@ -95,6 +95,55 @@ export async function fetchMap(): Promise<FortniteMap> {
   return json.data as FortniteMap;
 }
 
+export interface CosmeticItem {
+  id: string;
+  name: string;
+  description: string;
+  type: { value: string; displayValue: string };
+  rarity: { value: string; displayValue: string };
+  series?: { value: string; colors?: string[] };
+  set?: { value: string; text: string };
+  introduction?: { chapter: string; season: string; text: string };
+  images: { smallIcon?: string; icon?: string; featured?: string };
+  variants?: Array<{
+    channel: string;
+    type: string;
+    options: Array<{ tag: string; name: string; image: string }>;
+  }>;
+  added: string;
+}
+
+export async function fetchCosmeticById(id: string): Promise<CosmeticItem | null> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v2/cosmetics/br/${id}?language=ja`,
+      { next: { revalidate: 86400 } }
+    );
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data as CosmeticItem;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchRecentOutfits(limit = 200): Promise<{ id: string; added: string }[]> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v2/cosmetics/br/search/all?language=ja&type=outfit`,
+      { next: { revalidate: 86400 } }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return (json.data as CosmeticItem[])
+      .sort((a, b) => new Date(b.added).getTime() - new Date(a.added).getTime())
+      .slice(0, limit)
+      .map(({ id, added }) => ({ id, added }));
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchGameVersion(): Promise<GameVersion | null> {
   try {
     const response = await fetch(`${BASE_URL}/v2/aes`, { next: { revalidate: 3600 } });

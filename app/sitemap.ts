@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { fetchRecentOutfits } from "@/lib/fortniteApi";
 
 function recentShopDates(count: number): string[] {
   return Array.from({ length: count }, (_, i) => {
@@ -8,8 +9,9 @@ function recentShopDates(count: number): string[] {
   });
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const shopDates = recentShopDates(30);
+  const outfits = await fetchRecentOutfits(200).catch(() => []);
 
   return [
     {
@@ -42,12 +44,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.5,
     },
-    // 過去30日分の日別ショップページ（SEO蓄積）
+    // 過去30日分の日別ショップページ
     ...shopDates.map((date, i) => ({
       url: `https://fortnite-hub-delta.vercel.app/shop/${date}`,
       lastModified: new Date(date),
       changeFrequency: (i === 0 ? "daily" : "never") as "daily" | "never",
       priority: i === 0 ? 0.9 : 0.6,
+    })),
+    // 最新コスチューム200件
+    ...outfits.map(({ id, added }) => ({
+      url: `https://fortnite-hub-delta.vercel.app/cosmetics/${id}`,
+      lastModified: new Date(added),
+      changeFrequency: "never" as const,
+      priority: 0.6,
     })),
   ];
 }

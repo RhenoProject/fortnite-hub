@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ShopEntry, ShopItem, ShopBundle, rarityColors } from "@/lib/shopApi";
 import {
   getWishlist, getWishlistItems, saveWishlistItems,
@@ -108,7 +109,11 @@ function SearchResultCard({
     <div style={{
       backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
       border: `1px solid ${color}44`, display: "flex", flexDirection: "column",
+      position: "relative",
     }}>
+      <Link href={`/cosmetics/${item.id}`} style={{
+        position: "absolute", inset: 0, zIndex: 0,
+      }} aria-label={`${item.name}の詳細を見る`} />
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
         {item.image ? (
           <Image src={item.image} alt={item.name} fill sizes="(max-width: 640px) 50vw, 160px" style={{ objectFit: "cover" }} />
@@ -133,6 +138,7 @@ function SearchResultCard({
             border: "none", borderRadius: "50%",
             width: "34px", height: "34px", fontSize: "16px",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            zIndex: 1,
           }}
         >
           {wished ? "❤️" : "🤍"}
