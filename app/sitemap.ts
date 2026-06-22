@@ -31,12 +31,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: "https://fortnite-hub-delta.vercel.app/skins",
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
       url: "https://fortnite-hub-delta.vercel.app/competition",
       lastModified: new Date("2026-06-20"),
       changeFrequency: "weekly",
