@@ -6,6 +6,7 @@ import { PushSubscribeButton } from "@/components/PushSubscribeButton";
 const navItems = [
   { href: "/", label: "ショップ", emoji: "🛍️" },
   { href: "/news", label: "ニュース", emoji: "📰" },
+  { href: "/map", label: "マップ", emoji: "🗺️" },
   { href: "/competition", label: "競技日程", emoji: "🏆" },
   { href: "/devices", label: "デバイス", emoji: "🖱️" },
 ];

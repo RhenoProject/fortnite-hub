@@ -77,6 +77,24 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
     .map(({ _sp, ...item }) => item);
 }
 
+export interface MapPOI {
+  id: string;
+  name: string;
+  location: { x: number; y: number; z: number };
+}
+
+export interface FortniteMap {
+  images: { blank: string; pois: string };
+  pois: MapPOI[];
+}
+
+export async function fetchMap(): Promise<FortniteMap> {
+  const response = await fetch(`${BASE_URL}/v1/map?language=ja`, { next: { revalidate: 3600 } });
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+  const json = await response.json();
+  return json.data as FortniteMap;
+}
+
 export async function fetchGameVersion(): Promise<GameVersion | null> {
   try {
     const response = await fetch(`${BASE_URL}/v2/aes`, { next: { revalidate: 3600 } });
