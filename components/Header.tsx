@@ -7,7 +7,7 @@ const navItems = [
   { href: "/", label: "ショップ", emoji: "🛍️" },
   { href: "/news", label: "ニュース", emoji: "📰" },
   { href: "/competition", label: "競技日程", emoji: "🏆" },
-  { href: "/weapons", label: "武器", emoji: "⚔️" },
+  { href: "/creators", label: "プレイヤー", emoji: "🎮" },
   { href: "/devices", label: "デバイス", emoji: "🖱️" },
 ];
 
