@@ -13,6 +13,12 @@ export interface ShopItem {
   featured: boolean;
 }
 
+export interface ShopBundleItem {
+  id: string;
+  name: string;
+  image: string;
+}
+
 export interface ShopBundle {
   kind: 'bundle';
   id: string;
@@ -21,6 +27,7 @@ export interface ShopBundle {
   price: number;
   image: string;
   icons: string[];
+  brItems: ShopBundleItem[];
   itemCount: number;
   featured: boolean;
 }
@@ -99,6 +106,13 @@ export async function fetchShop(): Promise<ShopEntry[]> {
       price: entry.finalPrice ?? entry.regularPrice ?? 0,
       image: mainImage,
       icons,
+      brItems: isCar ? [] : brItems
+        .filter((i: any) => i.id)
+        .map((i: any) => ({
+          id: i.id as string,
+          name: (i.name as string) ?? '',
+          image: getBestImage(i),
+        })),
       itemCount: allItems.length,
       featured: isFeatured(entry),
     });

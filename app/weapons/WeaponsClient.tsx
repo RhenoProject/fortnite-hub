@@ -58,9 +58,9 @@ export function WeaponsClient({ weapons, patchNotes }: Props) {
           </h1>
           <span style={{
             fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20,
-            background: "#ff880022", color: "#ff8800", border: "1px solid #ff880044",
+            background: "#00c8ff18", color: "var(--primary)", border: "1px solid #00c8ff33",
           }}>
-            🔧 デモ（APIキー設定後に実データに切替）
+            シーズン最新データ
           </span>
         </div>
         <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>
