@@ -59,6 +59,94 @@
 
 ## ログ
 
+### 2026-06-26（第2セッション）
+| 指標 | 今日 | 直近7日 |
+|------|------|--------|
+| ユーザー | 4 | 86 |
+| PV | 23 | 668 |
+| セッション | 4 | 163 |
+
+流入経路（直近7日）: Direct 92 / Organic Social 63 / Unassigned 10 / Organic Search 3 / Referral 3
+
+人気ページ（直近7日）:
+1. / — 359 PV
+2. /devices — 115 PV
+3. /news — 52 PV
+4. /competition — 34 PV
+5. /updates — 27 PV
+
+セッション作業ログ（2026-06-26 第2セッション）:
+- /creators ページ大幅改修（develop完了・しゅうや確認中）:
+  - Rainyを削除 → ぶゅりる・リズアート・キャプテンしょーた・Koyota・Ragis・YUMAの6名に入れ替え
+  - プロ選手（YUMA・Koyota）とストリーマー・配信者（ぶゅりる・リズアート・キャプテンしょーた・Ragis）の2セクション分け
+  - role: "pro" | "streamer" フィールド追加。PROバッジ（金）・配信者バッジ（紫）を出し分け
+  - DFMロゴをサーバー自前配信（/teams/dfm.png）に変更・ホットリンク問題解消
+  - SNSアイコン拡大（14px → 18px / PC:22px）・ボタン44px化
+  - PC向けレスポンシブ強化（カード220px・フォント拡大）
+  - ナビ順変更: ショップ→プレイヤー→ニュース→競技日程→デバイス
+  - プレイヤーアイコン: 🎮→👤（人型）
+  - チーム紹介セクション削除
+  - バンドルアイテムタップ修正（スマホで44px化）
+  - 各選手への掲載許可アポ取り文面（6名個別）を作成
+- 各選手データ訂正: ぶゅりる(DFM)・リズアート(CR現役・ソロ世界1位)・キャプテンしょーた(EDGE)・Ragis(ストリーマー枠)・YUMA追加(ZETA・FNCS4冠)
+
+
+
+### 2026-06-23
+| 指標 | 今日 | 直近7日 |
+|------|------|--------|
+| ユーザー | 7 | 103 |
+| PV | 28 | 686 |
+| セッション | 10 | 196 |
+
+流入経路（直近7日）: Direct 116 / Organic Social 73 / Unassigned 4 / Referral 3 / Organic Video 2 / Organic Search 1
+
+人気ページ（直近7日）:
+1. / — 407 PV
+2. /devices — 111 PV
+3. /news — 49 PV
+4. /updates — 37 PV
+5. /competition — 30 PV
+
+### 2026-06-26
+| 指標 | 今日 | 直近7日 |
+|------|------|--------|
+| ユーザー | 1 | 93 |
+| PV | 2 | 631 |
+| セッション | 2 | 172 |
+
+流入経路（直近7日）: Direct 93 / Organic Social 70 / Unassigned 7 / Organic Search 3 / Referral 3 / Organic Video 1
+
+人気ページ（直近7日）:
+1. / — 351 PV
+2. /devices — 111 PV
+3. /news — 46 PV
+4. /updates — 31 PV
+5. /competition — 30 PV
+
+セッション作業ログ（2026-06-26）:
+- 武器ページ（B-002）: fortnite-api.com に武器APIなし確認。本番保留。デモバッジ削除・ナビ非追加のまま develop保留
+- バンドルアイテムリンク化: ShopBundleにbrItems追加・BundleCardアイコンを/cosmetics/{id}へのLinkに変更
+- コスメ個別ページ画像改善: images.other/background フォールバック追加・画像なし時プレースホルダー表示
+- fortniteapi.io 月$5将来タスク（B-007）をTASKS.mdに追加
+- B-008 選手・チーム紹介ページ（/creators）新規作成: DFM Rainy・DFM・EDGE 初期データ。横スクロール・画像クリックSNS遷移。develop完了・しゅうや確認待ち
+- develop プレビューURL: https://fortnite-irdrmqufe-rheno-project2026.vercel.app
+
+---
+
+### 2026-06-23
+セッション作業ログ（2026-06-23）:
+- Discord告知（2〜3サーバー）の効果: Organic Social 65 → 73セッション（+12%）
+- B-002 武器データベース: プレビューURL確認 https://fortnite-jtn68f463-rheno-project2026.vercel.app/weapons（しゅうや確認中）
+- Y-001 YouTube Analytics連携: scripts/analytics.js に YouTube Data API v3 追加完了。APIキー設定後に即使用可能。手順メモをAI_TASKS.mdに記録。
+
+---
+
+### 2026-06-23（前回記録）
+Discord告知: 2〜3サーバーに投稿完了。効果測定は数日後のGA4で確認予定。
+
+---
+
 ### 2026-06-22（セッション終了時）
 | 指標 | 今日 | 直近7日 |
 |------|------|--------|
