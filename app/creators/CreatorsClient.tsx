@@ -93,11 +93,20 @@ function PlayerCard({ player }: { player: Player }) {
         <p className="card-name">{player.name}</p>
         <div style={{ display: "flex", justifyContent: "center", gap: 6, alignItems: "center", marginBottom: 6 }}>
           <span className="card-label" style={{ margin: 0 }}>{player.team}</span>
-          <span style={{
-            fontSize: 10, fontWeight: 800, color: "#000",
-            background: "linear-gradient(90deg,#f5c518,#ffaa00)",
-            borderRadius: 4, padding: "1px 6px", letterSpacing: "0.05em",
-          }}>PRO</span>
+          {player.role === "pro" && (
+            <span style={{
+              fontSize: 10, fontWeight: 800, color: "#000",
+              background: "linear-gradient(90deg,#f5c518,#ffaa00)",
+              borderRadius: 4, padding: "1px 6px", letterSpacing: "0.05em",
+            }}>PRO</span>
+          )}
+          {player.role === "streamer" && (
+            <span style={{
+              fontSize: 10, fontWeight: 800, color: "#fff",
+              background: "linear-gradient(90deg,#9146ff,#6441a5)",
+              borderRadius: 4, padding: "1px 6px", letterSpacing: "0.05em",
+            }}>配信者</span>
+          )}
         </div>
         <p className="card-desc">{player.description}</p>
         <SnsButtons sns={player.sns} />
@@ -146,22 +155,34 @@ export function CreatorsClient({ players }: Props) {
 
       <div style={{ marginBottom: 28 }}>
         <h1 className="creators-page-title" style={{ fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>
-          👤 プロ選手
+          👤 選手・配信者
         </h1>
         <p className="creators-page-sub" style={{ color: "var(--text-muted)" }}>
-          日本のフォートナイトプロ選手を紹介。画像をタップでSNSへ。
+          日本のフォートナイト選手・人気配信者を紹介。画像をタップでSNSへ。
         </p>
       </div>
+
+      <section style={{ marginBottom: 40 }}>
+        <h2 className="creators-section-h" style={{
+          fontWeight: 900, color: "var(--primary)",
+          marginBottom: 16, paddingBottom: 8, borderBottom: "1px solid var(--border)",
+        }}>
+          🏅 プロ選手
+        </h2>
+        <div className="creators-row" style={scrollRowStyle}>
+          {players.filter(p => p.role === "pro").map((p) => <PlayerCard key={p.id} player={p} />)}
+        </div>
+      </section>
 
       <section>
         <h2 className="creators-section-h" style={{
           fontWeight: 900, color: "var(--primary)",
           marginBottom: 16, paddingBottom: 8, borderBottom: "1px solid var(--border)",
         }}>
-          🏅 プレイヤー
+          🎥 ストリーマー・配信者
         </h2>
         <div className="creators-row" style={scrollRowStyle}>
-          {players.map((p) => <PlayerCard key={p.id} player={p} />)}
+          {players.filter(p => p.role === "streamer").map((p) => <PlayerCard key={p.id} player={p} />)}
         </div>
       </section>
     </>
