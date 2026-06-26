@@ -73,7 +73,7 @@ export const PLAYERS: Player[] = [
     id: "captainshota",
     name: "キャプテンしょーた",
     image: "https://unavatar.io/x/Captain_Shota",
-    team: "Circus",
+    team: "EDGE",
     role: "streamer",
     description: "60万人超のフォートナイトYouTuber。",
     primaryUrl: "https://x.com/Captain_Shota",
