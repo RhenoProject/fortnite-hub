@@ -93,8 +93,11 @@ function PlayerCard({ player }: { player: Player }) {
         <p style={{ fontSize: 14, fontWeight: 900, color: "var(--text)", textAlign: "center", marginBottom: 4 }}>
           {player.name}
         </p>
-        <p style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, textAlign: "center", marginBottom: 10 }}>
+        <p style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, textAlign: "center", marginBottom: 6 }}>
           {player.team}
+        </p>
+        <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginBottom: 10, lineHeight: 1.4 }}>
+          {player.description}
         </p>
         <SnsButtons sns={player.sns} />
       </div>
@@ -120,8 +123,11 @@ function TeamCard({ team }: { team: Team }) {
         />
       </a>
       <div style={{ padding: "10px 10px 12px" }}>
-        <p style={{ fontSize: 13, fontWeight: 900, color: "var(--text)", textAlign: "center", marginBottom: 10, lineHeight: 1.3 }}>
+        <p style={{ fontSize: 13, fontWeight: 900, color: "var(--text)", textAlign: "center", marginBottom: 6, lineHeight: 1.3 }}>
           {team.name}
+        </p>
+        <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginBottom: 10, lineHeight: 1.4 }}>
+          {team.description}
         </p>
         <SnsButtons sns={team.sns} />
       </div>
