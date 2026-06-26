@@ -3,25 +3,25 @@
 import type { Player, Team, SnsLinks } from "@/lib/creatorsData";
 
 const X_ICON = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+  <svg className="sns-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
   </svg>
 );
 
 const YT_ICON = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+  <svg className="sns-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
   </svg>
 );
 
 const TWITCH_ICON = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+  <svg className="sns-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
   </svg>
 );
 
 const TIKTOK_ICON = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+  <svg className="sns-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z" />
   </svg>
 );
@@ -156,7 +156,8 @@ export function CreatorsClient({ players, teams }: Props) {
           .card-name   { font-size: 20px; margin-bottom: 6px; }
           .card-label  { font-size: 14px; margin-bottom: 8px; }
           .card-desc   { font-size: 13px; margin-bottom: 14px; }
-          .sns-btn     { width: 40px; height: 40px; border-radius: 10px !important; }
+          .sns-btn     { width: 44px; height: 44px; border-radius: 10px !important; }
+          .sns-icon    { width: 22px; height: 22px; }
           .creators-row { gap: 20px !important; }
           .creators-page-title { font-size: 30px; }
           .creators-page-sub   { font-size: 15px; }
