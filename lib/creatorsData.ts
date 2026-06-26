@@ -76,7 +76,7 @@ export const PLAYERS: Player[] = [
     image: "https://unavatar.io/x/CRRIZARTTT",
     team: "Crazy Raccoon",
     role: "streamer",
-    description: "Crazy Raccoon所属のプロ選手。",
+    description: "ソロ世界1位達成。CR所属ストリーマー。",
     primaryUrl: "https://x.com/CRRIZARTTT",
     sns: {
       x: "https://x.com/CRRIZARTTT",
