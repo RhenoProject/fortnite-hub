@@ -57,10 +57,10 @@ function SnsButtons({ sns }: { sns: SnsLinks }) {
             rel="noopener noreferrer"
             title={cfg.label}
             onClick={(e) => e.stopPropagation()}
+            className="sns-btn"
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
-              width: 30, height: 30, borderRadius: 8,
-              background: cfg.bg, color: cfg.color,
+              borderRadius: 8, background: cfg.bg, color: cfg.color,
               textDecoration: "none", flexShrink: 0,
             }}
           >
@@ -74,8 +74,8 @@ function SnsButtons({ sns }: { sns: SnsLinks }) {
 
 function PlayerCard({ player }: { player: Player }) {
   return (
-    <div style={{
-      minWidth: 150, width: 150, flexShrink: 0,
+    <div className="creator-card player-card" style={{
+      flexShrink: 0,
       background: "var(--surface)",
       border: "1px solid var(--border)",
       borderRadius: 14, overflow: "hidden",
@@ -89,16 +89,10 @@ function PlayerCard({ player }: { player: Player }) {
           style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block", background: "var(--card)" }}
         />
       </a>
-      <div style={{ padding: "10px 10px 12px" }}>
-        <p style={{ fontSize: 14, fontWeight: 900, color: "var(--text)", textAlign: "center", marginBottom: 4 }}>
-          {player.name}
-        </p>
-        <p style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, textAlign: "center", marginBottom: 6 }}>
-          {player.team}
-        </p>
-        <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginBottom: 10, lineHeight: 1.4 }}>
-          {player.description}
-        </p>
+      <div className="card-body">
+        <p className="card-name">{player.name}</p>
+        <p className="card-label">{player.team}</p>
+        <p className="card-desc">{player.description}</p>
         <SnsButtons sns={player.sns} />
       </div>
     </div>
@@ -107,8 +101,8 @@ function PlayerCard({ player }: { player: Player }) {
 
 function TeamCard({ team }: { team: Team }) {
   return (
-    <div style={{
-      minWidth: 180, width: 180, flexShrink: 0,
+    <div className="creator-card team-card" style={{
+      flexShrink: 0,
       background: "var(--surface)",
       border: "1px solid var(--border)",
       borderRadius: 14, overflow: "hidden",
@@ -122,13 +116,9 @@ function TeamCard({ team }: { team: Team }) {
           style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block", background: "var(--card)" }}
         />
       </a>
-      <div style={{ padding: "10px 10px 12px" }}>
-        <p style={{ fontSize: 13, fontWeight: 900, color: "var(--text)", textAlign: "center", marginBottom: 6, lineHeight: 1.3 }}>
-          {team.name}
-        </p>
-        <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginBottom: 10, lineHeight: 1.4 }}>
-          {team.description}
-        </p>
+      <div className="card-body">
+        <p className="card-name" style={{ lineHeight: 1.3 }}>{team.name}</p>
+        <p className="card-desc">{team.description}</p>
         <SnsButtons sns={team.sns} />
       </div>
     </div>
@@ -143,20 +133,49 @@ interface Props {
 export function CreatorsClient({ players, teams }: Props) {
   return (
     <>
-      <style>{`.creators-row::-webkit-scrollbar { display: none; }`}</style>
+      <style>{`
+        .creators-row::-webkit-scrollbar { display: none; }
+
+        /* モバイル */
+        .player-card { min-width: 150px; width: 150px; }
+        .team-card   { min-width: 180px; width: 180px; }
+        .card-body   { padding: 10px 10px 12px; }
+        .card-name   { font-size: 14px; font-weight: 900; color: var(--text); text-align: center; margin-bottom: 4px; }
+        .card-label  { font-size: 11px; color: var(--primary); font-weight: 700; text-align: center; margin-bottom: 6px; }
+        .card-desc   { font-size: 10px; color: var(--text-muted); text-align: center; margin-bottom: 10px; line-height: 1.4; }
+        .sns-btn     { width: 30px; height: 30px; }
+        .creators-page-title { font-size: 22px; }
+        .creators-page-sub   { font-size: 13px; }
+        .creators-section-h  { font-size: 15px; }
+
+        /* PC */
+        @media (min-width: 768px) {
+          .player-card { min-width: 220px; width: 220px; }
+          .team-card   { min-width: 260px; width: 260px; }
+          .card-body   { padding: 18px 18px 20px; }
+          .card-name   { font-size: 20px; margin-bottom: 6px; }
+          .card-label  { font-size: 14px; margin-bottom: 8px; }
+          .card-desc   { font-size: 13px; margin-bottom: 14px; }
+          .sns-btn     { width: 40px; height: 40px; border-radius: 10px !important; }
+          .creators-row { gap: 20px !important; }
+          .creators-page-title { font-size: 30px; }
+          .creators-page-sub   { font-size: 15px; }
+          .creators-section-h  { font-size: 18px; }
+        }
+      `}</style>
 
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>
+        <h1 className="creators-page-title" style={{ fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>
           🎮 選手・チーム
         </h1>
-        <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+        <p className="creators-page-sub" style={{ color: "var(--text-muted)" }}>
           日本のフォートナイトプロ選手・チームを紹介。画像をタップでSNSへ。
         </p>
       </div>
 
       <section style={{ marginBottom: 40 }}>
-        <h2 style={{
-          fontSize: 15, fontWeight: 900, color: "var(--primary)",
+        <h2 className="creators-section-h" style={{
+          fontWeight: 900, color: "var(--primary)",
           marginBottom: 16, paddingBottom: 8, borderBottom: "1px solid var(--border)",
         }}>
           🏅 プレイヤー
@@ -167,8 +186,8 @@ export function CreatorsClient({ players, teams }: Props) {
       </section>
 
       <section>
-        <h2 style={{
-          fontSize: 15, fontWeight: 900, color: "var(--primary)",
+        <h2 className="creators-section-h" style={{
+          fontWeight: 900, color: "var(--primary)",
           marginBottom: 16, paddingBottom: 8, borderBottom: "1px solid var(--border)",
         }}>
           🏆 チーム
