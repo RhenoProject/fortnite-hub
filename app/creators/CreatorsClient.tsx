@@ -1,6 +1,6 @@
 "use client";
 
-import type { Player, Team, SnsLinks } from "@/lib/creatorsData";
+import type { Player, SnsLinks } from "@/lib/creatorsData";
 
 const X_ICON = (
   <svg className="sns-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -106,38 +106,12 @@ function PlayerCard({ player }: { player: Player }) {
   );
 }
 
-function TeamCard({ team }: { team: Team }) {
-  return (
-    <div className="creator-card team-card" style={{
-      flexShrink: 0,
-      background: "var(--surface)",
-      border: "1px solid var(--border)",
-      borderRadius: 14, overflow: "hidden",
-      scrollSnapAlign: "start",
-    }}>
-      <a href={team.primaryUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={team.image}
-          alt={team.name}
-          style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block", background: "var(--card)" }}
-        />
-      </a>
-      <div className="card-body">
-        <p className="card-name" style={{ lineHeight: 1.3 }}>{team.name}</p>
-        <p className="card-desc">{team.description}</p>
-        <SnsButtons sns={team.sns} />
-      </div>
-    </div>
-  );
-}
 
 interface Props {
   players: Player[];
-  teams: Team[];
 }
 
-export function CreatorsClient({ players, teams }: Props) {
+export function CreatorsClient({ players }: Props) {
   return (
     <>
       <style>{`
@@ -145,7 +119,6 @@ export function CreatorsClient({ players, teams }: Props) {
 
         /* モバイル */
         .player-card { min-width: 150px; width: 150px; }
-        .team-card   { min-width: 180px; width: 180px; }
         .card-body   { padding: 10px 10px 12px; }
         .card-name   { font-size: 14px; font-weight: 900; color: var(--text); text-align: center; margin-bottom: 4px; }
         .card-label  { font-size: 11px; color: var(--primary); font-weight: 700; text-align: center; margin-bottom: 6px; }
@@ -158,7 +131,6 @@ export function CreatorsClient({ players, teams }: Props) {
         /* PC */
         @media (min-width: 768px) {
           .player-card { min-width: 220px; width: 220px; }
-          .team-card   { min-width: 260px; width: 260px; }
           .card-body   { padding: 18px 18px 20px; }
           .card-name   { font-size: 20px; margin-bottom: 6px; }
           .card-label  { font-size: 14px; margin-bottom: 8px; }
@@ -174,14 +146,14 @@ export function CreatorsClient({ players, teams }: Props) {
 
       <div style={{ marginBottom: 28 }}>
         <h1 className="creators-page-title" style={{ fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>
-          🎮 選手・チーム
+          👤 プロ選手
         </h1>
         <p className="creators-page-sub" style={{ color: "var(--text-muted)" }}>
-          日本のフォートナイトプロ選手・チームを紹介。画像をタップでSNSへ。
+          日本のフォートナイトプロ選手を紹介。画像をタップでSNSへ。
         </p>
       </div>
 
-      <section style={{ marginBottom: 40 }}>
+      <section>
         <h2 className="creators-section-h" style={{
           fontWeight: 900, color: "var(--primary)",
           marginBottom: 16, paddingBottom: 8, borderBottom: "1px solid var(--border)",
@@ -190,18 +162,6 @@ export function CreatorsClient({ players, teams }: Props) {
         </h2>
         <div className="creators-row" style={scrollRowStyle}>
           {players.map((p) => <PlayerCard key={p.id} player={p} />)}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="creators-section-h" style={{
-          fontWeight: 900, color: "var(--primary)",
-          marginBottom: 16, paddingBottom: 8, borderBottom: "1px solid var(--border)",
-        }}>
-          🏆 チーム
-        </h2>
-        <div className="creators-row" style={scrollRowStyle}>
-          {teams.map((t) => <TeamCard key={t.id} team={t} />)}
         </div>
       </section>
     </>

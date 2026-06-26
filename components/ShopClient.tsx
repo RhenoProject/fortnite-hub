@@ -196,15 +196,16 @@ function BundleCard({ bundle }: { bundle: ShopBundle }) {
           </div>
           <div>
             {bundle.brItems.length > 0 && (
-              <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "8px" }}>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "8px" }}>
                 {bundle.brItems.slice(0, 6).map((item: ShopBundleItem) => (
                   <Link
                     key={item.id}
                     href={`/cosmetics/${item.id}`}
                     onClick={(e) => e.stopPropagation()}
                     title={item.name}
+                    className="bundle-item-link"
                     style={{
-                      position: "relative", width: "34px", height: "34px",
+                      position: "relative",
                       borderRadius: "6px", overflow: "hidden",
                       backgroundColor: "var(--border)", display: "block",
                       flexShrink: 0,
@@ -212,7 +213,7 @@ function BundleCard({ bundle }: { bundle: ShopBundle }) {
                       transition: "border-color 0.15s",
                     }}
                   >
-                    {item.image && <Image src={item.image} alt={item.name} fill sizes="34px" style={{ objectFit: "cover" }} />}
+                    {item.image && <Image src={item.image} alt={item.name} fill sizes="44px" style={{ objectFit: "cover" }} />}
                   </Link>
                 ))}
               </div>
@@ -357,6 +358,10 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           .shop-grid-featured { grid-template-columns: repeat(2, 1fr); gap: 10px; }
           .shop-grid-regular  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
         }
+
+        /* バンドル内アイテムリンク */
+        .bundle-item-link { width: 34px; height: 34px; }
+        @media (max-width: 480px) { .bundle-item-link { width: 44px; height: 44px; } }
 
         /* フィルタータブ: 横スクロール＋スクロールバー非表示 */
         .filter-tabs {
