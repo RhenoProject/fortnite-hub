@@ -91,7 +91,14 @@ function PlayerCard({ player }: { player: Player }) {
       </a>
       <div className="card-body">
         <p className="card-name">{player.name}</p>
-        <p className="card-label">{player.team}</p>
+        <div style={{ display: "flex", justifyContent: "center", gap: 6, alignItems: "center", marginBottom: 6 }}>
+          <span className="card-label" style={{ margin: 0 }}>{player.team}</span>
+          <span style={{
+            fontSize: 10, fontWeight: 800, color: "#000",
+            background: "linear-gradient(90deg,#f5c518,#ffaa00)",
+            borderRadius: 4, padding: "1px 6px", letterSpacing: "0.05em",
+          }}>PRO</span>
+        </div>
         <p className="card-desc">{player.description}</p>
         <SnsButtons sns={player.sns} />
       </div>

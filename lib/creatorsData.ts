@@ -43,7 +43,7 @@ export const TEAMS: Team[] = [
   {
     id: "dfm",
     name: "DetonatioN FocusMe",
-    image: "https://owcdn.net/img/63972e548cdc9.png",
+    image: "/teams/dfm.png",
     description: "2012年設立の日本老舗eスポーツ組織。複数タイトルで国内トップ。",
     primaryUrl: "https://x.com/team_detonation",
     sns: {
