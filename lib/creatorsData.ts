@@ -35,7 +35,7 @@ export const PLAYERS: Player[] = [
     name: "Ragis",
     image: "https://unavatar.io/x/rag1sfn",
     team: "Nova",
-    role: "pro",
+    role: "streamer",
     description: "アジアソロ1位。最強の若手プロ。",
     primaryUrl: "https://x.com/rag1sfn",
     sns: {
