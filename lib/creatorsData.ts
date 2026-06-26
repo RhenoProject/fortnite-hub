@@ -18,6 +18,20 @@ export interface Player {
 
 export const PLAYERS: Player[] = [
   {
+    id: "yuma",
+    name: "YUMA",
+    image: "https://unavatar.io/x/yumafv",
+    team: "ZETA DIVISION",
+    role: "pro",
+    description: "FNCS4冠達成。ZETAの若きエース。",
+    primaryUrl: "https://x.com/yumafv",
+    sns: {
+      x: "https://x.com/yumafv",
+      youtube: "https://www.youtube.com/@yumafv",
+      twitch: "https://www.twitch.tv/yumafv",
+    },
+  },
+  {
     id: "koyota",
     name: "Koyota",
     image: "https://unavatar.io/x/Koyota0",
@@ -36,7 +50,7 @@ export const PLAYERS: Player[] = [
     image: "https://unavatar.io/x/rag1sfn",
     team: "Nova",
     role: "streamer",
-    description: "アジアソロ1位。最強の若手プロ。",
+    description: "アジアソロ1位の実力を持つ若手ストリーマー。",
     primaryUrl: "https://x.com/rag1sfn",
     sns: {
       x: "https://x.com/rag1sfn",
