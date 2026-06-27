@@ -78,9 +78,17 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
   const entries: any[] = json.data?.entries ?? [];
 
+  // "Terminator1.98" → "Terminator1" (同セクションの判定用)
+  const getLayoutPrefix = (id: string | null | undefined): string | null => {
+    if (!id) return null;
+    const dot = id.lastIndexOf('.');
+    return dot >= 0 ? id.slice(0, dot) : id;
+  };
+
   const bundles: ShopBundle[] = [];
-  // 名付きバンドルに含まれるアイテム名を収集（疑似バンドル・カーアイテムの判定用）
+  // 名付きバンドルのアイテム名とlayoutIdプレフィックスを収集
   const bundleItemNames = new Set<string>();
+  const bundlePrefixes = new Set<string>();
 
   for (const entry of entries) {
     if (!entry.bundle) continue;
@@ -90,6 +98,9 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
     // 名付きバンドル内の全アイテム名を収集
     allItems.forEach((i: any) => { if (i.name) bundleItemNames.add(i.name); });
+    // セクションプレフィックスを収集 (例: "Terminator1.99" → "Terminator1")
+    const pfx = getLayoutPrefix(entry.layoutId);
+    if (pfx) bundlePrefixes.add(pfx);
 
     if (allItems.length === 0) continue;
 
@@ -144,13 +155,20 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     const entryFeatured = isFeatured(entry);
 
     if (brItems.length > 1) {
-      // コンボの全アイテムが名付きバンドルに含まれる場合 → バンドルカードで表示済みなので非表示
-      const allInBundle = brItems.every((i: any) => !i.name || bundleItemNames.has(i.name));
-      if (allInBundle) {
-        brItems.forEach((i: any) => { if (i.name) seenNames.add(i.name); });
-        continue;
+      // 同セクションに名付きバンドルがある場合（例: Terminator1.98 ↔ Terminator1.99）
+      // → 同セクションのサブ購入オプションなので表示する
+      const entryPrefix = getLayoutPrefix(entry.layoutId);
+      const inBundleSection = entryPrefix !== null && bundlePrefixes.has(entryPrefix);
+
+      if (!inBundleSection) {
+        // 別セクションかつ全アイテムが名付きバンドルに含まれる場合 → 非表示
+        const allInBundle = brItems.every((i: any) => !i.name || bundleItemNames.has(i.name));
+        if (allInBundle) {
+          brItems.forEach((i: any) => { if (i.name) seenNames.add(i.name); });
+          continue;
+        }
       }
-      // 一部でもバンドル外のアイテムがある場合 → 疑似バンドルカードとして表示
+      // 表示: 同セクションのサブオプション or バンドル外アイテムを含む独立セット
       const icons = brItems
         .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? '')
         .filter(Boolean)
