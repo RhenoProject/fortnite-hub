@@ -126,8 +126,36 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     if (entry.bundle) continue;
     const brItems: any[] = entry.brItems ?? entry.items ?? [];
     const carItems: any[] = entry.cars ?? [];
-    const allEntryItems = brItems.length > 0 ? brItems : carItems;
     const entryFeatured = isFeatured(entry);
+
+    // 複数brItemsを持つ非バンドルエントリ = 一括購入セット（個別販売ではない）
+    // → bundlesに疑似バンドルとして追加し、個別カード表示を防ぐ
+    if (brItems.length > 1) {
+      const icons = brItems
+        .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? '')
+        .filter(Boolean)
+        .slice(0, 6);
+      brItems.forEach((i: any) => { if (i.name) seenNames.add(i.name); });
+      bundles.push({
+        kind: 'bundle',
+        id: entry.offerId ?? brItems[0]?.id ?? '',
+        name: brItems[0]?.name ?? 'セット',
+        rarity: getRarity(entry),
+        price: entry.finalPrice ?? entry.regularPrice ?? 0,
+        image: getBestImage(brItems[0]),
+        icons,
+        brItems: brItems.filter((i: any) => i.id).map((i: any) => ({
+          id: i.id as string,
+          name: (i.name as string) ?? '',
+          image: getBestImage(i),
+        })),
+        itemCount: brItems.length,
+        featured: entryFeatured,
+      });
+      continue;
+    }
+
+    const allEntryItems = brItems.length === 1 ? brItems : carItems;
 
     for (const item of allEntryItems) {
       const name: string = item.name ?? '';
