@@ -163,14 +163,109 @@ function SearchResultCard({
   );
 }
 
-function BundleCard({ bundle }: { bundle: ShopBundle }) {
+function BundleDetailModal({ bundle, onClose }: { bundle: ShopBundle; onClose: () => void }) {
   const color = rarityColors[bundle.rarity] ?? rarityColors.legendary;
   return (
-    <div style={{
-      backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
-      border: `1px solid ${color}66`, display: "flex", flexDirection: "column",
-      gridColumn: "span 2",
-    }}>
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 2000, background: "rgba(0,0,0,0.82)", display: "flex", alignItems: "flex-end" }}
+      onClick={onClose}
+    >
+      <style>{`
+        @media (min-width: 640px) {
+          .bundle-modal-panel { width: 520px !important; border-radius: 20px !important; align-self: center !important; margin: auto !important; }
+          .bundle-modal-wrap { align-items: center !important; justify-content: center !important; }
+        }
+      `}</style>
+      <div
+        className="bundle-modal-wrap"
+        style={{ width: "100%", display: "flex", alignItems: "flex-end", justifyContent: "center" }}
+        onClick={onClose}
+      >
+        <div
+          className="bundle-modal-panel"
+          style={{
+            width: "100%", maxHeight: "88vh", overflowY: "auto",
+            background: "var(--surface)", borderRadius: "20px 20px 0 0",
+            padding: "0 0 max(env(safe-area-inset-bottom),20px)",
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          {/* ハンドル */}
+          <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 0" }}>
+            <div style={{ width: "36px", height: "4px", borderRadius: "2px", background: "var(--border)" }} />
+          </div>
+
+          {/* ヘッダー */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 0" }}>
+            <span style={{ fontSize: "11px", fontWeight: "800", color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              セット {bundle.itemCount}点
+            </span>
+            <button
+              onClick={onClose}
+              style={{ background: "rgba(255,255,255,0.08)", border: "none", cursor: "pointer", color: "var(--text)", fontSize: "16px", borderRadius: "8px", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}
+            >✕</button>
+          </div>
+
+          {/* バンドル画像 */}
+          {bundle.image && (
+            <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", maxHeight: "260px", overflow: "hidden" }}>
+              <Image src={bundle.image} alt={bundle.name} fill sizes="520px" style={{ objectFit: "cover" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--surface) 0%, transparent 50%)" }} />
+            </div>
+          )}
+
+          {/* 名前・価格 */}
+          <div style={{ padding: "0 16px 16px" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: "900", color: "var(--text)", marginBottom: "8px", lineHeight: 1.3 }}>
+              {bundle.name}
+            </h2>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "20px" }}>
+              <span style={{ color: "var(--accent)", fontWeight: "900", fontSize: "20px" }}>⟁</span>
+              <span style={{ color: "var(--accent)", fontWeight: "900", fontSize: "20px" }}>{bundle.price.toLocaleString()}</span>
+            </div>
+
+            {/* 含まれるアイテム */}
+            {bundle.brItems.length > 0 && (
+              <>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: "700", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  含まれるアイテム ({bundle.brItems.length}点)
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "10px" }}>
+                  {bundle.brItems.map(item => (
+                    <Link key={item.id} href={`/cosmetics/${item.id}`} onClick={onClose} style={{ textDecoration: "none" }}>
+                      <div style={{ borderRadius: "10px", overflow: "hidden", background: "var(--card)", border: `1px solid ${color}33` }}>
+                        <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
+                          {item.image
+                            ? <Image src={item.image} alt={item.name} fill sizes="100px" style={{ objectFit: "cover" }} />
+                            : <div style={{ width: "100%", height: "100%", background: "var(--border)" }} />
+                          }
+                        </div>
+                        <p style={{ fontSize: "10px", fontWeight: "700", color: "var(--text)", padding: "4px 6px", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any }}>
+                          {item.name}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BundleCard({ bundle, onClick }: { bundle: ShopBundle; onClick: () => void }) {
+  const color = rarityColors[bundle.rarity] ?? rarityColors.legendary;
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        backgroundColor: "var(--card)", borderRadius: "12px", overflow: "hidden",
+        border: `1px solid ${color}66`, display: "flex", flexDirection: "column",
+        gridColumn: "span 2", cursor: "pointer",
+      }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
         {bundle.image ? (
           <div style={{ position: "relative", width: "50%", aspectRatio: "1/1", flexShrink: 0 }}>
@@ -226,6 +321,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [showWishlist, setShowWishlist] = useState(false);
+  const [selectedBundle, setSelectedBundle] = useState<ShopBundle | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -573,7 +669,7 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
               </div>
               <div className="shop-grid-featured">
                 {featured.map(e => e.kind === "bundle"
-                  ? <BundleCard key={e.id} bundle={e} />
+                  ? <BundleCard key={e.id} bundle={e} onClick={() => setSelectedBundle(e as ShopBundle)} />
                   : <ItemCard key={e.id} item={e} large wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
                 )}
               </div>
@@ -605,12 +701,17 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
 
             <div className="shop-grid-regular">
               {filteredRegular.map(e => e.kind === "bundle"
-                ? <BundleCard key={e.id} bundle={e} />
+                ? <BundleCard key={e.id} bundle={e} onClick={() => setSelectedBundle(e as ShopBundle)} />
                 : <ItemCard key={e.id} item={e} wished={wishlist.has(e.id)} onToggleWish={toggleWish} />
               )}
             </div>
           </section>
         </>
+      )}
+
+      {/* バンドル詳細モーダル */}
+      {selectedBundle && (
+        <BundleDetailModal bundle={selectedBundle} onClose={() => setSelectedBundle(null)} />
       )}
 
       {/* ほしいものリストモーダル */}
