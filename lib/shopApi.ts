@@ -146,10 +146,14 @@ export async function fetchShop(): Promise<ShopEntry[]> {
         .filter(Boolean)
         .slice(0, 6);
       brItems.forEach((i: any) => { if (i.name) seenNames.add(i.name); });
+      const pseudoItemNames = [...new Set(brItems.map((i: any) => i.name as string).filter(Boolean))];
+      const pseudoName = pseudoItemNames.length >= 2
+        ? pseudoItemNames.slice(0, 2).join(' & ')
+        : (pseudoItemNames[0] ?? 'セット');
       bundles.push({
         kind: 'bundle',
         id: entry.offerId ?? brItems[0]?.id ?? '',
-        name: brItems[0]?.name ?? 'セット',
+        name: pseudoName,
         rarity: getRarity(entry),
         price: entry.finalPrice ?? entry.regularPrice ?? 0,
         image: getBestImage(brItems[0]),
