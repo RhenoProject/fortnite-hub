@@ -69,7 +69,10 @@ async function handleRequest(req: NextRequest) {
           });
 
       try {
-        await webpush.sendNotification(subscription, payload);
+        await webpush.sendNotification(subscription, payload, {
+          urgency: "high",
+          TTL: 3600,
+        });
         sent++;
       } catch (e: any) {
         failed++;

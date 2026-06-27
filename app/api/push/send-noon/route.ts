@@ -10,7 +10,7 @@ webpush.setVapidDetails(
 );
 
 const CRON_SECRET = process.env.CRON_SECRET;
-const EXPIRY_DATE = "2026-06-21"; // この日以降は自動停止
+const EXPIRY_DATE = "2026-06-01"; // 永続停止
 
 async function fetchTodayShop(): Promise<Map<string, string>> {
   try {
