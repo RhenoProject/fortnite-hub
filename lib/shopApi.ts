@@ -118,7 +118,17 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     });
   }
 
-  // seenNames で重複を防ぐ。バンドル内アイテムであっても単品エントリがあれば表示する。
+  // 先に複数brItemsを持つ非バンドルエントリのアイテム名を収集
+  // → APIの処理順序に関わらず、コンボ内アイテムを単品として表示しない
+  const comboItemNames = new Set<string>();
+  for (const entry of entries) {
+    if (entry.bundle) continue;
+    const brItems: any[] = entry.brItems ?? entry.items ?? [];
+    if (brItems.length > 1) {
+      brItems.forEach((i: any) => { if (i.name) comboItemNames.add(i.name); });
+    }
+  }
+
   const seenNames = new Set<string>();
   const items: ShopItem[] = [];
 
@@ -128,8 +138,8 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     const carItems: any[] = entry.cars ?? [];
     const entryFeatured = isFeatured(entry);
 
-    // 複数brItemsを持つ非バンドルエントリ = 一括購入セット（個別販売ではない）
-    // → bundlesに疑似バンドルとして追加し、個別カード表示を防ぐ
+    // 複数brItemsを持つ非バンドルエントリ = スキン+付属品コンボ（一括購入のみ）
+    // → bundlesに疑似バンドルとして追加
     if (brItems.length > 1) {
       const icons = brItems
         .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? '')
@@ -159,7 +169,8 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
     for (const item of allEntryItems) {
       const name: string = item.name ?? '';
-      if (!name || seenNames.has(name)) continue;
+      // コンボ内アイテムまたは既出アイテムは単品表示しない
+      if (!name || seenNames.has(name) || comboItemNames.has(name)) continue;
       seenNames.add(name);
 
       items.push({
