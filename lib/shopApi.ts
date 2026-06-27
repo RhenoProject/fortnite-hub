@@ -79,12 +79,17 @@ export async function fetchShop(): Promise<ShopEntry[]> {
   const entries: any[] = json.data?.entries ?? [];
 
   const bundles: ShopBundle[] = [];
+  // 名付きバンドルに含まれるアイテム名を収集（疑似バンドル・カーアイテムの判定用）
+  const bundleItemNames = new Set<string>();
 
   for (const entry of entries) {
     if (!entry.bundle) continue;
     const brItems: any[] = entry.brItems ?? entry.items ?? [];
     const carItems: any[] = entry.cars ?? [];
     const allItems = brItems.length > 0 ? brItems : carItems;
+
+    // 名付きバンドル内の全アイテム名を収集
+    allItems.forEach((i: any) => { if (i.name) bundleItemNames.add(i.name); });
 
     if (allItems.length === 0) continue;
 
@@ -138,9 +143,14 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     const carItems: any[] = entry.cars ?? [];
     const entryFeatured = isFeatured(entry);
 
-    // 複数brItemsを持つ非バンドルエントリ = スキン+付属品コンボ（一括購入のみ）
-    // → bundlesに疑似バンドルとして追加
     if (brItems.length > 1) {
+      // コンボの全アイテムが名付きバンドルに含まれる場合 → バンドルカードで表示済みなので非表示
+      const allInBundle = brItems.every((i: any) => !i.name || bundleItemNames.has(i.name));
+      if (allInBundle) {
+        brItems.forEach((i: any) => { if (i.name) seenNames.add(i.name); });
+        continue;
+      }
+      // 一部でもバンドル外のアイテムがある場合 → 疑似バンドルカードとして表示
       const icons = brItems
         .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? '')
         .filter(Boolean)
@@ -169,12 +179,15 @@ export async function fetchShop(): Promise<ShopEntry[]> {
       continue;
     }
 
+    const isCar = brItems.length === 0 && carItems.length > 0;
     const allEntryItems = brItems.length === 1 ? brItems : carItems;
 
     for (const item of allEntryItems) {
       const name: string = item.name ?? '';
       // コンボ内アイテムまたは既出アイテムは単品表示しない
       if (!name || seenNames.has(name) || comboItemNames.has(name)) continue;
+      // カーアイテムが名付きバンドルに含まれる場合 → バンドル経由でのみ入手可能なので非表示
+      if (isCar && bundleItemNames.has(name)) continue;
       seenNames.add(name);
 
       items.push({
