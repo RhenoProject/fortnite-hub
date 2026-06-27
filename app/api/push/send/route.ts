@@ -3,12 +3,6 @@ import { revalidatePath } from "next/cache";
 import { getDb } from "@/lib/firestore";
 import webpush from "web-push";
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
-
 const CRON_SECRET = process.env.CRON_SECRET;
 
 async function fetchTodayShop(): Promise<Map<string, string>> {
@@ -34,6 +28,12 @@ async function handleRequest(req: NextRequest) {
   if (CRON_SECRET && req.headers.get("authorization") !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT!,
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  );
 
   const [db, shopMap] = await Promise.all([
     Promise.resolve(getDb()),

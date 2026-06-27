@@ -3,12 +3,6 @@ import { revalidatePath } from "next/cache";
 import { getDb } from "@/lib/firestore";
 import webpush from "web-push";
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
-
 const CRON_SECRET = process.env.CRON_SECRET;
 const EXPIRY_DATE = "2026-06-01"; // 永続停止
 
@@ -35,6 +29,12 @@ async function handleRequest(req: NextRequest) {
   if (CRON_SECRET && req.headers.get("authorization") !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT!,
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!
+  );
 
   // 6/21以降は自動停止
   const jstDateStr = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
