@@ -176,7 +176,8 @@ export default function DevicesPage() {
       <div className="devices-page">
         <div className="devices-hero">
           <h1>フォートナイト おすすめゲーミングデバイス</h1>
-          <p>プロ選手も使用する厳選デバイス — 8カテゴリ51商品をAmazon価格付きで紹介</p>
+          <p style={{ fontSize: 16, fontWeight: 800, color: "var(--primary)", marginBottom: 6 }}>勝率が上がる！プロ選手が使うデバイスを厳選。</p>
+          <p>マウス・モニター・ヘッドセット など8カテゴリ51商品をAmazon価格付きで紹介</p>
         </div>
 
         {devices.map((category) => (
