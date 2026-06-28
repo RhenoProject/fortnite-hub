@@ -1,7 +1,7 @@
 # フォトナHub — タスク管理
 
 > CTO: ジョブズ（Claude）｜オーナー: しゅうや
-> 最終更新: 2026-06-22（マップページ実装・ズーム/パン/ドロップスポット・B-004 develop完了）
+> 最終更新: 2026-06-29（SEO強化・push通知遅延修正・デバイスページ勝率コピー追加・ナビ整理）
 
 ---
 
@@ -110,6 +110,8 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] SEO強化 本番反映: /devicesページtitle【2026年最新】・JSON-LD ItemList・h2タグ化、/cosmetics/[id]タイトル/description改善（いつ出る・通知文言）、ショップバナーCTA強化 — 2026-06-29
 - [x] SEO追加改善 本番反映: BreadcrumbList JSON-LD（/cosmetics/[id]）・FAQPage JSON-LD（/competition）・sitemap lastModified更新 — 2026-06-29
 - [x] push通知遅延修正 本番反映: TTL 3600→300（5分で期限切れ）・cronを09:10 JST（UTC 00:10）に変更 — 2026-06-29
+- [x] デバイスページ 勝率訴求コピー追加 本番反映: h1下に「勝率が上がる！プロ選手が使うデバイスを厳選。」追加 — 2026-06-29
+- [x] ナビから「プレイヤー（/creators）」を削除 本番反映: mainには元々なし・developから除去 — 2026-06-29
 
 ---
 
