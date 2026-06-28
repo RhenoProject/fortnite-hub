@@ -65,10 +65,10 @@ export default async function ShopPage() {
             <span style={{ fontSize: "30px", flexShrink: 0, lineHeight: 1 }}>{"\u{1F525}"}</span>
             <div>
               <div style={{ fontSize: "15px", fontWeight: 900, color: "#dff6ff", marginBottom: "4px", letterSpacing: "0.3px" }}>
-                フォートナイト向け おすすめゲーミングデバイス
+                勝率が上がる！フォートナイト向けゲーミングデバイス
               </div>
               <div style={{ fontSize: "12px", color: "#5aa8c8" }}>
-                マウス・モニター・ヘッドセット・キーボードなど 51商品を厳選
+                プロ選手も使用 — マウス・モニター・ヘッドセット など51商品をAmazon価格で比較
               </div>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default async function ShopPage() {
             borderRadius: "20px", padding: "9px 20px",
             whiteSpace: "nowrap", flexShrink: 0,
           }}>
-            今すぐチェック →
+            Amazonで見る →
           </div>
         </div>
       </a>

@@ -4,8 +4,12 @@ import { DeviceImage } from "@/components/DeviceImage";
 const parsePrice = (price: string) => parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
 
 export const metadata: Metadata = {
-  title: "おすすめゲーミングデバイス | フォトナHub",
-  description: "フォートナイトをもっと楽しむためのおすすめゲーミングデバイスを紹介。マウス・キーボード・ヘッドセット・イヤホン・マイク・モニター・マウスパッドなど厳選アイテム。",
+  title: "フォートナイト おすすめゲーミングデバイス【2026年最新】| フォトナHub",
+  description: "フォートナイトプレイヤー向けのおすすめゲーミングデバイスを厳選紹介。マウス・キーボード・ヘッドセット・ゲーミングモニター・マウスパッドなど8カテゴリ51商品。プロ選手も使用するモデルからコスパ重視まで比較。Amazonで購入可能。",
+  openGraph: {
+    title: "フォートナイト おすすめゲーミングデバイス【2026年最新】| フォトナHub",
+    description: "フォートナイトプレイヤー向けの厳選ゲーミングデバイス。マウス・モニター・ヘッドセット・キーボードなど51商品を比較紹介。",
+  },
 };
 
 const devices: {
@@ -122,9 +126,27 @@ const devices: {
   },
 ];
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "フォートナイト おすすめゲーミングデバイス",
+  "description": "フォートナイトプレイヤー向けの厳選ゲーミングデバイス一覧",
+  "numberOfItems": devices.reduce((acc, c) => acc + c.items.length, 0),
+  "itemListElement": devices.map((cat, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": cat.category.replace(/^\S+\s/, ""),
+    "description": cat.description,
+  })),
+};
+
 export default function DevicesPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <style>{`
         .devices-page { max-width: 1000px; margin: 0 auto; padding: 24px 16px 48px; }
         .devices-hero { text-align: center; margin-bottom: 40px; }
@@ -153,13 +175,13 @@ export default function DevicesPage() {
 
       <div className="devices-page">
         <div className="devices-hero">
-          <h1>🎮 おすすめゲーミングデバイス</h1>
-          <p>フォートナイトをもっと楽しむための厳選デバイスを紹介</p>
+          <h1>フォートナイト おすすめゲーミングデバイス</h1>
+          <p>プロ選手も使用する厳選デバイス — 8カテゴリ51商品をAmazon価格付きで紹介</p>
         </div>
 
         {devices.map((category) => (
           <div key={category.category} className="device-category">
-            <div className="category-title">{category.category}</div>
+            <h2 className="category-title">{category.category}</h2>
             <div className="category-desc">{category.description}</div>
             <div className="device-grid">
               {[...category.items].sort((a, b) => parsePrice(a.price) - parsePrice(b.price)).map((item) => (
