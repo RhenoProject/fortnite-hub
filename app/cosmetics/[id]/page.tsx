@@ -60,14 +60,25 @@ export default async function CosmeticDetailPage({ params }: Props) {
   const color = rarityColors[item.rarity?.value] ?? rarityColors.common;
   const rarityLabel = RARITY_LABEL[item.rarity?.value] ?? item.rarity?.displayValue ?? "";
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: item.name,
-    description: item.description,
-    image: heroImage,
-    brand: { "@type": "Brand", name: "Epic Games" },
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: item.name,
+      description: item.description,
+      image: heroImage,
+      brand: { "@type": "Brand", name: "Epic Games" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "フォトナHub", item: "https://fortnite-hub-delta.vercel.app" },
+        { "@type": "ListItem", position: 2, name: "スキン検索", item: "https://fortnite-hub-delta.vercel.app/" },
+        { "@type": "ListItem", position: 3, name: item.name, item: `https://fortnite-hub-delta.vercel.app/cosmetics/${id}` },
+      ],
+    },
+  ];
 
   return (
     <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px" }}>
