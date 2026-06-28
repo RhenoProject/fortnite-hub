@@ -214,4 +214,12 @@
 - 教訓: **SEO施策はまとめてデプロイするより種類別に計測できるよう記録しておく。FAQリッチリザルトはSearch Consoleの「拡張機能」タブで確認できる**
 - タグ: #SEO #JSON-LD #構造化データ
 
+### cherry-pick時の型定義漏れ（2026-06-29）
+- 問題: `app/cosmetics/[id]/page.tsx`（`item.images.other`使用）をmainにcherry-pickしたが、`lib/fortniteApi.ts`の型拡張（`other`/`background`追加）は未cherry-pick → TypeScript build error
+- 原因: 関連する複数ファイルをセットでcherry-pickしなかった
+- 結果: 本番デプロイが2回連続ERRORになり、しゅうやが指摘するまで気づかなかった
+- 修正: mainで直接1行修正・push → READY
+- 教訓: **cherry-pickは型定義・ユーティリティ等の依存ファイルも必ずセットで行う。mainへのpush後は即Vercelデプロイ状態を確認する。今後はpush後確認がルール化済み**
+- タグ: #TypeScript #cherry-pick #デプロイ #バグ
+
 *最終更新: 2026-06-29 by AI CTO ジョブズ（セッション終了時更新）*
