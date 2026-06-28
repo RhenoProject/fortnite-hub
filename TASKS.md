@@ -107,7 +107,9 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] push通知動作確認: Vercel Cron Jobs「Run」ボタンで手動送信→即時届いた ✅ — 2026-06-27
 - [x] バンドルクリックで詳細モーダル表示（含まれるアイテム一覧・PC/スマホ両対応）本番反映（main cherry-pick 5787ad1）— 2026-06-27
 - [x] 単品誤表示修正: 複数brItemsを持つ非バンドルエントリを疑似バンドルとして表示（個別販売アイテムと区別）本番反映 — 2026-06-27
-- [x] SEO強化（develop・しゅうや確認待ち）: /devicesページtitle【2026年最新】・JSON-LD ItemList・h2タグ化、/cosmetics/[id]タイトル/description改善（いつ出る・通知文言）、ショップバナーCTA強化 — 2026-06-29
+- [x] SEO強化 本番反映: /devicesページtitle【2026年最新】・JSON-LD ItemList・h2タグ化、/cosmetics/[id]タイトル/description改善（いつ出る・通知文言）、ショップバナーCTA強化 — 2026-06-29
+- [x] SEO追加改善 本番反映: BreadcrumbList JSON-LD（/cosmetics/[id]）・FAQPage JSON-LD（/competition）・sitemap lastModified更新 — 2026-06-29
+- [x] push通知遅延修正 本番反映: TTL 3600→300（5分で期限切れ）・cronを09:10 JST（UTC 00:10）に変更 — 2026-06-29
 
 ---
 
