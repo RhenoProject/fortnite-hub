@@ -1,7 +1,7 @@
 # フォトナHub — タスク管理
 
 > CTO: ジョブズ（Claude）｜オーナー: しゅうや
-> 最終更新: 2026-06-29（SEO強化・push通知遅延修正・デバイスページ勝率コピー追加・ナビ整理）
+> 最終更新: 2026-06-29（ビルドエラー修正・mainPush許可追加・エラーチェックルール化）
 
 ---
 
@@ -112,6 +112,9 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] push通知遅延修正 本番反映: TTL 3600→300（5分で期限切れ）・cronを09:10 JST（UTC 00:10）に変更 — 2026-06-29
 - [x] デバイスページ 勝率訴求コピー追加 本番反映: h1下に「勝率が上がる！プロ選手が使うデバイスを厳選。」追加 — 2026-06-29
 - [x] ナビから「プレイヤー（/creators）」を削除 本番反映: mainには元々なし・developから除去 — 2026-06-29
+- [x] ビルドエラー修正（CosmeticItem.images型にother/background追加）本番反映 ✅ — 2026-06-29
+- [x] mainブランチpush許可をClaude設定に追加（~/.claude/settings.json）— 2026-06-29
+- [x] エラーチェックルール追加（TASKS更新後・main push後にVercelデプロイ状況を毎回確認）PROJECT.md・feedback_auto_save.md に記載 — 2026-06-29
 
 ---
 
