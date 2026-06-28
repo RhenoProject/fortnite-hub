@@ -59,6 +59,55 @@
 
 ## ログ
 
+### 2026-06-29
+| 指標 | 今日 | 直近7日 |
+|------|------|--------|
+| ユーザー | 0 | 84 |
+| PV | 1 | 498 |
+| セッション | 1 | 136 |
+
+流入経路（直近7日）: Direct 72 / Organic Social 58 / Organic Search 4 / Unassigned 6 / Referral 2
+
+人気ページ（直近7日）:
+1. / — 256 PV
+2. /creators — 29 PV（develop preview URLへのアクセス）
+3. /devices — 29 PV
+4. /news — 26 PV
+5. /competition — 17 PV
+
+セッション作業ログ（2026-06-29）:
+- データ分析でOrganic Search 4セッション確認（SEO効果が出始め）
+- ICE評価に基づきSEO強化3施策を実施（develop完了・しゅうや確認待ち）:
+  - /devices: title【2026年最新】・JSON-LD ItemList追加・h2タグ化・h1キーワード最適化
+  - /cosmetics/[id]: title「いつ出る？」追加・descriptionにレアリティ/ショップ通知文言追加
+  - /: ショップバナー「勝率が上がる！」「Amazonで見る →」CTA強化
+- プレビューURL: https://fortnite-k774vyp8e-rheno-project2026.vercel.app
+
+---
+
+### 2026-06-27
+| 指標 | 今日 | 直近7日 |
+|------|------|--------|
+| ユーザー | 6 | 95 |
+| PV | 8 | 546 |
+| セッション | 6 | 160 |
+
+流入経路（直近7日）: Direct 89 / Organic Social 57 / Unassigned 19 / Organic Search 3 / Referral 3
+
+人気ページ（直近7日）:
+1. / — 266 PV
+2. /devices — 59 PV
+3. /news — 49 PV
+4. /competition — 35 PV
+5. /creators — 26 PV
+
+セッション作業ログ（2026-06-27）:
+- push通知不具合調査・修正: urgency:high + TTL:3600追加・send-noon完全停止・本番反映
+- Vercelダッシュボード「Run」ボタンで手動送信 → しゅうやのスマホに即時届いたことを確認 ✅
+- 今後の手動送信方法: Settings → Cron Jobs → /api/push/send の▶Runボタン
+
+---
+
 ### 2026-06-26（第2セッション）
 | 指標 | 今日 | 直近7日 |
 |------|------|--------|
