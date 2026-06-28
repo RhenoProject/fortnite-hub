@@ -15,10 +15,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = await fetchCosmeticById(id);
   if (!item) return { title: "スキン情報 | フォトナHub" };
 
-  const title = `${item.name} | フォートナイト スキン情報 | フォトナHub`;
+  const title = `${item.name} | フォートナイト スキン いつ出る？ | フォトナHub`;
+  const rarityStr = item.rarity.displayValue ? `${item.rarity.displayValue}レアリティ。` : "";
   const description = item.description
-    ? `${item.description} レアリティ: ${item.rarity.displayValue}。フォートナイト ${item.name} の詳細情報。`
-    : `フォートナイト ${item.name} のスキン詳細情報。レアリティ・セット・登場シーズンを確認。`;
+    ? `フォートナイト「${item.name}」${rarityStr}${item.description} ショップ入荷状況・スタイル・登場シーズンを確認。ほしいものリストに追加してショップ出現時に通知を受け取れます。`
+    : `フォートナイト「${item.name}」スキン情報。${rarityStr}ショップ入荷状況・スタイル・登場シーズンをチェック。ほしいものリストに追加してショップ出現時に通知を受け取れます。`;
   const image = item.images.featured ?? item.images.other ?? item.images.icon ?? item.images.background ?? item.images.smallIcon ?? "";
 
   return {
