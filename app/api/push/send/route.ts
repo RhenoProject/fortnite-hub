@@ -71,7 +71,7 @@ async function handleRequest(req: NextRequest) {
       try {
         await webpush.sendNotification(subscription, payload, {
           urgency: "high",
-          TTL: 3600,
+          TTL: 300,
         });
         sent++;
       } catch (e: any) {
