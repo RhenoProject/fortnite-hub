@@ -104,7 +104,7 @@ export interface CosmeticItem {
   series?: { value: string; colors?: string[] };
   set?: { value: string; text: string };
   introduction?: { chapter: string; season: string; text: string };
-  images: { smallIcon?: string; icon?: string; featured?: string };
+  images: { smallIcon?: string; icon?: string; featured?: string; other?: string; background?: string };
   variants?: Array<{
     channel: string;
     type: string;
