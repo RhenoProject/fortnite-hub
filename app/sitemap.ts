@@ -28,13 +28,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: "https://fortnite-hub-delta.vercel.app/devices",
-      lastModified: new Date("2026-06-19"),
+      lastModified: new Date("2026-06-29"),
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: "https://fortnite-hub-delta.vercel.app/competition",
-      lastModified: new Date("2026-06-20"),
+      lastModified: new Date("2026-06-29"),
       changeFrequency: "weekly",
       priority: 0.7,
     },
