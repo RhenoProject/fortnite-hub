@@ -60,6 +60,7 @@ export function NewsCard({ item, priority }: { item: NewsItem; priority?: boolea
             sizes="(max-width: 639px) 100vw, (max-width: 1100px) 50vw, 530px"
             style={{ objectFit: "cover" }}
             priority={priority}
+            unoptimized
             onError={() => setImgError(true)}
           />
           {badge}
