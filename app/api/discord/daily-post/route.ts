@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchShop, ShopItem } from "@/lib/shopApi";
+import { fetchShop, ShopItem, ShopEntry } from "@/lib/shopApi";
 import { getDb } from "@/lib/firestore";
+import { sendBotMessage, sendWebhookMessage, MessageOptions } from "@/lib/discordBot";
+
+const SITE_URL = "https://fortnite-hub-delta.vercel.app";
 
 function jstDateStr(): string {
   return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
@@ -23,7 +26,7 @@ async function markSentToday(): Promise<void> {
   } catch {}
 }
 
-async function fetchShopWithRetry(maxAttempts = 3): Promise<Awaited<ReturnType<typeof fetchShop>>> {
+async function fetchShopWithRetry(maxAttempts = 3): Promise<ShopEntry[]> {
   let lastErr: unknown;
   for (let i = 0; i < maxAttempts; i++) {
     try {
@@ -36,24 +39,48 @@ async function fetchShopWithRetry(maxAttempts = 3): Promise<Awaited<ReturnType<t
   throw lastErr;
 }
 
-async function sendToDiscord(webhookUrl: string, payload: object, maxAttempts = 3): Promise<void> {
-  let lastErr: unknown;
-  for (let i = 0; i < maxAttempts; i++) {
-    try {
-      const res = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return;
-      const detail = await res.text().catch(() => "");
-      throw new Error(`Discord webhook ${res.status}: ${detail}`);
-    } catch (e) {
-      lastErr = e;
-      if (i < maxAttempts - 1) await new Promise(r => setTimeout(r, 2000 * (i + 1)));
-    }
+async function postToDiscord(options: MessageOptions): Promise<void> {
+  const botToken = process.env.DISCORD_BOT_TOKEN;
+  const channelId = process.env.DISCORD_CHANNEL_ID;
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+
+  if (botToken && channelId) {
+    await sendBotMessage(botToken, channelId, options, 3);
+  } else if (webhookUrl) {
+    await sendWebhookMessage(webhookUrl, options, 3);
+  } else {
+    throw new Error("Discord credentials not set");
   }
-  throw lastErr;
+}
+
+function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
+  const featuredItems = entries
+    .filter((e): e is ShopItem => e.kind === "item" && e.featured)
+    .slice(0, 5);
+  const totalCount = entries.length;
+
+  const descParts = [`今日は **${totalCount}点** のアイテムがラインナップ！`, ""];
+  if (featuredItems.length > 0) {
+    descParts.push("⭐ **注目アイテム**");
+    featuredItems.forEach(item => {
+      descParts.push(`・${item.name}（${item.price.toLocaleString()} V-Bucks）`);
+    });
+    descParts.push("");
+  }
+  descParts.push(`[🔗 ショップ全体を見る](${SITE_URL})`);
+
+  return {
+    embeds: [
+      {
+        title: `🛍️ 今日のフォートナイトショップ（${today}）`,
+        description: descParts.join("\n"),
+        color: 0x00c8ff,
+        image: { url: `${SITE_URL}/api/og/shop` },
+        footer: { text: "フォトナHub | #フォートナイト #Fortnite" },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
 }
 
 async function handleRequest(req: NextRequest) {
@@ -67,12 +94,12 @@ async function handleRequest(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-  if (!webhookUrl) {
-    return NextResponse.json({ error: "DISCORD_WEBHOOK_URL not set" }, { status: 503 });
+  const hasBot = !!(process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_CHANNEL_ID);
+  const hasWebhook = !!process.env.DISCORD_WEBHOOK_URL;
+  if (!hasBot && !hasWebhook) {
+    return NextResponse.json({ error: "Discord credentials not set" }, { status: 503 });
   }
 
-  // 手動トリガー以外は重複送信を防ぐ
   if (!isManual && await hasSentToday()) {
     return NextResponse.json({ skipped: "already sent today" });
   }
@@ -84,63 +111,25 @@ async function handleRequest(req: NextRequest) {
     timeZone: "Asia/Tokyo",
   });
 
-  let entries: Awaited<ReturnType<typeof fetchShop>>;
+  let entries: ShopEntry[];
   try {
     entries = await fetchShopWithRetry(3);
   } catch (e) {
     const errMsg = `fetchShop失敗（3回リトライ後）: ${String(e)}`;
-    await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: `🚨 daily-post エラー（${today}）: ${errMsg}` }),
+    await postToDiscord({
+      embeds: [{ title: `🚨 daily-post エラー（${today}）`, description: errMsg, color: 0xff0000 }],
     }).catch(() => {});
     return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 
-  const featuredItems = entries
-    .filter((e): e is ShopItem => e.kind === "item" && e.featured)
-    .slice(0, 3);
-
-  const totalCount = entries.length;
-
-  const lines: string[] = [`🛍️ 今日のフォートナイトショップ（${today}）`, ""];
-
-  if (featuredItems.length > 0) {
-    lines.push("⭐ 注目アイテム");
-    featuredItems.forEach((item) => {
-      const name = item.name.length > 16 ? item.name.slice(0, 15) + "…" : item.name;
-      lines.push(`・${name}（${item.price.toLocaleString()}V）`);
-    });
-    lines.push("");
-  }
-
-  lines.push(`他${totalCount}点のアイテムはこちら👇`);
-  lines.push("https://fortnite-hub-delta.vercel.app");
-  lines.push("");
-  lines.push("#フォートナイト #Fortnite #アイテムショップ");
-
-  const OG_IMAGE_URL = "https://fortnite-hub-delta.vercel.app/api/og/shop";
-
-  const payload = {
-    content: `📋 **今日のX投稿文面（コピペしてXに貼ってください）**\n\`\`\`\n${lines.join("\n")}\n\`\`\``,
-    embeds: [
-      {
-        title: `🛍️ 今日のショップ画像（Xに添付してください）`,
-        color: 51455, // #00C8FF
-        image: { url: OG_IMAGE_URL },
-        footer: { text: "画像を右クリック→保存→Xに投稿文と一緒に貼ってください" },
-      },
-    ],
-  };
-
   try {
-    await sendToDiscord(webhookUrl, payload, 3);
+    await postToDiscord(buildShopPayload(entries, today));
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 
   await markSentToday();
-  return NextResponse.json({ success: true, itemCount: totalCount });
+  return NextResponse.json({ success: true, itemCount: entries.length });
 }
 
 export const GET = handleRequest;
