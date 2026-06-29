@@ -17,8 +17,25 @@ const categoryColor: Record<NewsCategory, string> = {
 
 export function NewsCard({ item, priority }: { item: NewsItem; priority?: boolean }) {
   const [expanded, setExpanded] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const color = categoryColor[item.category];
   const label = categoryLabel[item.category];
+
+  const badge = (
+    <span style={{
+      position: "absolute",
+      top: "14px",
+      left: "14px",
+      padding: "4px 12px",
+      borderRadius: "20px",
+      fontSize: "12px",
+      fontWeight: "700",
+      backgroundColor: `${color}dd`,
+      color: "#0a0f1a",
+    }}>
+      {label}
+    </span>
+  );
 
   return (
     <div
@@ -34,7 +51,7 @@ export function NewsCard({ item, priority }: { item: NewsItem; priority?: boolea
         transition: "border-color 0.2s",
       }}
     >
-      {item.image ? (
+      {item.image && !imgError ? (
         <div style={{ position: "relative", width: "100%", aspectRatio: "16/9" }}>
           <Image
             src={item.image}
@@ -43,36 +60,13 @@ export function NewsCard({ item, priority }: { item: NewsItem; priority?: boolea
             sizes="(max-width: 639px) 100vw, (max-width: 1100px) 50vw, 530px"
             style={{ objectFit: "cover" }}
             priority={priority}
+            onError={() => setImgError(true)}
           />
-          <span style={{
-            position: "absolute",
-            top: "14px",
-            left: "14px",
-            padding: "4px 12px",
-            borderRadius: "20px",
-            fontSize: "12px",
-            fontWeight: "700",
-            backgroundColor: `${color}dd`,
-            color: "#0a0f1a",
-          }}>
-            {label}
-          </span>
+          {badge}
         </div>
       ) : (
         <div style={{ width: "100%", aspectRatio: "16/9", backgroundColor: "var(--border)", position: "relative" }}>
-          <span style={{
-            position: "absolute",
-            top: "14px",
-            left: "14px",
-            padding: "4px 12px",
-            borderRadius: "20px",
-            fontSize: "12px",
-            fontWeight: "700",
-            backgroundColor: `${color}dd`,
-            color: "#0a0f1a",
-          }}>
-            {label}
-          </span>
+          {badge}
         </div>
       )}
 
