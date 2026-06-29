@@ -53,6 +53,21 @@ async function postToDiscord(options: MessageOptions): Promise<void> {
   }
 }
 
+const JOBS_QUOTES = [
+  "毎日ショップをチェックする習慣が、最高のプレイヤーを作る。",
+  "365点の選択肢。最高の一点を見つけろ。",
+  "アイテムは消耗品だが、センスは永続する。",
+  "プレイヤーの時間は有限だ。フォトナHubで賢く使え。",
+  "今日売れるアイテムが、明日の情報になる。",
+  "ゲームに勝つのはスキルだが、スタイルに勝つのは情報だ。",
+  "毎日更新されるショップは、毎日訪れる理由になる。",
+];
+
+function getJobsQuote(): string {
+  const dayIndex = new Date(Date.now() + 9 * 60 * 60 * 1000).getDay();
+  return JOBS_QUOTES[dayIndex];
+}
+
 function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
   const featuredItems = entries
     .filter((e): e is ShopItem => e.kind === "item" && e.featured)
@@ -67,7 +82,7 @@ function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
     });
     descParts.push("");
   }
-  descParts.push(`[🔗 ショップ全体を見る](${SITE_URL})`);
+  descParts.push(`🔗 ${SITE_URL}`);
 
   return {
     embeds: [
@@ -78,6 +93,10 @@ function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
         image: { url: `${SITE_URL}/api/og/shop` },
         footer: { text: "フォトナHub | #フォートナイト #Fortnite" },
         timestamp: new Date().toISOString(),
+      },
+      {
+        description: `💼 **RHENOより**\n${getJobsQuote()}`,
+        color: 0x1a1a2e,
       },
     ],
   };
