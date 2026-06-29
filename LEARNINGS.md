@@ -118,4 +118,108 @@
 
 ---
 
-*最終更新: 2026-06-21 by AI CTO ジョブズ（セッション終了時更新）*
+---
+
+### コスメティック個別ページ C-001（2026-06-22実装）
+- 仮説: /cosmetics/[id] で各スキンに独自URLを与えるとロングテールSEO流入が期待できる
+- 実施内容: fetchCosmeticById / 個別ページ / generateMetadata / JSON-LD / sitemap200件追加 / 検索カードリンク / ショップカードリンク
+- 結果: 本番稼働中。Googleインデックス待ち（2〜4週間後に効果測定予定）
+- 追加実装: 検索クエリURL同期（?q=...）でrouter.back()時に検索状態を復元
+- 教訓: 個別ページSEOは実装は早いがインデックスに時間がかかる。Search Consoleで進捗を追うこと
+- タグ: #SEO #新規ページ
+
+### マップページの失敗（2026-06-22）
+- 仮説: マップ表示・ドロップスポット機能でユーザー価値がある
+- 実施内容: /map・MapClient・ズーム/パン・ドロップスポットピン（13POI）
+- 問題1: DROP_DATAのキーが英語名だがAPIは日本語名を返すためピンが全件非表示（バグ）
+- 問題2: しゅうやが「マップを追加する意味はある？」と問い直し → 競合（fortnite.gg等）に勝てる独自コンテンツがない
+- 結論: ナビから削除・developに残存（宝箱座標等の独自データが取れたら再着手）
+- 教訓: **独自データがない単なるAPI表示は競合に勝てない。「これがないと困る」という機能のみ作る**
+- タグ: #判断ミス #競合分析
+
+### Reddit告知は日本語サイトに向かない（2026-06-22）
+- 試したこと: r/FortNiteBR に投稿 → 削除。r/FortniteJP は存在しない
+- 根本原因: Reddit英語サブは自己宣伝に厳しい。日本人フォートナイトユーザーはRedditをほぼ使わない
+- 結論: Reddit戦略は廃止。Discord・X・YouTube・クリエイターDMに集中する
+- 教訓: **チャンネル選定は「ターゲットユーザーがそこにいるか」を先に確認する**
+- タグ: #SNS #失敗
+
+### スキン一覧ページの判断ミス（2026-06-22）
+- 仮説: スキン一覧は検索需要があるから作るべき
+- 実施内容: /skins・SkinsClient・/api/cosmetics/list を実装
+- 結果: しゅうやに「本当に残すという判断は大事か？」と指摘 → 削除
+- 根本原因: PROJECT.md「今必要ない機能は作らない」ルールを確認せずに実装した。競合が強い・ショップ内全スキン検索が既に同等機能として存在する点を事前に評価しなかった
+- 教訓: **新規ページ実装前に必ずPROJECT.md・LEARNINGS.md・AI_TASKS.mdを再読し「競合」「既存機能との重複」「今必要か」を評価する。実装コストがあっても見切り発車で始めない**
+- タグ: #判断ミス #PROJECT.md違反
+
+### Server→Client ペイロード超過（2026-06-22）
+- 問題: スキン一覧で5000件以上のコスメデータをServer Componentからpropsで渡した → ペイロード超過でページ表示不可
+- 修正: /api/cosmetics/list APIルート新設（クライアント側でフェッチ・80件/ページ・type/q/pageフィルター）
+- 教訓: **大量データ（目安: 1000件以上）はServer→Clientのprops転送禁止。必ずAPIルート経由でクライアント取得する**
+- タグ: #Next.js #パフォーマンス
+
+### 武器データ取得の限界（2026-06-22）
+- 調査: fortnite-api.com の /v2/cosmetics/br?type=weapon は 404（武器データなし）
+- 原因: fortnite-api.com は コスメ（スキン・エモート等）専門API。武器バランスデータは提供していない
+- 結論: 無料での武器バランス（ダメージ・DPS・環境変動）自動取得は不可能
+- 解決策: fortniteapi.io（月$5〜）で武器・大会・環境データが取得可能
+- 教訓: **APIの対象データ範囲を先に調査してから実装方針を決める。fortnite-api.com = コスメ特化・fortniteapi.io = 総合（有料）**
+- タグ: #API #調査
+
+### マップAPI無料取得（2026-06-22）
+- 調査: fortnite-api.com の `/v1/map?language=ja` で日本語マップ画像+全POI名+座標が無料で取得可能
+- 取得データ: マップ画像URL（blank版/POI名入り版）・POI30件（名前・x/y/z座標）
+- 教訓: **マップはfortnite-api.comで無料実装可能。武器データと同様に「まず無料APIで取得できるか確認する」フローを徹底する**
+- タグ: #API #マップ
+
+### ズーム・パンのライブラリ不要実装（2026-06-22）
+- 実装: マウスホイール（カーソル位置中心ズーム）・ドラッグパン・タッチピンチズーム+スライドをuseRef+useEffectで手動実装
+- PROJECT.md「ライブラリ追加は最小限」ルールに従い、react-zoom-pan-pinchを不採用
+- 教訓: **ズーム/パンはwheel event + touchstart/move/end + transform: translateX scale() の組み合わせで十分。カーソル中心ズームは `mx - r*(mx - ox)` の公式を使う**
+- タグ: #UX #手動実装
+
+### 間違ったプレビューURL提供（2026-06-22・2回発生）
+- 問題: デプロイ完了前の古いdeploymentのURLを提供してしまった（2回）
+- 1回目: スキンページで fortnite-7mo6g9h8p（旧）→ 正しくは fortnite-f2rypwf1i
+- 2回目: 武器ページで fortnite-h967pirel（旧）→ 正しくは fortnite-a16h7hhpu
+- 原因: git pushからVercelデプロイ完了まで1〜2分のタイムラグがある。pushした直後にAPIを叩くと前回のdeploymentが返ってくる
+- 教訓: **プレビューURLを提供する前に `vercel ls` でlatestのdeploymentのURLを確認する。git push直後は30秒以上待ってから確認する**
+- タグ: #デプロイ #Vercel
+
+---
+
+---
+
+## 2026-06-29
+
+### Web Push TTL = 配信遅延の直接原因（2026-06-29 特定・修正）
+- 問題: push通知が9:05 JSTに送信されているのに、しゅうやには約1時間遅れで届いていた
+- 根本原因: `webpush.sendNotification()` の `TTL: 3600`（1時間）設定
+  - デバイスがオフライン・スリープ中 → プッシュサービスが通知をキューに保持
+  - TTL = 3600 なので最大1時間キューに残る → TTL切れ直前に配信 → 約10:05 JSTに届く
+- 修正: `TTL: 3600 → 300`（5分）。5分以内に届かなければ通知はドロップ（古い情報なので届かない方がまし）
+- あわせて: cronを `5 0 * * *`（JST 09:05）→ `10 0 * * *`（JST 09:10）に変更。ショップ更新直後のタイムラグを考慮
+- 教訓: **Web Push で「届く時刻を制御したい」場合は TTL を短く設定する（ショップ通知なら300〜600秒）。TTLを長くすると「後から突然届く」体験が生まれる**
+- タグ: #WebPush #Cron #TTL #バグ修正
+
+### SEO施策まとめ — JSON-LD拡充（2026-06-29）
+- 実施内容:
+  - /devices: ItemList JSON-LD・title【2026年最新】・h2タグ化
+  - /cosmetics/[id]: titleに「いつ出る？」・description改善（ショップ入荷状況・通知案内）・BreadcrumbList JSON-LD追加・画像フォールバック拡張
+  - /competition: FAQPage JSON-LD追加（FNCSとは・キャッシュカップ・オープンリーグ）
+  - sitemap.ts: devices/competitionのlastModifiedを2026-06-29に更新
+  - app/page.tsx: デバイスバナーCTA強化（「勝率が上がる！」「Amazonで見る →」）
+- 期待効果: リッチリザルト表示（FAQ・パンくず）→ CTR向上、タイトル改善→ Organic Search増加
+- 計測: 2〜4週間後に Search Console で確認予定
+- 教訓: **SEO施策はまとめてデプロイするより種類別に計測できるよう記録しておく。FAQリッチリザルトはSearch Consoleの「拡張機能」タブで確認できる**
+- タグ: #SEO #JSON-LD #構造化データ
+
+### cherry-pick時の型定義漏れ（2026-06-29）
+- 問題: `app/cosmetics/[id]/page.tsx`（`item.images.other`使用）をmainにcherry-pickしたが、`lib/fortniteApi.ts`の型拡張（`other`/`background`追加）は未cherry-pick → TypeScript build error
+- 原因: 関連する複数ファイルをセットでcherry-pickしなかった
+- 結果: 本番デプロイが2回連続ERRORになり、しゅうやが指摘するまで気づかなかった
+- 修正: mainで直接1行修正・push → READY
+- 教訓: **cherry-pickは型定義・ユーティリティ等の依存ファイルも必ずセットで行う。mainへのpush後は即Vercelデプロイ状態を確認する。今後はpush後確認がルール化済み**
+- タグ: #TypeScript #cherry-pick #デプロイ #バグ
+
+*最終更新: 2026-06-29 by AI CTO ジョブズ（セッション終了時更新）*

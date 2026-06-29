@@ -1,7 +1,7 @@
 # フォトナHub — タスク管理
 
 > CTO: ジョブズ（Claude）｜オーナー: しゅうや
-> 最終更新: 2026-06-19（デバイスページ本番公開・スマホナビ改善・背景黒単色化・ニュースソート改善）
+> 最終更新: 2026-06-29（ビルドエラー修正・mainPush許可追加・エラーチェックルール化）
 
 ---
 
@@ -105,9 +105,18 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] バンドルアイテムスマホタップ修正（44px化） — 2026-06-26
 - [x] push通知修正: urgency:high+TTL:3600追加（即時配信）・send-noon完全停止・本番反映 — 2026-06-27
 - [x] push通知動作確認: Vercel Cron Jobs「Run」ボタンで手動送信→即時届いた ✅ — 2026-06-27
-- [x] バンドルクリックで詳細モーダル表示（含まれるアイテム一覧・PC/スマホ両対応）本番反映 — 2026-06-27
+- [x] バンドルクリックで詳細モーダル表示（含まれるアイテム一覧・PC/スマホ両対応）本番反映（main cherry-pick 5787ad1）— 2026-06-27
 - [x] 単品誤表示修正: 複数brItemsを持つ非バンドルエントリを疑似バンドルとして表示（個別販売アイテムと区別）本番反映 — 2026-06-27
 - [x] ビルドクラッシュ修正: webpush.setVapidDetails をリクエスト処理内に移動（モジュール評価時エラー解消）本番反映 — 2026-06-27
+- [x] SEO強化 本番反映: /devicesページtitle【2026年最新】・JSON-LD ItemList・h2タグ化、/cosmetics/[id]タイトル/description改善（いつ出る・通知文言）、ショップバナーCTA強化 — 2026-06-29
+- [x] SEO追加改善 本番反映: BreadcrumbList JSON-LD（/cosmetics/[id]）・FAQPage JSON-LD（/competition）・sitemap lastModified更新 — 2026-06-29
+- [x] push通知遅延修正 本番反映: TTL 3600→300（5分で期限切れ）・cronを09:10 JST（UTC 00:10）に変更 — 2026-06-29
+- [x] デバイスページ 勝率訴求コピー追加 本番反映: h1下に「勝率が上がる！プロ選手が使うデバイスを厳選。」追加 — 2026-06-29
+- [x] ナビから「プレイヤー（/creators）」を削除 本番反映: mainには元々なし・developから除去 — 2026-06-29
+- [x] ビルドエラー修正（CosmeticItem.images型にother/background追加）本番反映 ✅ — 2026-06-29
+- [x] mainブランチpush許可をClaude設定に追加（~/.claude/settings.json）— 2026-06-29
+- [x] エラーチェックルール追加（TASKS更新後・main push後にVercelデプロイ状況を毎回確認）PROJECT.md・feedback_auto_save.md に記載 — 2026-06-29
+- [x] ニュース画像修正 本番反映: unoptimized追加（CDN URL再最適化回避）・onError fallback実装 — 2026-06-29
 
 ---
 
@@ -157,12 +166,14 @@ URL: https://fortnite-hub-delta.vercel.app
 
 | # | 内容 | 状態 |
 |---|------|------|
-| B-001 | スキン一覧ページ（/skins） | 実装中 |
-| B-002 | 武器一覧ページ（/weapons） | 待機 |
-| B-003 | XP・レベル計算機（/xp-calc） | 待機 |
-| B-004 | マップ情報ページ（/map） | 調査中 |
-| B-005 | パッチノート一覧強化（/updates） | 待機 |
-| B-006 | アイテムショップ履歴（/shop/history） | 待機 |
+| ~~B-001~~ | ~~スキン一覧ページ（/skins）~~ | ❌ キャンセル（競合強い・重複・「今必要ない機能は作らない」ルール違反）|
+| B-002 | 武器データベース（/weapons） | ⏸️ 本番保留（fortniteapi.io 契約後に実データ化・本番公開）|
+| B-003 | XP・レベル計算機（/xp-calc） | ❌ 却下（APIなし・手動更新前提・工数対効果低い）|
+| B-004 | マップ情報ページ（/map） | ✅ develop完了・しゅうや確認待ち（ズーム/パン/ドロップスポット）|
+| B-005 | パッチノート一覧強化（/updates） | ✅ develop完了・BRニュース表示・しゅうや確認待ち |
+| B-006 | アイテムショップ履歴（/shop/history） | 保留（Firestore蓄積が2026-06-21開始・1ヶ月後に実装）|
+| B-007 | fortniteapi.io 契約 → 武器・パッチノート実データ化 | 🔜 将来タスク（月$5・しゅうや契約後にジョブズが実装）|
+| B-008 | 選手/クリエイター/チーム紹介ページ（/creators） | 🟢 実装中 |
 
 ---
 

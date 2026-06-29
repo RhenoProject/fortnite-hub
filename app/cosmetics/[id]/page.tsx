@@ -51,7 +51,12 @@ export default async function CosmeticDetailPage({ params }: Props) {
   const item = await fetchCosmeticById(id);
   if (!item) notFound();
 
-  const heroImage = item.images.featured ?? item.images.icon ?? item.images.smallIcon ?? "";
+  const heroImage = item.images.featured
+    ?? item.images.other
+    ?? item.images.icon
+    ?? item.images.background
+    ?? item.images.smallIcon
+    ?? "";
   const color = rarityColors[item.rarity?.value] ?? rarityColors.common;
   const rarityLabel = RARITY_LABEL[item.rarity?.value] ?? item.rarity?.displayValue ?? "";
 
@@ -82,23 +87,30 @@ export default async function CosmeticDetailPage({ params }: Props) {
       <BackButton />
 
       {/* ヒーロー画像 */}
-      {heroImage && (
-        <div style={{
-          width: "100%", aspectRatio: "1/1", maxHeight: 400,
-          borderRadius: 16, overflow: "hidden",
-          border: `2px solid ${color}66`,
-          background: `linear-gradient(135deg, ${color}18, #000)`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          marginBottom: 20,
-        }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+      <div style={{
+        width: "100%", aspectRatio: "1/1", maxHeight: 400,
+        borderRadius: 16, overflow: "hidden",
+        border: `2px solid ${color}66`,
+        background: `linear-gradient(135deg, ${color}18, #000)`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        marginBottom: 20,
+      }}>
+        {heroImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={heroImage}
             alt={item.name}
             style={{ width: "100%", height: "100%", objectFit: "contain" }}
           />
-        </div>
-      )}
+        ) : (
+          <div style={{ textAlign: "center", color: "var(--text-muted)" }}>
+            <div style={{ fontSize: 64, marginBottom: 8 }}>
+              {item.type?.value === "emote" ? "🕺" : item.type?.value === "backpack" ? "🎒" : item.type?.value === "pickaxe" ? "⛏️" : item.type?.value === "glider" ? "🪂" : item.type?.value === "wrap" ? "🎨" : "✨"}
+            </div>
+            <div style={{ fontSize: 12 }}>{item.type?.displayValue ?? "コスメティック"}</div>
+          </div>
+        )}
+      </div>
 
       {/* レアリティ・タイプ バッジ */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>

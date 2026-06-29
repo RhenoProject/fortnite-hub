@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShopEntry, ShopItem, ShopBundle, rarityColors } from "@/lib/shopApi";
+import { ShopEntry, ShopItem, ShopBundle, ShopBundleItem, rarityColors } from "@/lib/shopApi";
 import {
   getWishlist, getWishlistItems, saveWishlistItems,
   syncWishlistToServer, WishlistItem,
@@ -290,7 +290,30 @@ function BundleCard({ bundle, onClick }: { bundle: ShopBundle; onClick: () => vo
             </p>
           </div>
           <div>
-            {bundle.icons.length > 0 && (
+            {bundle.brItems.length > 0 && (
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "8px" }}>
+                {bundle.brItems.slice(0, 6).map((item: ShopBundleItem) => (
+                  <Link
+                    key={item.id}
+                    href={`/cosmetics/${item.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    title={item.name}
+                    className="bundle-item-link"
+                    style={{
+                      position: "relative",
+                      borderRadius: "6px", overflow: "hidden",
+                      backgroundColor: "var(--border)", display: "block",
+                      flexShrink: 0,
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      transition: "border-color 0.15s",
+                    }}
+                  >
+                    {item.image && <Image src={item.image} alt={item.name} fill sizes="44px" style={{ objectFit: "cover" }} />}
+                  </Link>
+                ))}
+              </div>
+            )}
+            {bundle.brItems.length === 0 && bundle.icons.length > 0 && (
               <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "8px" }}>
                 {bundle.icons.map((icon, i) => (
                   <div key={i} style={{ position: "relative", width: "28px", height: "28px", borderRadius: "4px", overflow: "hidden", backgroundColor: "var(--border)" }}>
@@ -431,6 +454,10 @@ export function ShopClient({ featured, regular }: { featured: ShopEntry[]; regul
           .shop-grid-featured { grid-template-columns: repeat(2, 1fr); gap: 10px; }
           .shop-grid-regular  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
         }
+
+        /* バンドル内アイテムリンク */
+        .bundle-item-link { width: 34px; height: 34px; }
+        @media (max-width: 480px) { .bundle-item-link { width: 44px; height: 44px; } }
 
         /* フィルタータブ: 横スクロール＋スクロールバー非表示 */
         .filter-tabs {

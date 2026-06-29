@@ -48,7 +48,7 @@ export async function fetchFortniteNews(): Promise<NewsItem[]> {
       id: `stw-${i}`,
       title: m.title,
       body: m.body,
-      image: m.image || '',
+      image: m.tileImage || m.adImage || m.image || '',
       date: m.date || (stw?.date ?? ''),
       category: 'stw' as NewsCategory,
       _sp: m.sortingPriority ?? (1000 - i),
