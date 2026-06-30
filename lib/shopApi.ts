@@ -71,9 +71,6 @@ function getBestImage(item: any): string {
   return item.images?.featured ?? item.images?.icon ?? item.images?.smallIcon ?? item.images?.large ?? item.images?.small ?? '';
 }
 
-function getEntryImage(entry: any, fallbackItem: any): string {
-  return entry.newDisplayAsset?.renderImages?.[0]?.image ?? getBestImage(fallbackItem);
-}
 
 export async function fetchShop(): Promise<ShopEntry[]> {
   const res = await fetch(`${BASE_URL}/v2/shop?language=ja`, { next: { revalidate: 600 } });
@@ -110,8 +107,8 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
     const isCar = brItems.length === 0 && carItems.length > 0;
     const mainImage = isCar
-      ? (entry.newDisplayAsset?.renderImages?.[0]?.image ?? carItems[0]?.images?.large ?? '')
-      : getEntryImage(entry, brItems[0]);
+      ? (carItems[0]?.images?.large ?? '')
+      : getBestImage(brItems[0]);
 
     const icons = allItems
       .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? i.images?.small ?? '')
@@ -221,7 +218,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
         rarity: item.rarity?.value ?? 'common',
         rarityDisplay: item.rarity?.displayValue ?? '',
         price: entry.finalPrice ?? entry.regularPrice ?? 0,
-        image: getEntryImage(entry, item),
+        image: getBestImage(item),
         featured: entryFeatured,
       });
     }
