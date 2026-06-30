@@ -68,7 +68,7 @@ function getRarity(entry: any): string {
 }
 
 function getBestImage(item: any): string {
-  return item.images?.featured ?? item.images?.icon ?? item.images?.smallIcon ?? item.images?.large ?? item.images?.small ?? '';
+  return item.images?.featured || item.images?.icon || item.images?.smallIcon || item.images?.large || item.images?.small || '';
 }
 
 
@@ -107,11 +107,11 @@ export async function fetchShop(): Promise<ShopEntry[]> {
 
     const isCar = brItems.length === 0 && carItems.length > 0;
     const mainImage = isCar
-      ? (carItems[0]?.images?.large ?? '')
+      ? (carItems[0]?.images?.large || carItems[0]?.images?.featured || carItems[0]?.images?.icon || '')
       : getBestImage(brItems[0]);
 
     const icons = allItems
-      .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? i.images?.small ?? '')
+      .map((i: any) => i.images?.smallIcon || i.images?.icon || i.images?.small || '')
       .filter(Boolean)
       .slice(0, 6);
 
@@ -171,7 +171,7 @@ export async function fetchShop(): Promise<ShopEntry[]> {
       }
       // 表示: 同セクションのサブオプション or バンドル外アイテムを含む独立セット
       const icons = brItems
-        .map((i: any) => i.images?.smallIcon ?? i.images?.icon ?? '')
+        .map((i: any) => i.images?.smallIcon || i.images?.icon || '')
         .filter(Boolean)
         .slice(0, 6);
       brItems.forEach((i: any) => { if (i.name) seenNames.add(i.name); });
@@ -277,7 +277,7 @@ export async function fetchNewCosmetics(): Promise<NewCosmetic[]> {
         typeValue: item.type?.value ?? '',
         typeDisplay: item.type?.displayValue ?? '',
         rarity: item.rarity?.value ?? 'common',
-        image: item.images?.icon ?? item.images?.smallIcon ?? '',
+        image: item.images?.icon || item.images?.smallIcon || '',
         addedAt: item.added ?? '',
         category: cat as CosmeticCategory,
       });
