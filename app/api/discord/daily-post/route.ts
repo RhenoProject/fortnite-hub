@@ -9,20 +9,20 @@ function jstDateStr(): string {
   return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
-async function hasSentToday(): Promise<boolean> {
+async function hasSentToday(collection: string): Promise<boolean> {
   try {
     const db = getDb();
-    const doc = await db.collection("discord_daily_log").doc(jstDateStr()).get();
+    const doc = await db.collection(collection).doc(jstDateStr()).get();
     return doc.exists;
   } catch {
     return false;
   }
 }
 
-async function markSentToday(): Promise<void> {
+async function markSentToday(collection: string): Promise<void> {
   try {
     const db = getDb();
-    await db.collection("discord_daily_log").doc(jstDateStr()).set({ sentAt: new Date().toISOString() });
+    await db.collection(collection).doc(jstDateStr()).set({ sentAt: new Date().toISOString() });
   } catch {}
 }
 
@@ -39,11 +39,16 @@ async function fetchShopWithRetry(maxAttempts = 3): Promise<ShopEntry[]> {
   throw lastErr;
 }
 
-async function postToDiscord(options: MessageOptions): Promise<void> {
+async function postToDiscord(options: MessageOptions, target: string): Promise<void> {
+  if (target === "2") {
+    const webhookUrl = process.env.DISCORD_WEBHOOK_URL_2;
+    if (!webhookUrl) throw new Error("DISCORD_WEBHOOK_URL_2 not set");
+    await sendWebhookMessage(webhookUrl, options, 3);
+    return;
+  }
   const botToken = process.env.DISCORD_BOT_TOKEN;
   const channelId = process.env.DISCORD_CHANNEL_ID;
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-
   if (botToken && channelId) {
     await sendBotMessage(botToken, channelId, options, 3);
   } else if (webhookUrl) {
@@ -53,7 +58,7 @@ async function postToDiscord(options: MessageOptions): Promise<void> {
   }
 }
 
-const JOBS_QUOTES = [
+const RHENO_QUOTES = [
   "毎日ショップをチェックする習慣が、最高のプレイヤーを作る。",
   "365点の選択肢。最高の一点を見つけろ。",
   "アイテムは消耗品だが、センスは永続する。",
@@ -63,9 +68,9 @@ const JOBS_QUOTES = [
   "毎日更新されるショップは、毎日訪れる理由になる。",
 ];
 
-function getJobsQuote(): string {
+function getRhenoQuote(): string {
   const dayIndex = new Date(Date.now() + 9 * 60 * 60 * 1000).getDay();
-  return JOBS_QUOTES[dayIndex];
+  return RHENO_QUOTES[dayIndex];
 }
 
 function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
@@ -95,7 +100,7 @@ function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
         timestamp: new Date().toISOString(),
       },
       {
-        description: `💼 **RHENOより**\n${getJobsQuote()}`,
+        description: `💼 **RHENOより**\n${getRhenoQuote()}`,
         color: 0x1a1a2e,
       },
     ],
@@ -113,13 +118,21 @@ async function handleRequest(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const hasBot = !!(process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_CHANNEL_ID);
-  const hasWebhook = !!process.env.DISCORD_WEBHOOK_URL;
-  if (!hasBot && !hasWebhook) {
-    return NextResponse.json({ error: "Discord credentials not set" }, { status: 503 });
+  const target = req.nextUrl.searchParams.get("target") ?? "1";
+  const logCollection = target === "2" ? "discord_daily_log_2" : "discord_daily_log";
+
+  if (target === "2" && !process.env.DISCORD_WEBHOOK_URL_2) {
+    return NextResponse.json({ error: "DISCORD_WEBHOOK_URL_2 not set" }, { status: 503 });
+  }
+  if (target !== "2") {
+    const hasBot = !!(process.env.DISCORD_BOT_TOKEN && process.env.DISCORD_CHANNEL_ID);
+    const hasWebhook = !!process.env.DISCORD_WEBHOOK_URL;
+    if (!hasBot && !hasWebhook) {
+      return NextResponse.json({ error: "Discord credentials not set" }, { status: 503 });
+    }
   }
 
-  if (!isManual && await hasSentToday()) {
+  if (!isManual && await hasSentToday(logCollection)) {
     return NextResponse.json({ skipped: "already sent today" });
   }
 
@@ -137,18 +150,18 @@ async function handleRequest(req: NextRequest) {
     const errMsg = `fetchShop失敗（3回リトライ後）: ${String(e)}`;
     await postToDiscord({
       embeds: [{ title: `🚨 daily-post エラー（${today}）`, description: errMsg, color: 0xff0000 }],
-    }).catch(() => {});
+    }, target).catch(() => {});
     return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 
   try {
-    await postToDiscord(buildShopPayload(entries, today));
+    await postToDiscord(buildShopPayload(entries, today), target);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 
-  await markSentToday();
-  return NextResponse.json({ success: true, itemCount: entries.length });
+  await markSentToday(logCollection);
+  return NextResponse.json({ success: true, itemCount: entries.length, target });
 }
 
 export const GET = handleRequest;
