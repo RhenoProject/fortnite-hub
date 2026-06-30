@@ -106,9 +106,9 @@ export async function fetchShop(): Promise<ShopEntry[]> {
     if (allItems.length === 0) continue;
 
     const isCar = brItems.length === 0 && carItems.length > 0;
-    const mainImage = isCar
+    const mainImage = (entry.bundle.image as string) || (isCar
       ? (carItems[0]?.images?.large || carItems[0]?.images?.featured || carItems[0]?.images?.icon || '')
-      : getBestImage(brItems[0]);
+      : getBestImage(brItems[0]));
 
     const icons = allItems
       .map((i: any) => i.images?.smallIcon || i.images?.icon || i.images?.small || '')

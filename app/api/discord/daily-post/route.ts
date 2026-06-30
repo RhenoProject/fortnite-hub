@@ -73,6 +73,31 @@ function getRhenoQuote(): string {
   return RHENO_QUOTES[dayIndex];
 }
 
+function buildXStyleText(entries: ShopEntry[], today: string): string {
+  const featuredItems = entries
+    .filter((e): e is ShopItem => e.kind === "item" && e.featured)
+    .slice(0, 3);
+  const totalCount = entries.length;
+
+  const lines: string[] = [`🛍️ 今日のフォートナイトショップ（${today}）`, ""];
+
+  if (featuredItems.length > 0) {
+    lines.push("⭐ 注目アイテム");
+    featuredItems.forEach(item => {
+      const name = item.name.length > 16 ? item.name.slice(0, 15) + "…" : item.name;
+      lines.push(`・${name}（${item.price.toLocaleString()}V）`);
+    });
+    lines.push("");
+  }
+
+  lines.push(`他${totalCount}点のアイテムはこちら👇`);
+  lines.push(SITE_URL);
+  lines.push("");
+  lines.push("#フォートナイト #Fortnite #アイテムショップ");
+
+  return lines.join("\n");
+}
+
 function buildShopPayload(entries: ShopEntry[], today: string): MessageOptions {
   const featuredItems = entries
     .filter((e): e is ShopItem => e.kind === "item" && e.featured)
@@ -154,8 +179,12 @@ async function handleRequest(req: NextRequest) {
     return NextResponse.json({ error: errMsg }, { status: 500 });
   }
 
+  const payload: MessageOptions = target === "1"
+    ? { content: buildXStyleText(entries, today) }
+    : buildShopPayload(entries, today);
+
   try {
-    await postToDiscord(buildShopPayload(entries, today), target);
+    await postToDiscord(payload, target);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
