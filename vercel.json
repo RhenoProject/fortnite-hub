@@ -2,6 +2,12 @@
   "functions": {
     "app/api/amazon-img/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/admin/generate-guide/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/admin/check-update/route.ts": {
+      "maxDuration": 120
     }
   },
   "crons": [
@@ -52,6 +58,22 @@
     {
       "path": "/api/admin/generate-guide?slug=shop-history-guide",
       "schedule": "0 22 * * 0"
+    },
+    {
+      "path": "/api/admin/check-update",
+      "schedule": "0 13 * * 2-4"
+    },
+    {
+      "path": "/api/admin/check-update",
+      "schedule": "0 15 * * 2-4"
+    },
+    {
+      "path": "/api/admin/check-update",
+      "schedule": "0 17 * * 2-4"
+    },
+    {
+      "path": "/api/admin/check-update",
+      "schedule": "0 19 * * 2-4"
     }
   ]
 }
