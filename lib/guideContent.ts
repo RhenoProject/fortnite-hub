@@ -13,6 +13,7 @@ export interface GuideContent {
   sections: GuideSection[];
   keywords: string[];
   updatedAt: string;
+  featuredImage?: string;
 }
 
 export async function getGuide(slug: string): Promise<GuideContent | null> {

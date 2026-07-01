@@ -218,6 +218,31 @@ export default async function GuidePage({ params }: Props) {
         </p>
       </div>
 
+      {/* フィーチャー画像 */}
+      {guide.featuredImage && (
+        <div style={{ position: "relative", width: "100%", maxHeight: 220, overflow: "hidden" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={guide.featuredImage}
+            alt={guide.title}
+            style={{
+              width: "100%",
+              height: 220,
+              objectFit: "cover",
+              objectPosition: "center top",
+              display: "block",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to bottom, transparent 30%, #070e1c 100%)",
+            }}
+          />
+        </div>
+      )}
+
       {/* 他のガイドへのクイックリンク */}
       <div
         style={{

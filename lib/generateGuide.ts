@@ -1,15 +1,21 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { saveGuide, type GuideSection } from "./guideContent";
 
-async function fetchFortniteNewsRaw(): Promise<string> {
-  const res = await fetch("https://fortnite-api.com/v2/news?language=ja", { cache: "no-store" });
-  if (!res.ok) return "";
-  const json = await res.json();
-  const motds = json?.data?.br?.motds ?? [];
-  return motds
-    .slice(0, 8)
-    .map((m: { title?: string; body?: string }) => `■ ${m.title ?? ""}\n${m.body ?? ""}`)
-    .join("\n\n");
+async function fetchFortniteNews(): Promise<{ text: string; imageUrl: string | null }> {
+  try {
+    const res = await fetch("https://fortnite-api.com/v2/news?language=ja", { cache: "no-store" });
+    if (!res.ok) return { text: "", imageUrl: null };
+    const json = await res.json();
+    const motds: { title?: string; body?: string; image?: string }[] = json?.data?.br?.motds ?? [];
+    const text = motds
+      .slice(0, 8)
+      .map((m) => `■ ${m.title ?? ""}\n${m.body ?? ""}`)
+      .join("\n\n");
+    const imageUrl = motds[0]?.image ?? null;
+    return { text, imageUrl };
+  } catch {
+    return { text: "", imageUrl: null };
+  }
 }
 
 export async function fetchCurrentBuild(): Promise<string | null> {
@@ -96,6 +102,7 @@ export interface GenerateResult {
   title: string;
   success: boolean;
   error?: string;
+  imageUrl?: string;
 }
 
 export async function runGenerateGuide(slug: string): Promise<GenerateResult> {
@@ -103,10 +110,11 @@ export async function runGenerateGuide(slug: string): Promise<GenerateResult> {
   if (!apiKey) return { slug, title: "", success: false, error: "ANTHROPIC_API_KEY not set" };
 
   try {
-    const [newsText, build] = await Promise.all([
-      fetchFortniteNewsRaw(),
+    const [news, build] = await Promise.all([
+      fetchFortniteNews(),
       fetchCurrentBuild(),
     ]);
+    const { text: newsText, imageUrl } = news;
     const version = build ? extractVersion(build) : "不明";
     const prompt = buildPrompt(slug, { newsText, version });
 
@@ -134,9 +142,10 @@ export async function runGenerateGuide(slug: string): Promise<GenerateResult> {
       description: parsed.description,
       keywords: parsed.keywords ?? [],
       sections: parsed.sections ?? [],
+      ...(imageUrl ? { featuredImage: imageUrl } : {}),
     });
 
-    return { slug, title: parsed.title, success: true };
+    return { slug, title: parsed.title, success: true, imageUrl: imageUrl ?? undefined };
   } catch (e) {
     return { slug, title: "", success: false, error: String(e) };
   }

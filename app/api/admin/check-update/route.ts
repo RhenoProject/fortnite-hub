@@ -29,20 +29,42 @@ async function saveCurrentBuild(build: string): Promise<void> {
   await db.doc(STATE_DOC).set({ build, updatedAt: new Date().toISOString() });
 }
 
-async function notifyDiscord(version: string, results: { slug: string; title: string; success: boolean }[]) {
+async function notifyDiscord(
+  version: string,
+  results: { slug: string; title: string; success: boolean; imageUrl?: string }[]
+) {
   if (!DISCORD_WEBHOOK) return;
-  const lines = results.map((r) =>
-    r.success
-      ? `✅ ${r.slug}: [${r.title}](https://fortnite-hub-delta.vercel.app/guides/${r.slug})`
-      : `❌ ${r.slug}: 生成失敗`
-  );
-  const body = {
-    content: `🎮 **フォートナイト v${version} アップデート検知！** 記事を自動更新しました。\n${lines.join("\n")}`,
+
+  const siteUrl = "https://fortnite-hub-delta.vercel.app";
+  const successResults = results.filter((r) => r.success);
+  const featuredImage = successResults.find((r) => r.imageUrl)?.imageUrl;
+
+  const fields = results.map((r) => ({
+    name: r.success ? "✅ 記事更新" : "❌ 生成失敗",
+    value: r.success
+      ? `[${r.title}](${siteUrl}/guides/${r.slug})`
+      : r.slug,
+    inline: false,
+  }));
+
+  const embed = {
+    title: `🎮 フォートナイト v${version} アップデート！`,
+    description: `フォトナHubの記事を自動更新しました。\n最新情報をチェックしよう！`,
+    url: siteUrl,
+    color: 0x00c8ff,
+    fields,
+    ...(featuredImage ? { image: { url: featuredImage } } : {}),
+    footer: {
+      text: "フォトナHub • 自動通知",
+      icon_url: `${siteUrl}/icon.png`,
+    },
+    timestamp: new Date().toISOString(),
   };
+
   await fetch(DISCORD_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ embeds: [embed] }),
   });
 }
 
@@ -71,7 +93,10 @@ async function handleRequest(req: NextRequest) {
     runGenerateGuide("season-guide"),
   ]);
 
-  await notifyDiscord(version, [patchResult, seasonResult]);
+  await notifyDiscord(version, [
+    { ...patchResult, imageUrl: patchResult.imageUrl },
+    { ...seasonResult, imageUrl: seasonResult.imageUrl },
+  ]);
 
   return NextResponse.json({
     updated: true,
