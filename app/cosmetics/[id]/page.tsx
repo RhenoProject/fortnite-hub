@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { fetchCosmeticById } from "@/lib/fortniteApi";
 import { BackButton } from "@/components/BackButton";
 import { rarityColors } from "@/lib/shopApi";
+import { getCosmeticShopHistory } from "@/lib/shopHistory";
 
 export const revalidate = 86400;
 
@@ -50,6 +51,8 @@ export default async function CosmeticDetailPage({ params }: Props) {
   const { id } = await params;
   const item = await fetchCosmeticById(id);
   if (!item) notFound();
+
+  const shopHistory = await getCosmeticShopHistory(id);
 
   const heroImage = item.images.featured
     ?? item.images.other
@@ -200,6 +203,52 @@ export default async function CosmeticDetailPage({ params }: Props) {
           </a>
         );
       })()}
+
+      {/* ショップ登場履歴 */}
+      <section style={{ marginBottom: 20 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 900, color: "var(--text)", marginBottom: 12 }}>
+          🛍️ ショップ登場履歴
+        </h2>
+        {shopHistory.length === 0 ? (
+          <div style={{
+            background: "var(--surface)", border: "1px solid var(--border)",
+            borderRadius: 12, padding: "14px 16px",
+            fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6,
+          }}>
+            <p style={{ margin: 0 }}>記録なし（フォトナHubは2026年6月21日からショップデータを記録しています）</p>
+            <p style={{ margin: "6px 0 0", fontSize: 12 }}>
+              ほしいものリストに追加しておくと、ショップに来た日に通知が届きます。
+            </p>
+          </div>
+        ) : (
+          <div style={{
+            background: "var(--surface)", border: "1px solid var(--border)",
+            borderRadius: 12, overflow: "hidden",
+          }}>
+            <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--border)", fontSize: 12, color: "var(--text-muted)" }}>
+              過去{shopHistory.length}回の登場を確認（2026年6月21日以降）
+            </div>
+            {shopHistory.map((entry, i) => {
+              const d = new Date(entry.date + 'T00:00:00Z');
+              const dateJa = `${d.getUTCFullYear()}年${d.getUTCMonth() + 1}月${d.getUTCDate()}日`;
+              return (
+                <div key={entry.date} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "10px 16px",
+                  borderBottom: i < shopHistory.length - 1 ? "1px solid var(--border)" : "none",
+                }}>
+                  <span style={{ fontSize: 13, color: "var(--text)" }}>{dateJa}</span>
+                  {entry.price > 0 && (
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#00c8ff" }}>
+                      {entry.price.toLocaleString()} V-Bucks
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
       {/* バリアント（スタイル） */}
       {item.variants && item.variants.length > 0 && (

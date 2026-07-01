@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { fetchRecentOutfits } from "@/lib/fortniteApi";
+import { listGuides } from "@/lib/guideContent";
 
 function recentShopDates(count: number): string[] {
   return Array.from({ length: count }, (_, i) => {
@@ -11,7 +12,10 @@ function recentShopDates(count: number): string[] {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const shopDates = recentShopDates(30);
-  const outfits = await fetchRecentOutfits(200).catch(() => []);
+  const [outfits, guides] = await Promise.all([
+    fetchRecentOutfits(200).catch(() => []),
+    listGuides().catch(() => []),
+  ]);
 
   return [
     {
@@ -44,6 +48,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.5,
     },
+    // V-Bucks ガイド（静的）
+    {
+      url: "https://fortnite-hub-delta.vercel.app/guides/vbucks",
+      lastModified: new Date("2026-07-02"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    // AI生成ガイド記事
+    ...guides.map(({ slug, updatedAt }) => ({
+      url: `https://fortnite-hub-delta.vercel.app/guides/${slug}`,
+      lastModified: new Date(updatedAt),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
     // 過去30日分の日別ショップページ
     ...shopDates.map((date, i) => ({
       url: `https://fortnite-hub-delta.vercel.app/shop/${date}`,

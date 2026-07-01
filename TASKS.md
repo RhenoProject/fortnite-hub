@@ -117,6 +117,10 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] mainブランチpush許可をClaude設定に追加（~/.claude/settings.json）— 2026-06-29
 - [x] エラーチェックルール追加（TASKS更新後・main push後にVercelデプロイ状況を毎回確認）PROJECT.md・feedback_auto_save.md に記載 — 2026-06-29
 - [x] ニュース画像修正 本番反映: unoptimized追加（CDN URL再最適化回避）・onError fallback実装 — 2026-06-29
+- [x] ショップ画像欠落 根本原因特定・修正 本番反映: next.config.tsにimages.unoptimized:true追加。原因はVercel画像最適化クォータ超過（/_next/image が全件402 Payment Required）。直接配信に変更し464枚全件200を確認 — 2026-06-30
+- [x] shopApi.ts 画像フォールバック強化 本番反映: ??（null/undefinedのみスキップ）を||に変更し空文字も正しくフォールバック・バンドルメイン画像をbundle.image（高解像度プロモ画像）優先に変更 — 2026-06-29
+- [x] 旧Discordサーバーの投稿文面をX投稿と同一テキストに統一 本番反映（discord/daily-post: target=1はcontent形式、target=2は従来のembed形式）— 2026-06-29
+- [x] 新Discordサーバーへ手動通知送信（DISCORD_WEBHOOK_URL_2・HTTP 204成功）— 2026-06-29
 
 ---
 

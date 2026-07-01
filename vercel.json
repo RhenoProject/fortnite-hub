@@ -40,6 +40,18 @@
     {
       "path": "/api/shop/save-daily",
       "schedule": "4 0 * * *"
+    },
+    {
+      "path": "/api/admin/generate-guide?slug=patch-notes",
+      "schedule": "0 21 * * 0"
+    },
+    {
+      "path": "/api/admin/generate-guide?slug=season-guide",
+      "schedule": "30 21 * * 0"
+    },
+    {
+      "path": "/api/admin/generate-guide?slug=shop-history-guide",
+      "schedule": "0 22 * * 0"
     }
   ]
 }
