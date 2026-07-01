@@ -218,6 +218,58 @@ export default async function GuidePage({ params }: Props) {
         </p>
       </div>
 
+      {/* 他のガイドへのクイックリンク */}
+      <div
+        style={{
+          borderBottom: "1px solid #0d1f30",
+          padding: "12px 20px",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          overflowX: "auto",
+          scrollbarWidth: "none",
+        }}
+      >
+        <span style={{ fontSize: 11, color: "#445566", flexShrink: 0, fontWeight: 700 }}>ガイド:</span>
+        {GUIDE_LINKS.filter((g) => g.slug !== slug).map((g) => (
+          <a
+            key={g.slug}
+            href={`/guides/${g.slug}`}
+            style={{
+              flexShrink: 0,
+              fontSize: 12,
+              fontWeight: 700,
+              padding: "5px 12px",
+              borderRadius: 20,
+              background: "#0a1628",
+              border: "1px solid #0d2540",
+              color: "#7aa8c0",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {g.label}
+          </a>
+        ))}
+        <a
+          href="/guides/vbucks"
+          style={{
+            flexShrink: 0,
+            fontSize: 12,
+            fontWeight: 700,
+            padding: "5px 12px",
+            borderRadius: 20,
+            background: "#0a1628",
+            border: "1px solid #0d2540",
+            color: "#7aa8c0",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Vバックス購入ガイド
+        </a>
+      </div>
+
       {/* 目次（h2が2個以上のとき） */}
       {h2s.length >= 2 && (
         <div
@@ -313,54 +365,21 @@ export default async function GuidePage({ params }: Props) {
         でご確認ください。
       </div>
 
-      {/* 関連ガイドへのリンク */}
-      <div style={{ padding: "28px 20px 0" }}>
-        <p style={{ fontSize: 12, fontWeight: 800, color: "#445566", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
-          他のガイドを読む
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {GUIDE_LINKS.filter((g) => g.slug !== slug).map((g) => (
-            <a
-              key={g.slug}
-              href={`/guides/${g.slug}`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "12px 16px",
-                background: "#0a1628",
-                border: "1px solid #0d1f30",
-                borderRadius: 10,
-                color: "#b0c4d8",
-                textDecoration: "none",
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              {g.label}
-              <span style={{ color: "#00c8ff", fontSize: 16 }}>→</span>
-            </a>
-          ))}
-          <a
-            href="/guides/vbucks"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "12px 16px",
-              background: "#0a1628",
-              border: "1px solid #0d1f30",
-              borderRadius: 10,
-              color: "#b0c4d8",
-              textDecoration: "none",
-              fontSize: 14,
-              fontWeight: 600,
-            }}
-          >
-            Vバックス購入ガイド
-            <span style={{ color: "#00c8ff", fontSize: 16 }}>→</span>
-          </a>
-        </div>
+      {/* 下部リンク（トップへ戻る） */}
+      <div style={{ padding: "28px 20px 0", textAlign: "center" }}>
+        <a
+          href="/"
+          style={{
+            fontSize: 13,
+            color: "#445566",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          ← フォトナHub トップへ
+        </a>
       </div>
     </div>
   );
