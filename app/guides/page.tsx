@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { listGuides } from "@/lib/guideContent";
+import { listGuides, type GuideContent } from "@/lib/guideContent";
 
 export const revalidate = 3600;
 
@@ -10,182 +10,354 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://fortnite-hub-delta.vercel.app/guides" },
 };
 
-const STATIC_GUIDES = [
-  {
-    slug: "vbucks",
-    title: "フォートナイト Vバックスの値段・お得な買い方【2026年最新版】",
-    description:
-      "Vバックス価格一覧（1,000〜13,500）と最もお得な購入方法を徹底解説。クルーパックとの比較・ギフトカード活用法も。",
-    category: "購入ガイド",
-  },
-];
+interface ArticleCard {
+  slug: string;
+  title: string;
+  description: string;
+  updatedAt?: string;
+  icon: string;
+  accent: string;
+  accentBg: string;
+  label: string;
+  readMin?: number;
+}
 
-const CATEGORY_LABELS: Record<string, string> = {
-  "patch-notes": "パッチノート",
-  "season-guide": "シーズン",
-  "shop-history-guide": "ショップ",
+const ARTICLE_META: Record<string, { icon: string; accent: string; accentBg: string; label: string }> = {
+  "patch-notes":      { icon: "⚡", accent: "#00c8ff", accentBg: "rgba(0,200,255,0.08)",    label: "パッチノート" },
+  "season-guide":     { icon: "🌍", accent: "#a78bfa", accentBg: "rgba(124,58,237,0.08)",   label: "シーズンガイド" },
+  "shop-history-guide":{ icon: "🔁", accent: "#4ade80", accentBg: "rgba(74,222,128,0.08)",  label: "ショップ復刻" },
+  "vbucks":           { icon: "💰", accent: "#fbbf24", accentBg: "rgba(251,191,36,0.08)",   label: "購入ガイド" },
 };
 
-function categoryOf(slug: string): string {
-  return CATEGORY_LABELS[slug] ?? "ガイド";
+function estimateRead(description: string): number {
+  return Math.max(1, Math.ceil(description.length / 200) + 1);
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return new Date(iso).toLocaleDateString("ja-JP", { month: "long", day: "numeric" });
+}
+
+function isNew(iso: string): boolean {
+  return Date.now() - new Date(iso).getTime() < 7 * 24 * 60 * 60 * 1000;
+}
+
+function HeroCard({ a }: { a: ArticleCard }) {
+  const meta = ARTICLE_META[a.slug] ?? ARTICLE_META["vbucks"];
+  return (
+    <a href={`/guides/${a.slug}`} className="hero-card" style={{ ["--accent" as string]: meta.accent }}>
+      <div className="hero-icon">{meta.icon}</div>
+      <div className="hero-label">{meta.label}</div>
+      <h2 className="hero-title">{a.title}</h2>
+      <p className="hero-desc">{a.description}</p>
+      <div className="hero-footer">
+        {a.updatedAt && (
+          <span className="hero-date">
+            {isNew(a.updatedAt) && <span className="new-badge">NEW</span>}
+            {formatDate(a.updatedAt)} 更新
+          </span>
+        )}
+        <span className="hero-cta">
+          読む <span style={{ fontSize: 16 }}>→</span>
+        </span>
+      </div>
+    </a>
+  );
+}
+
+function SmallCard({ a }: { a: ArticleCard }) {
+  const meta = ARTICLE_META[a.slug] ?? ARTICLE_META["vbucks"];
+  return (
+    <a href={`/guides/${a.slug}`} className="small-card" style={{ ["--accent" as string]: meta.accent }}>
+      <div className="small-card-top">
+        <span className="small-icon">{meta.icon}</span>
+        <span className="small-label">{meta.label}</span>
+        {a.updatedAt && isNew(a.updatedAt) && <span className="new-badge">NEW</span>}
+      </div>
+      <h2 className="small-title">{a.title}</h2>
+      <p className="small-desc">{a.description}</p>
+      <div className="small-footer">
+        <span className="small-read">約{a.readMin}分</span>
+        {a.updatedAt && <span className="small-date">{formatDate(a.updatedAt)} 更新</span>}
+        <span className="small-cta">読む →</span>
+      </div>
+    </a>
+  );
 }
 
 export default async function GuidesPage() {
   const aiGuides = await listGuides();
 
+  const staticCard: ArticleCard = {
+    slug: "vbucks",
+    title: "Vバックスの値段・お得な買い方完全ガイド",
+    description:
+      "1,000〜13,500 の価格一覧・クルーパックのコスパ比較・ギフトカード活用法まで。損しない買い方を全部まとめました。",
+    icon: "💰",
+    accent: "#fbbf24",
+    accentBg: "rgba(251,191,36,0.08)",
+    label: "購入ガイド",
+    readMin: 3,
+  };
+
+  const aiCards: ArticleCard[] = aiGuides.map((g) => ({
+    slug: g.slug,
+    title: g.title,
+    description: g.description,
+    updatedAt: g.updatedAt,
+    ...(ARTICLE_META[g.slug] ?? { icon: "📄", accent: "#00c8ff", accentBg: "rgba(0,200,255,0.08)", label: "ガイド" }),
+    readMin: estimateRead(g.description),
+  }));
+
+  // 最新更新順に並べ、先頭をヒーロー表示
+  const allCards = [...aiCards, staticCard].sort((a, b) => {
+    if (!a.updatedAt) return 1;
+    if (!b.updatedAt) return -1;
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+  });
+
+  const [hero, ...rest] = allCards.length > 0 ? allCards : [staticCard];
+
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 16px 48px" }}>
+    <>
       <style>{`
-        .guide-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 16px;
-          padding: 20px;
-          height: 100%;
+        /* ヒーローカード */
+        .hero-card {
+          display: block;
+          text-decoration: none;
+          border-radius: 20px;
+          padding: 28px 28px 24px;
+          margin-bottom: 20px;
+          border: 1.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
+          background: linear-gradient(135deg,
+            color-mix(in srgb, var(--accent) 6%, #070e1c) 0%,
+            #070e1c 60%
+          );
+          position: relative;
+          overflow: hidden;
+          transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .hero-card::before {
+          content: "";
+          position: absolute;
+          top: -60px; right: -60px;
+          width: 200px; height: 200px;
+          border-radius: 50%;
+          background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+          pointer-events: none;
+        }
+        .hero-card:hover {
+          border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+          box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 15%, transparent);
+        }
+        .hero-icon {
+          font-size: 36px;
+          line-height: 1;
+          margin-bottom: 12px;
+        }
+        .hero-label {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 10px;
+        }
+        .hero-title {
+          font-size: clamp(18px, 4vw, 24px);
+          font-weight: 900;
+          color: #e8f4ff;
+          line-height: 1.35;
+          margin: 0 0 12px;
+        }
+        .hero-desc {
+          font-size: 13px;
+          color: #6a8899;
+          line-height: 1.75;
+          margin: 0 0 20px;
+          max-width: 560px;
+        }
+        .hero-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .hero-date {
+          font-size: 12px;
+          color: #445566;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .hero-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 800;
+          color: var(--accent);
+          padding: 9px 22px;
+          border-radius: 24px;
+          border: 1.5px solid color-mix(in srgb, var(--accent) 40%, transparent);
+          background: color-mix(in srgb, var(--accent) 8%, transparent);
+          transition: background 0.15s;
+        }
+        .hero-card:hover .hero-cta {
+          background: color-mix(in srgb, var(--accent) 16%, transparent);
+        }
+
+        /* スモールカード */
+        .cards-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 14px;
+        }
+        .small-card {
           display: flex;
           flex-direction: column;
           gap: 10px;
-          transition: border-color 0.15s, box-shadow 0.15s;
           text-decoration: none;
-          color: inherit;
+          border-radius: 16px;
+          padding: 18px 20px;
+          border: 1px solid var(--border);
+          background: var(--surface);
+          transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .guide-card:hover {
-          border-color: rgba(0,200,255,0.4);
-          box-shadow: 0 0 16px rgba(0,200,255,0.08);
+        .small-card:hover {
+          border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+          box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 10%, transparent);
         }
-        .guide-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 16px;
+        .small-card-top {
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
-        .tag {
+        .small-icon {
+          font-size: 20px;
+          line-height: 1;
+        }
+        .small-label {
           font-size: 11px;
           font-weight: 700;
-          padding: 3px 10px;
-          border-radius: 20px;
+          color: var(--accent);
         }
-        .tag-blue {
-          background: rgba(0,200,255,0.1);
-          color: #00c8ff;
-          border: 1px solid rgba(0,200,255,0.25);
+        .small-title {
+          font-size: 14px;
+          font-weight: 800;
+          color: #d0e8f8;
+          line-height: 1.45;
+          margin: 0;
+          flex: 1;
         }
-        .tag-green {
-          background: rgba(74,222,128,0.1);
-          color: #4ade80;
-          border: 1px solid rgba(74,222,128,0.25);
+        .small-desc {
+          font-size: 12px;
+          color: #4a6070;
+          line-height: 1.7;
+          margin: 0;
+          flex: 1;
         }
-        .tag-purple {
-          background: rgba(124,58,237,0.1);
-          color: #a78bfa;
-          border: 1px solid rgba(124,58,237,0.25);
+        .small-footer {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 4px;
+        }
+        .small-read {
+          font-size: 11px;
+          color: #334455;
+          background: #0a1a26;
+          padding: 2px 8px;
+          border-radius: 10px;
+        }
+        .small-date {
+          font-size: 11px;
+          color: #334455;
+          flex: 1;
+        }
+        .small-cta {
+          font-size: 12px;
+          font-weight: 800;
+          color: var(--accent);
+        }
+
+        /* NEW バッジ */
+        .new-badge {
+          font-size: 10px;
+          font-weight: 900;
+          padding: 2px 7px;
+          border-radius: 10px;
+          background: #ef4444;
+          color: #fff;
+          letter-spacing: 0.05em;
+        }
+
+        /* ページヘッダー */
+        .page-header {
+          margin-bottom: 24px;
+        }
+        .page-title {
+          font-size: clamp(18px, 5vw, 24px);
+          font-weight: 900;
+          color: var(--text);
+          margin: 0 0 6px;
+        }
+        .page-sub {
+          font-size: 13px;
+          color: var(--text-muted);
+          line-height: 1.7;
+          margin: 0;
+        }
+        .section-label {
+          font-size: 11px;
+          font-weight: 800;
+          color: #334455;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin: 0 0 12px;
+        }
+
+        @media (max-width: 480px) {
+          .hero-card { padding: 20px 18px 18px; }
+          .hero-title { font-size: 18px; }
         }
       `}</style>
 
-      {/* ヘッダー */}
-      <div style={{ marginBottom: 28 }}>
-        <h1
-          style={{
-            fontSize: "clamp(20px, 5vw, 26px)",
-            fontWeight: 900,
-            color: "var(--text)",
-            marginBottom: 6,
-          }}
-        >
-          📝 記事・ガイド
-        </h1>
-        <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7 }}>
-          パッチノート・シーズン情報・Vバックス購入ガイドなど、フォートナイトに役立つ記事をまとめています。
-          AIが公式情報をもとに自動更新します。
-        </p>
-      </div>
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "24px 16px 48px" }}>
 
-      {/* 記事グリッド */}
-      <div className="guide-grid">
-        {/* 静的ガイド */}
-        {STATIC_GUIDES.map((g) => (
-          <a key={g.slug} href={`/guides/${g.slug}`} className="guide-card">
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span className="tag tag-blue">{g.category}</span>
-              <span className="tag tag-green">固定記事</span>
-            </div>
-            <h2
-              style={{
-                fontSize: 15,
-                fontWeight: 800,
-                color: "var(--text)",
-                lineHeight: 1.45,
-                margin: 0,
-                flex: 1,
-              }}
-            >
-              {g.title}
-            </h2>
-            <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
-              {g.description}
-            </p>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#00c8ff", marginTop: 4 }}>
-              読む →
-            </div>
-          </a>
-        ))}
+        <div className="page-header">
+          <h1 className="page-title">📝 記事・ガイド</h1>
+          <p className="page-sub">
+            アップデート情報・シーズンガイド・お得な購入方法など、フォートナイトを楽しむための記事をまとめています。
+          </p>
+        </div>
 
-        {/* AI生成ガイド */}
-        {aiGuides.map((g) => (
-          <a key={g.slug} href={`/guides/${g.slug}`} className="guide-card">
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span className="tag tag-blue">{categoryOf(g.slug)}</span>
-              <span className="tag tag-purple">🤖 AI更新</span>
-            </div>
-            <h2
-              style={{
-                fontSize: 15,
-                fontWeight: 800,
-                color: "var(--text)",
-                lineHeight: 1.45,
-                margin: 0,
-                flex: 1,
-              }}
-            >
-              {g.title}
-            </h2>
-            <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
-              {g.description}
-            </p>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
-              <span style={{ fontSize: 11, color: "#445566" }}>
-                更新: {formatDate(g.updatedAt)}
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#00c8ff" }}>読む →</span>
-            </div>
-          </a>
-        ))}
+        {/* 注目記事（最新順1位） */}
+        <p className="section-label">注目記事</p>
+        <HeroCard a={hero} />
 
-        {/* AI記事がまだない場合 */}
-        {aiGuides.length === 0 && (
-          <div
-            style={{
-              gridColumn: "1 / -1",
-              padding: "32px",
-              textAlign: "center",
-              color: "var(--text-muted)",
-              fontSize: 13,
-              background: "var(--surface)",
-              borderRadius: 16,
-              border: "1px dashed var(--border)",
-            }}
-          >
-            AI記事は次回のフォートナイトアップデート後に自動生成されます
+        {/* その他の記事 */}
+        {rest.length > 0 && (
+          <>
+            <p className="section-label" style={{ marginTop: 28 }}>その他の記事</p>
+            <div className="cards-grid">
+              {rest.map((a) => (
+                <SmallCard key={a.slug} a={a} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {allCards.length === 0 && (
+          <div style={{
+            padding: 40, textAlign: "center", color: "var(--text-muted)",
+            fontSize: 13, background: "var(--surface)", borderRadius: 16,
+            border: "1px dashed var(--border)",
+          }}>
+            次回のフォートナイトアップデート後に記事が自動生成されます
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
