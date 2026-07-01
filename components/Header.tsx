@@ -5,6 +5,7 @@ import { PushSubscribeButton } from "@/components/PushSubscribeButton";
 
 const navItems = [
   { href: "/", label: "ショップ", emoji: "🛍️" },
+  { href: "/guides", label: "記事", emoji: "📝" },
   { href: "/news", label: "ニュース", emoji: "📰" },
   { href: "/competition", label: "競技日程", emoji: "🏆" },
   { href: "/devices", label: "デバイス", emoji: "🖱️" },
@@ -12,7 +13,8 @@ const navItems = [
 
 export function Header() {
   const pathname = usePathname();
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <>
