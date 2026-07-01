@@ -17,7 +17,6 @@ const STATIC_GUIDES = [
     description:
       "Vバックス価格一覧（1,000〜13,500）と最もお得な購入方法を徹底解説。クルーパックとの比較・ギフトカード活用法も。",
     category: "購入ガイド",
-    isStatic: true,
   },
 ];
 
@@ -44,6 +43,51 @@ export default async function GuidesPage() {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 16px 48px" }}>
+      <style>{`
+        .guide-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 20px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          transition: border-color 0.15s, box-shadow 0.15s;
+          text-decoration: none;
+          color: inherit;
+        }
+        .guide-card:hover {
+          border-color: rgba(0,200,255,0.4);
+          box-shadow: 0 0 16px rgba(0,200,255,0.08);
+        }
+        .guide-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 16px;
+        }
+        .tag {
+          font-size: 11px;
+          font-weight: 700;
+          padding: 3px 10px;
+          border-radius: 20px;
+        }
+        .tag-blue {
+          background: rgba(0,200,255,0.1);
+          color: #00c8ff;
+          border: 1px solid rgba(0,200,255,0.25);
+        }
+        .tag-green {
+          background: rgba(74,222,128,0.1);
+          color: #4ade80;
+          border: 1px solid rgba(74,222,128,0.25);
+        }
+        .tag-purple {
+          background: rgba(124,58,237,0.1);
+          color: #a78bfa;
+          border: 1px solid rgba(124,58,237,0.25);
+        }
+      `}</style>
 
       {/* ヘッダー */}
       <div style={{ marginBottom: 28 }}>
@@ -59,204 +103,72 @@ export default async function GuidesPage() {
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7 }}>
           パッチノート・シーズン情報・Vバックス購入ガイドなど、フォートナイトに役立つ記事をまとめています。
-          AI が公式情報をもとに自動更新します。
+          AIが公式情報をもとに自動更新します。
         </p>
       </div>
 
       {/* 記事グリッド */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: 16,
-        }}
-      >
+      <div className="guide-grid">
         {/* 静的ガイド */}
         {STATIC_GUIDES.map((g) => (
-          <a
-            key={g.slug}
-            href={`/guides/${g.slug}`}
-            style={{ textDecoration: "none" }}
-          >
-            <article
+          <a key={g.slug} href={`/guides/${g.slug}`} className="guide-card">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="tag tag-blue">{g.category}</span>
+              <span className="tag tag-green">固定記事</span>
+            </div>
+            <h2
               style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 16,
-                padding: "20px",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                transition: "border-color 0.15s",
+                fontSize: 15,
+                fontWeight: 800,
+                color: "var(--text)",
+                lineHeight: 1.45,
+                margin: 0,
+                flex: 1,
               }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLElement).style.borderColor = "#00c8ff55")
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLElement).style.borderColor =
-                  "var(--border)")
-              }
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: 20,
-                    background: "rgba(0,200,255,0.1)",
-                    color: "#00c8ff",
-                    border: "1px solid rgba(0,200,255,0.25)",
-                  }}
-                >
-                  {g.category}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    padding: "3px 10px",
-                    borderRadius: 20,
-                    background: "rgba(74,222,128,0.1)",
-                    color: "#4ade80",
-                    border: "1px solid rgba(74,222,128,0.25)",
-                  }}
-                >
-                  固定記事
-                </span>
-              </div>
-              <h2
-                style={{
-                  fontSize: 15,
-                  fontWeight: 800,
-                  color: "var(--text)",
-                  lineHeight: 1.45,
-                  margin: 0,
-                  flex: 1,
-                }}
-              >
-                {g.title}
-              </h2>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-muted)",
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}
-              >
-                {g.description}
-              </p>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "#00c8ff",
-                  marginTop: 4,
-                }}
-              >
-                読む →
-              </div>
-            </article>
+              {g.title}
+            </h2>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
+              {g.description}
+            </p>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#00c8ff", marginTop: 4 }}>
+              読む →
+            </div>
           </a>
         ))}
 
         {/* AI生成ガイド */}
         {aiGuides.map((g) => (
-          <a
-            key={g.slug}
-            href={`/guides/${g.slug}`}
-            style={{ textDecoration: "none" }}
-          >
-            <article
+          <a key={g.slug} href={`/guides/${g.slug}`} className="guide-card">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="tag tag-blue">{categoryOf(g.slug)}</span>
+              <span className="tag tag-purple">🤖 AI更新</span>
+            </div>
+            <h2
               style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: 16,
-                padding: "20px",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                transition: "border-color 0.15s",
+                fontSize: 15,
+                fontWeight: 800,
+                color: "var(--text)",
+                lineHeight: 1.45,
+                margin: 0,
+                flex: 1,
               }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLElement).style.borderColor = "#00c8ff55")
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLElement).style.borderColor =
-                  "var(--border)")
-              }
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: "3px 10px",
-                    borderRadius: 20,
-                    background: "rgba(0,200,255,0.1)",
-                    color: "#00c8ff",
-                    border: "1px solid rgba(0,200,255,0.25)",
-                  }}
-                >
-                  {categoryOf(g.slug)}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    padding: "3px 10px",
-                    borderRadius: 20,
-                    background: "rgba(124,58,237,0.1)",
-                    color: "#a78bfa",
-                    border: "1px solid rgba(124,58,237,0.25)",
-                  }}
-                >
-                  🤖 AI更新
-                </span>
-              </div>
-              <h2
-                style={{
-                  fontSize: 15,
-                  fontWeight: 800,
-                  color: "var(--text)",
-                  lineHeight: 1.45,
-                  margin: 0,
-                  flex: 1,
-                }}
-              >
-                {g.title}
-              </h2>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "var(--text-muted)",
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}
-              >
-                {g.description}
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginTop: 4,
-                }}
-              >
-                <span style={{ fontSize: 11, color: "#445566" }}>
-                  更新: {formatDate(g.updatedAt)}
-                </span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#00c8ff" }}>
-                  読む →
-                </span>
-              </div>
-            </article>
+              {g.title}
+            </h2>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
+              {g.description}
+            </p>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
+              <span style={{ fontSize: 11, color: "#445566" }}>
+                更新: {formatDate(g.updatedAt)}
+              </span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#00c8ff" }}>読む →</span>
+            </div>
           </a>
         ))}
 
-        {/* AI記事がまだない場合のプレースホルダー */}
+        {/* AI記事がまだない場合 */}
         {aiGuides.length === 0 && (
           <div
             style={{
