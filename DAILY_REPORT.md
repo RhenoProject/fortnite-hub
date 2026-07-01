@@ -59,6 +59,38 @@
 
 ## ログ
 
+### 2026-07-02
+| 指標 | 今日 | 直近7日 |
+|------|------|--------|
+| ユーザー | 0 | 80 |
+| PV | 0 | 470 |
+| セッション | 0 | 136 |
+
+流入経路（直近7日）: Organic Social 65 / Direct 64 / Unassigned 7 / Cross-network 4 / Organic Search 1
+
+人気ページ（直近7日）:
+1. / — 251 PV
+2. /devices — 39 PV
+3. /news — 38 PV
+4. /creators — 32 PV（ナビ非表示なのに高い）
+5. /cosmetics/CID_A_460_Athena_Commando_F_SunBeam — 20 PV（コスメ個別ページが流入し始め）
+
+セッション作業ログ（2026-07-02）:
+- SEOコンテンツ強化システム構築（develop完了・しゅうや確認待ち）
+- lib/shopHistory.ts: Firestoreのshop_dailyから各コスメの登場履歴を取得する関数
+- cosmetics/[id]/page.tsx: 「🛍️ ショップ登場履歴」セクション追加（記録なし時は2026-06-21以降と明記）
+- /guides/vbucks: V-Bucks価格表・Crew比較・購入方法・注意事項の静的SEOページ（FAQPage JSON-LD込み）
+- lib/guideContent.ts: Firestoreガイド記事CRUD（getGuide/saveGuide/listGuides）
+- /guides/[slug]: AI生成ガイド記事レンダラー（Firestoreから読み込み・セクション型のサーバーレンダリング）
+- /api/admin/generate-guide: Claude haiku APIでfortniteニュース→日本語記事JSON自動生成・Firestoreに保存
+  - 対応スラッグ: patch-notes / season-guide / shop-history-guide
+  - ANTHROPIC_API_KEYが必要（Vercelに設定要）
+- vercel.json: 毎週日曜UTC21:00〜22:00（JST月曜6〜7時）に3記事を週次自動生成するCron追加
+- sitemap.ts: /guides/vbucks + Firestore内AI生成ガイドURLを自動追加
+- プレビューURL: https://fortnite-oghfem7t3-rheno-project2026.vercel.app
+
+---
+
 ### 2026-06-29（第2セッション）
 セッション作業ログ（2026-06-29 第2セッション）:
 - 本番デプロイ ERROR を検出・修正: CosmeticItem.images型にother/backgroundフィールドが未追加のままcherry-pickされていた → main直接修正・push → Vercel READY確認

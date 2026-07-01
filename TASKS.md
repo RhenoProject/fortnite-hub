@@ -1,7 +1,7 @@
 # フォトナHub — タスク管理
 
 > CTO: ジョブズ（Claude）｜オーナー: しゅうや
-> 最終更新: 2026-06-29（ビルドエラー修正・mainPush許可追加・エラーチェックルール化）
+> 最終更新: 2026-07-02（SEOコンテンツ強化・復刻履歴・Vバックスガイド・Claude AI記事生成システム）
 
 ---
 
@@ -121,6 +121,10 @@ URL: https://fortnite-hub-delta.vercel.app
 - [x] shopApi.ts 画像フォールバック強化 本番反映: ??（null/undefinedのみスキップ）を||に変更し空文字も正しくフォールバック・バンドルメイン画像をbundle.image（高解像度プロモ画像）優先に変更 — 2026-06-29
 - [x] 旧Discordサーバーの投稿文面をX投稿と同一テキストに統一 本番反映（discord/daily-post: target=1はcontent形式、target=2は従来のembed形式）— 2026-06-29
 - [x] 新Discordサーバーへ手動通知送信（DISCORD_WEBHOOK_URL_2・HTTP 204成功）— 2026-06-29
+- [x] コスメ個別ページ（/cosmetics/[id]）にショップ登場履歴セクション追加（Firestoreのshop_dailyから取得・「いつ来た？」検索需要対応）— 2026-07-02 develop
+- [x] /guides/vbucks — Vバックス価格一覧・お得な買い方 静的SEOページ作成（FAQPage JSON-LD）— 2026-07-02 develop
+- [x] /api/admin/generate-guide — Claude API(haiku)でnewsデータ→日本語ガイド記事自動生成エンドポイント — 2026-07-02 develop
+- [x] vercel.json — 毎週日曜JST6時にpatch-notes/season-guide/shop-history-guide自動生成Cron追加 — 2026-07-02 develop
 
 ---
 
