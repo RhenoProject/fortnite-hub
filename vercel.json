@@ -15,40 +15,36 @@
   },
   "crons": [
     {
+      "path": "/api/push/send",
+      "schedule": "0 0 * * *"
+    },
+    {
       "path": "/api/shop/refresh",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/push/send",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/push/send",
-      "schedule": "5 0 * * *"
-    },
-    {
-      "path": "/api/push/send",
-      "schedule": "10 0 * * *"
+      "schedule": "1 0 * * *"
     },
     {
       "path": "/api/discord/daily-post",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/discord/daily-post?target=2",
-      "schedule": "5 0 * * *"
-    },
-    {
-      "path": "/api/discord/daily-post-backup",
-      "schedule": "30 0 * * *"
+      "schedule": "2 0 * * *"
     },
     {
       "path": "/api/shop/save-daily",
       "schedule": "4 0 * * *"
     },
     {
+      "path": "/api/discord/daily-post?target=2",
+      "schedule": "7 0 * * *"
+    },
+    {
+      "path": "/api/push/send",
+      "schedule": "10 0 * * *"
+    },
+    {
       "path": "/api/x/post-shop",
       "schedule": "15 0 * * *"
+    },
+    {
+      "path": "/api/discord/daily-post-backup",
+      "schedule": "30 0 * * *"
     },
     {
       "path": "/api/health-check",
