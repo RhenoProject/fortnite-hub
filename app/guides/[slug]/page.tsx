@@ -2,6 +2,20 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getGuide, type GuideSection } from "@/lib/guideContent";
 
+async function fetchNewsImage(): Promise<string | null> {
+  try {
+    const res = await fetch("https://fortnite-api.com/v2/news?language=ja", {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const motds: { image?: string }[] = json?.data?.br?.motds ?? [];
+    return motds.find((m) => m.image)?.image ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export const revalidate = 3600;
 
 interface Props {
@@ -157,6 +171,7 @@ export default async function GuidePage({ params }: Props) {
   const guide = await getGuide(slug);
   if (!guide) notFound();
 
+  const featuredImage = guide.featuredImage ?? await fetchNewsImage();
   const updatedDate = new Date(guide.updatedAt).toLocaleDateString("ja-JP");
   const readMin = estimateReadTime(guide.sections);
   const h2s = guide.sections.filter((s) => s.type === "h2");
@@ -219,11 +234,11 @@ export default async function GuidePage({ params }: Props) {
       </div>
 
       {/* フィーチャー画像 */}
-      {guide.featuredImage && (
+      {featuredImage && (
         <div style={{ position: "relative", width: "100%", maxHeight: 220, overflow: "hidden" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={guide.featuredImage}
+            src={featuredImage}
             alt={guide.title}
             style={{
               width: "100%",

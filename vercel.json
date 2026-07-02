@@ -3,6 +3,9 @@
     "app/api/amazon-img/route.ts": {
       "maxDuration": 30
     },
+    "app/api/push/send/route.ts": {
+      "maxDuration": 30
+    },
     "app/api/admin/generate-guide/route.ts": {
       "maxDuration": 60
     },
@@ -16,20 +19,16 @@
       "schedule": "0 0 * * *"
     },
     {
-      "path": "/api/shop/refresh",
-      "schedule": "3 0 * * *"
+      "path": "/api/push/send",
+      "schedule": "0 0 * * *"
     },
     {
-      "path": "/api/health-check",
-      "schedule": "0 15 * * *"
+      "path": "/api/push/send",
+      "schedule": "5 0 * * *"
     },
     {
       "path": "/api/push/send",
       "schedule": "10 0 * * *"
-    },
-    {
-      "path": "/api/x/post-shop",
-      "schedule": "15 0 * * *"
     },
     {
       "path": "/api/discord/daily-post",
@@ -46,6 +45,14 @@
     {
       "path": "/api/shop/save-daily",
       "schedule": "4 0 * * *"
+    },
+    {
+      "path": "/api/x/post-shop",
+      "schedule": "15 0 * * *"
+    },
+    {
+      "path": "/api/health-check",
+      "schedule": "0 15 * * *"
     },
     {
       "path": "/api/admin/generate-guide?slug=patch-notes",

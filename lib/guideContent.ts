@@ -35,13 +35,19 @@ export async function saveGuide(guide: Omit<GuideContent, 'updatedAt'>): Promise
   });
 }
 
-export async function listGuides(): Promise<Pick<GuideContent, 'slug' | 'title' | 'description' | 'updatedAt'>[]> {
+export async function listGuides(): Promise<Pick<GuideContent, 'slug' | 'title' | 'description' | 'updatedAt' | 'featuredImage'>[]> {
   try {
     const db = getDb();
     const snapshot = await db.collection('guides').orderBy('updatedAt', 'desc').get();
     return snapshot.docs.map((doc) => {
       const d = doc.data() as GuideContent;
-      return { slug: d.slug, title: d.title, description: d.description, updatedAt: d.updatedAt };
+      return {
+        slug: d.slug,
+        title: d.title,
+        description: d.description,
+        updatedAt: d.updatedAt,
+        featuredImage: d.featuredImage,
+      };
     });
   } catch {
     return [];

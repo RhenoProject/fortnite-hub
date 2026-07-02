@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
 import { listGuides, type GuideContent } from "@/lib/guideContent";
 
+async function fetchNewsImage(): Promise<string | null> {
+  try {
+    const res = await fetch("https://fortnite-api.com/v2/news?language=ja", {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const motds: { image?: string }[] = json?.data?.br?.motds ?? [];
+    return motds.find((m) => m.image)?.image ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
@@ -20,6 +34,7 @@ interface ArticleCard {
   accentBg: string;
   label: string;
   readMin?: number;
+  image?: string;
 }
 
 const ARTICLE_META: Record<string, { icon: string; accent: string; accentBg: string; label: string }> = {
@@ -45,20 +60,29 @@ function HeroCard({ a }: { a: ArticleCard }) {
   const meta = ARTICLE_META[a.slug] ?? ARTICLE_META["vbucks"];
   return (
     <a href={`/guides/${a.slug}`} className="hero-card" style={{ ["--accent" as string]: meta.accent }}>
-      <div className="hero-icon">{meta.icon}</div>
-      <div className="hero-label">{meta.label}</div>
-      <h2 className="hero-title">{a.title}</h2>
-      <p className="hero-desc">{a.description}</p>
-      <div className="hero-footer">
-        {a.updatedAt && (
-          <span className="hero-date">
-            {isNew(a.updatedAt) && <span className="new-badge">NEW</span>}
-            {formatDate(a.updatedAt)} 更新
+      {a.image && (
+        <div className="hero-img-wrap">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={a.image} alt={a.title} className="hero-img" />
+          <div className="hero-img-overlay" />
+        </div>
+      )}
+      <div className="hero-body">
+        <div className="hero-icon">{meta.icon}</div>
+        <div className="hero-label">{meta.label}</div>
+        <h2 className="hero-title">{a.title}</h2>
+        <p className="hero-desc">{a.description}</p>
+        <div className="hero-footer">
+          {a.updatedAt && (
+            <span className="hero-date">
+              {isNew(a.updatedAt) && <span className="new-badge">NEW</span>}
+              {formatDate(a.updatedAt)} 更新
+            </span>
+          )}
+          <span className="hero-cta">
+            読む <span style={{ fontSize: 16 }}>→</span>
           </span>
-        )}
-        <span className="hero-cta">
-          読む <span style={{ fontSize: 16 }}>→</span>
-        </span>
+        </div>
       </div>
     </a>
   );
@@ -68,11 +92,24 @@ function SmallCard({ a }: { a: ArticleCard }) {
   const meta = ARTICLE_META[a.slug] ?? ARTICLE_META["vbucks"];
   return (
     <a href={`/guides/${a.slug}`} className="small-card" style={{ ["--accent" as string]: meta.accent }}>
-      <div className="small-card-top">
-        <span className="small-icon">{meta.icon}</span>
-        <span className="small-label">{meta.label}</span>
-        {a.updatedAt && isNew(a.updatedAt) && <span className="new-badge">NEW</span>}
-      </div>
+      {a.image && (
+        <div className="small-img-wrap">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={a.image} alt={a.title} className="small-img" />
+          <div className="small-img-overlay" />
+          <span className="small-img-label">{meta.label}</span>
+          {a.updatedAt && isNew(a.updatedAt) && (
+            <span className="new-badge small-img-new">NEW</span>
+          )}
+        </div>
+      )}
+      {!a.image && (
+        <div className="small-card-top">
+          <span className="small-icon">{meta.icon}</span>
+          <span className="small-label">{meta.label}</span>
+          {a.updatedAt && isNew(a.updatedAt) && <span className="new-badge">NEW</span>}
+        </div>
+      )}
       <h2 className="small-title">{a.title}</h2>
       <p className="small-desc">{a.description}</p>
       <div className="small-footer">
@@ -85,7 +122,10 @@ function SmallCard({ a }: { a: ArticleCard }) {
 }
 
 export default async function GuidesPage() {
-  const aiGuides = await listGuides();
+  const [aiGuides, fallbackImage] = await Promise.all([
+    listGuides(),
+    fetchNewsImage(),
+  ]);
 
   const staticCard: ArticleCard = {
     slug: "vbucks",
@@ -97,6 +137,7 @@ export default async function GuidesPage() {
     accentBg: "rgba(251,191,36,0.08)",
     label: "購入ガイド",
     readMin: 3,
+    image: fallbackImage ?? undefined,
   };
 
   const aiCards: ArticleCard[] = aiGuides.map((g) => ({
@@ -106,6 +147,7 @@ export default async function GuidesPage() {
     updatedAt: g.updatedAt,
     ...(ARTICLE_META[g.slug] ?? { icon: "📄", accent: "#00c8ff", accentBg: "rgba(0,200,255,0.08)", label: "ガイド" }),
     readMin: estimateRead(g.description),
+    image: g.featuredImage ?? fallbackImage ?? undefined,
   }));
 
   // 最新更新順に並べ、先頭をヒーロー表示
@@ -125,7 +167,6 @@ export default async function GuidesPage() {
           display: block;
           text-decoration: none;
           border-radius: 20px;
-          padding: 28px 28px 24px;
           margin-bottom: 20px;
           border: 1.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
           background: linear-gradient(135deg,
@@ -136,23 +177,35 @@ export default async function GuidesPage() {
           overflow: hidden;
           transition: border-color 0.18s, box-shadow 0.18s;
         }
-        .hero-card::before {
-          content: "";
-          position: absolute;
-          top: -60px; right: -60px;
-          width: 200px; height: 200px;
-          border-radius: 50%;
-          background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
-          pointer-events: none;
-        }
         .hero-card:hover {
           border-color: color-mix(in srgb, var(--accent) 60%, transparent);
           box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 15%, transparent);
         }
+        .hero-img-wrap {
+          position: relative;
+          width: 100%;
+          height: 200px;
+          overflow: hidden;
+        }
+        .hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center top;
+          display: block;
+        }
+        .hero-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, transparent 30%, #070e1c 100%);
+        }
+        .hero-body {
+          padding: 20px 24px 22px;
+        }
         .hero-icon {
-          font-size: 36px;
+          font-size: 32px;
           line-height: 1;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
         }
         .hero-label {
           font-size: 11px;
@@ -205,6 +258,43 @@ export default async function GuidesPage() {
         }
         .hero-card:hover .hero-cta {
           background: color-mix(in srgb, var(--accent) 16%, transparent);
+        }
+
+        /* スモールカード画像 */
+        .small-img-wrap {
+          position: relative;
+          width: 100%;
+          height: 130px;
+          overflow: hidden;
+          border-radius: 10px;
+          margin-bottom: 4px;
+        }
+        .small-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center top;
+          display: block;
+        }
+        .small-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, transparent 40%, rgba(7,14,28,0.85) 100%);
+        }
+        .small-img-label {
+          position: absolute;
+          bottom: 8px;
+          left: 10px;
+          font-size: 10px;
+          font-weight: 800;
+          color: var(--accent);
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+        .small-img-new {
+          position: absolute;
+          top: 8px;
+          right: 8px;
         }
 
         /* スモールカード */
